@@ -8,6 +8,7 @@ function ShaderScene(options) {
   this.active = options.active;
   this.getScreenshotResolve = null;
   this.material = null;
+  this.webGLVersion = options.webGLVersion || 1;
 
   this.canvas = options.canvas;
   this.uniforms = options.uniforms || options.shader.uniforms;
@@ -53,8 +54,10 @@ Object.assign(ShaderScene.prototype, {
     floor.rotation.x = -Math.PI / 2;
     this.scene.add(floor);
 
+    const context = this.webGLVersion === 2 ? this.canvas.getContext("webgl2") : this.canvas.getContext("webgl");
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
+      context: context,
       antialias: true
     });
     this.renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);

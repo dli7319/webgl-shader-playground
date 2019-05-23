@@ -4,6 +4,8 @@
   let texture = null;
   let previewScene = null;
   let shader = null;
+  let texturePath = 'valentinmalinov_wolf.jpg';
+  let webGLVersion = 1;
 
   loadShaders();
   loadTexture();
@@ -26,7 +28,7 @@
   function loadTexture() {
     var loader = new THREE.TextureLoader();
     loader.load(
-      'valentinmalinov_wolf.jpg',
+      texturePath,
       // onLoad callback
       function(textureParam) {
         texture = textureParam;
@@ -43,13 +45,13 @@
 
   function startScene() {
     if (typeof vertexShader !== "string" || typeof fragmentShader !== "string" ||
-      !texture.isTexture) {
+      texture === null || !texture.isTexture) {
       return;
     }
 
     const mainCanvas = document.getElementById("mainCanvas");
-    mainCanvas.width = 500;
-    mainCanvas.height = 500 * (1080 / 1920);
+    mainCanvas.width = document.body.clientWidth;
+    mainCanvas.height = mainCanvas.width * (1080 / 1920);
     shader = {
       uniforms: {
         "tDiffuse": {
@@ -64,7 +66,8 @@
     };
     previewScene = new ShaderScene({
       shader: shader,
-      canvas: mainCanvas
+      canvas: mainCanvas,
+      webGLVersion: webGLVersion
     });
 
     const screenshotButton = document.getElementById("screenshotButton");
