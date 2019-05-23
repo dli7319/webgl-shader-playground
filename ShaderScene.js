@@ -60,7 +60,7 @@ Object.assign(ShaderScene.prototype, {
       context: context,
       antialias: true
     });
-    this.renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    this.renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT, false);
 
     setTimeout(function() {
       scope.animate();
