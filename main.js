@@ -50,8 +50,8 @@
     }
 
     const mainCanvas = document.getElementById("mainCanvas");
-    mainCanvas.width = document.body.clientWidth;
-    mainCanvas.height = mainCanvas.width * (1080 / 1920);
+    mainCanvas.width = 1920;
+    mainCanvas.height = 1080;
     shader = {
       uniforms: {
         "tDiffuse": {
