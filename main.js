@@ -78,7 +78,7 @@
     previewScene.getScreenshot()
     .then(screenshot => {
       var a = document.createElement('a');
-      a.download = "screenshot.jpg";
+      a.download = "screenshot.png";
       a.href = screenshot;
       a.click();
     });
