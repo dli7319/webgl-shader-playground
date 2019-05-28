@@ -1,25 +1,25 @@
 // Generates a new THREE.js renderer and scene for 2D shaders
 // Options should include a canvas, uniforms, vertexShader, and fragmentShader
-function ShaderScene(options) {
-  const scope = this;
-  this.scene = null;
-  this.camera = null;
-  this.renderer = null;
-  this.active = options.active;
-  this.getScreenshotResolve = null;
-  this.material = null;
-  this.webGLVersion = options.webGLVersion || 1;
+class ShaderScene {
+  constructor(options) {
+    const scope = this;
+    this.scene = null;
+    this.camera = null;
+    this.renderer = null;
+    this.active = options.active == null ? true : options.active;
+    this.getScreenshotResolve = null;
+    this.material = null;
+    this.webGLVersion = options.webGLVersion || 1;
 
-  this.canvas = options.canvas;
-  this.uniforms = options.uniforms || options.shader.uniforms;
-  this.vertexShader = options.vertexShader || options.shader.vertexShader;
-  this.fragmentShader = options.fragmentShader || options.shader.fragmentShader;
+    this.canvas = options.canvas;
+    this.uniforms = options.uniforms || options.shader.uniforms;
+    this.vertexShader = options.vertexShader || options.shader.vertexShader;
+    this.fragmentShader = options.fragmentShader || options.shader.fragmentShader;
 
-  this.init();
-}
-Object.assign(ShaderScene.prototype, {
-  constructor: ShaderScene,
-  init: function() {
+    this._init();
+  }
+
+  _init() {
     // Copied from Ruofei Du
     const scope = this;
     this.scene = new THREE.Scene();
@@ -65,10 +65,14 @@ Object.assign(ShaderScene.prototype, {
     setTimeout(function() {
       scope.animate();
     });
-  },
-  animate: function() {
+  }
+
+  animate() {
+    const scope = this;
     if (this.active) {
-      requestAnimationFrame(this.animate);
+      requestAnimationFrame(() => {
+        scope.animate();
+      });
     }
     this.renderer.render(this.scene, this.camera);
 
@@ -77,8 +81,9 @@ Object.assign(ShaderScene.prototype, {
       this.getScreenshotResolve(savedImageData);
       this.getScreenshotResolve = null;
     }
-  },
-  updateShader: function(options) {
+  }
+
+  updateShader(options) {
     this.uniforms = options.uniforms || options.shader.uniforms;
     this.vertexShader = options.vertexShader || options.shader.vertexShader;
     this.fragmentShader = options.fragmentShader || options.shader.fragmentShader;
@@ -89,11 +94,12 @@ Object.assign(ShaderScene.prototype, {
     if (this.active) {
       this.animate();
     }
-  },
-  getScreenshot: function() {
+  }
+
+  getScreenshot() {
     return new Promise(resolve => {
       this.getScreenshotResolve = resolve;
       this.animate();
     });
   }
-});
+}
