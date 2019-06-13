@@ -96,6 +96,12 @@ class ShaderScene {
     }
   }
 
+  updateResolution(width, height) {
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this._init();
+  }
+
   getScreenshot() {
     return new Promise(resolve => {
       this.getScreenshotResolve = resolve;
