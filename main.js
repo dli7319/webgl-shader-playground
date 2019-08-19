@@ -6,7 +6,7 @@
   let shader = null;
   let texturePath = 'valentinmalinov_wolf.jpg';
   let webGLVersion = 1;
-  const resourcesUrl = window.resourcesUrl || "";
+  const resourcesUrl = typeof RESOURCES_URL == "string" ? RESOURCES_URL : "";
 
   loadShaders();
   loadTexture();
