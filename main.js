@@ -6,6 +6,7 @@
   let shader = null;
   let texturePath = 'valentinmalinov_wolf.jpg';
   let webGLVersion = 1;
+  const resourcesUrl = window.resourcesUrl || "";
 
   loadShaders();
   loadTexture();
@@ -22,13 +23,13 @@
   }
 
   function loadShaders() {
-    fetch("vertex_shader.vert")
+    fetch(resourcesUrl + "vertex_shader.vert")
       .then(response => response.text())
       .then(data => {
         vertexShader = data;
         startScene();
       });
-    fetch("fragment_shader.frag")
+    fetch(resourcesUrl + "fragment_shader.frag")
       .then(response => response.text())
       .then(data => {
         fragmentShader = data;
@@ -43,7 +44,7 @@
   function loadTexture() {
     var loader = new THREE.TextureLoader();
     loader.load(
-      texturePath,
+      resourcesUrl + texturePath,
       // onLoad callback
       function(textureParam) {
         texture = textureParam;
