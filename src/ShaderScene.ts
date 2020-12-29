@@ -1,21 +1,29 @@
+import * as THREE from "three";
+
 // Generates a new THREE.js renderer and scene for 2D shaders
 // Options should include a canvas, uniforms, vertexShader, and fragmentShader
-class ShaderScene {
-  constructor(options) {
-    const scope = this;
-    this.scene = null;
-    this.camera = null;
-    this.renderer = null;
-    this.active = options.active == null ? true : options.active;
-    this.getScreenshotResolve = null;
-    this.material = null;
-    this.webGLVersion = options.webGLVersion || 1;
+export class ShaderScene {
+  scene: any;
+  camera: any;
+  renderer: any;
+  active: boolean;
+  getScreenshotResolve: any;
+  material: any;
+  webGLVersion = 1;
+  canvas: HTMLCanvasElement;
+  uniforms: any;
+  vertexShader: string;
+  fragmentShader: string;
+  screenshotType: string;
 
+  constructor(options: any) {
+    this.active = options.active == null ? true : options.active;
+    this.webGLVersion = options.webGLVersion || 1;
     this.canvas = options.canvas;
     this.uniforms = options.uniforms || options.shader.uniforms;
     this.vertexShader = options.vertexShader || options.shader.vertexShader;
-    this.fragmentShader = options.fragmentShader || options.shader.fragmentShader;
-
+    this.fragmentShader =
+      options.fragmentShader || options.shader.fragmentShader;
     this._init();
   }
 
@@ -36,7 +44,8 @@ class ShaderScene {
       SCREEN_HEIGHT / 4, // Top
       SCREEN_HEIGHT / -4, // Bottom
       -5000, // Near
-      10000); // Far -- enough to see the skybox
+      10000
+    ); // Far -- enough to see the skybox
     this.camera.up = new THREE.Vector3(0, 0, -1);
     this.camera.lookAt(new THREE.Vector3(0, -1, 0));
     this.scene.add(this.camera);
@@ -49,12 +58,20 @@ class ShaderScene {
       side: THREE.DoubleSide
     });
 
-    const floorGeometry = new THREE.PlaneBufferGeometry(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 1, 1);
+    const floorGeometry = new THREE.PlaneBufferGeometry(
+      SCREEN_WIDTH / 2,
+      SCREEN_HEIGHT / 2,
+      1,
+      1
+    );
     const floor = new THREE.Mesh(floorGeometry, this.material);
     floor.rotation.x = -Math.PI / 2;
     this.scene.add(floor);
 
-    const context = this.webGLVersion === 2 ? this.canvas.getContext("webgl2") : this.canvas.getContext("webgl");
+    const context =
+      this.webGLVersion === 2
+        ? this.canvas.getContext("webgl2")
+        : this.canvas.getContext("webgl");
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       context: context,
@@ -77,16 +94,30 @@ class ShaderScene {
     this.renderer.render(this.scene, this.camera);
 
     if (typeof this.getScreenshotResolve == "function") {
-      let savedImageData = this.renderer.domElement.toDataURL();
+      let savedImageData = "";
+      if (this.screenshotType == "png") {
+        savedImageData = this.renderer.domElement.toDataURL("image/png");
+      } else if (
+        this.screenshotType == "jpg" ||
+        this.screenshotType == "jpeg"
+      ) {
+        savedImageData = this.renderer.domElement.toDataURL("image/jpeg", 1.0);
+      } else if (this.screenshotType == "webp") {
+        savedImageData = this.renderer.domElement.toDataURL("image/webp", 1.0);
+      } else {
+        console.error("Unknown screenshot type: " + this.screenshotType);
+      }
+
       this.getScreenshotResolve(savedImageData);
       this.getScreenshotResolve = null;
     }
   }
 
-  updateShader(options) {
+  updateShader(options: any) {
     this.uniforms = options.uniforms || options.shader.uniforms;
     this.vertexShader = options.vertexShader || options.shader.vertexShader;
-    this.fragmentShader = options.fragmentShader || options.shader.fragmentShader;
+    this.fragmentShader =
+      options.fragmentShader || options.shader.fragmentShader;
     this.material.uniforms = this.uniforms;
     this.material.vertexShader = this.vertexShader;
     this.material.fragmentShader = this.fragmentShader;
@@ -96,14 +127,15 @@ class ShaderScene {
     }
   }
 
-  updateResolution(width, height) {
+  updateResolution(width: number, height: number) {
     this.canvas.width = width;
     this.canvas.height = height;
     this._init();
   }
 
-  getScreenshot() {
-    return new Promise(resolve => {
+  getScreenshot(screenshotType = "png") {
+    this.screenshotType = screenshotType;
+    return new Promise<string>(resolve => {
       this.getScreenshotResolve = resolve;
       this.animate();
     });
