@@ -19,7 +19,7 @@
   "homepage": "https://github.com/dli7319/webgl-shader-playground#readme",
   "dependencies": {
     "ace-builds": "^1.4.12",
-    "three": "^0.124.0"
+    "three": "^0.125.0"
   },
   "devDependencies": {
     "@types/ace": "0.0.44",
