@@ -9,7 +9,7 @@ export class ShaderPlayground {
   texture: THREE.Texture;
   previewScene: ShaderScene;
   shader: any;
-  texturePath = "valentinmalinov_wolf.jpg";
+  texturePath = "cat-7738210_1920.jpg";
   webGLVersion = 1;
   resourcesUrl = "";
   fragmentShaderEditor: any;
