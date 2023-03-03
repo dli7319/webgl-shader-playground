@@ -58,7 +58,7 @@ export class ShaderScene {
       side: THREE.DoubleSide
     });
 
-    const floorGeometry = new THREE.PlaneBufferGeometry(
+    const floorGeometry = new THREE.PlaneGeometry(
       SCREEN_WIDTH / 2,
       SCREEN_HEIGHT / 2,
       1,

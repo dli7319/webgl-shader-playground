@@ -18,5 +18,12 @@ module.exports = {
   output: {
     filename: "main.js",
     path: path.resolve(__dirname, "dist")
-  }
+  },
+  devServer: {
+    hot: true,
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
+    compress: true,
+  },
 };
