@@ -114,7 +114,6 @@ export default function ShaderPlayground() {
                     onChange={e => setWidth(Number(e.target.value))} />
                 <TextField label="Height" type="number" className={styles.screenshotOption} value={height} variant="outlined"
                     onChange={e => setHeight(Number(e.target.value))} />
-                {/* <input type="text" id="screenshotFilenameInput" value="screenshot.png" readOnly={true} /> */}
                 <TextField label="Filename" type="text" className={styles.screenshotOption} value="screenshot.png" variant="outlined"
                     onChange={e => setScreenshotFilename(e.target.value)} />
                 <Button className={styles.screenshotButton} variant="outlined" onClick={captureScreenshot}>Screenshot!</Button>
