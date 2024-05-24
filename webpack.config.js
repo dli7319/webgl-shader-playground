@@ -1,3 +1,4 @@
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require("path");
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -25,6 +26,7 @@ module.exports = {
   resolve: {
     extensions: ['*', '.tsx', '.ts', '.js', '.jsx']
   },
+  plugins: [new MonacoWebpackPlugin()],
   output: {
     filename: "main.js",
     path: path.resolve(__dirname, "dist")
