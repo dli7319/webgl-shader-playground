@@ -119,7 +119,7 @@ export default function ShaderPlayground() {
                     onChange={e => setWidth(Number(e.target.value))} />
                 <TextField label="Height" type="number" className={styles.screenshotOption} value={height} variant="outlined"
                     onChange={e => setHeight(Number(e.target.value))} />
-                <TextField label="Filename" type="text" className={styles.screenshotOption} value="screenshot.png" variant="outlined"
+                <TextField label="Filename" type="text" className={styles.screenshotOption} value={screenshotFilename} variant="outlined"
                     onChange={e => setScreenshotFilename(e.target.value)} />
                 <Button className={styles.screenshotButton} variant="outlined" onClick={captureScreenshot}>Screenshot!</Button>
             </div>
@@ -139,7 +139,7 @@ export default function ShaderPlayground() {
                     <Button variant="outlined" onClick={updateShader} className={styles.runShaderButton}>Run Shader</Button>
                 </div>
                 <div className={styles.downloadShaderOptions}>
-                    <TextField label="Filename" type="text" className={styles.screenshotOption} value="fragment.frag" variant="outlined"
+                    <TextField label="Filename" type="text" className={styles.screenshotOption} value={downloadShaderFilename} variant="outlined"
                         onChange={e => setDownloadShaderFilename(e.target.value)} />
                     <Button variant="outlined" onClick={downloadShader}>Download Shader</Button>
                 </div>
