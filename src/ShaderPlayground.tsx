@@ -2,21 +2,25 @@ import React, { useEffect } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from "three";
 import { OrthographicCamera } from '@react-three/drei';
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-glsl";
+import * as monaco from 'monaco-editor';
+import { loader } from '@monaco-editor/react';
+import Editor from '@monaco-editor/react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import styles from './styles/ShaderPlayground.module.css';
 import defaultVertexShader from './shaders/vertex_shader.vert';
 import defaultFragmentShader from './shaders/fragment_shader.frag';
+import {language} from './glsl';
 
+monaco.languages.register({ id: 'glsl' })
+monaco.languages.setMonarchTokensProvider('glsl', language)
+loader.config({ monaco });
 
 const imageExtensionToMime = {
     "png": "image/png",
     "jpg": "image/jpeg",
     "jpeg": "image/jpeg",
 };
-
 
 export default function ShaderPlayground() {
     const [fragmentShader, setFragmentShader] = React.useState(defaultFragmentShader);
@@ -33,6 +37,7 @@ export default function ShaderPlayground() {
 
     function updateShader() {
         setFragmentShader(inputFragmentShader);
+        shaderMaterialRef.current!.fragmentShader = inputFragmentShader;
         shaderMaterialRef.current!.needsUpdate = true
     }
 
@@ -121,11 +126,13 @@ export default function ShaderPlayground() {
         </div>
         <div className={styles.rightColumn}>
             <div id="editorParent">
-                <AceEditor
-                    mode="glsl"
-                    value={inputFragmentShader}
-                    onChange={(e) => {
-                        setInputFragmentShader(e);
+                <Editor
+                    height="40vh"
+                    width="80vh"
+                    language="glsl"
+                    defaultValue={inputFragmentShader}
+                    onChange={(value, event) => {
+                        setInputFragmentShader(value);
                     }}
                 />
                 <div>
