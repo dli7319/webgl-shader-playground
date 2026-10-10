@@ -1,8 +1,8 @@
 export type ThemeMode = "light" | "dark";
 
 export const THEME_BACKGROUNDS: Record<ThemeMode, string> = {
-  light: "#ffffff",
-  dark: "#141414",
+  light: "#fdf6e3",
+  dark: "#002b36",
 };
 
 /** Applies the mode to the document (drives the CSS custom properties). */
