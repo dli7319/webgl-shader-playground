@@ -18,6 +18,9 @@
   },
   "author": "dli7319",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "bugs": {
     "url": "https://github.com/dli7319/webgl-shader-playground/issues"
   },
