@@ -1,19 +1,14 @@
-import React, { useEffect, useMemo } from "react";
+import React from "react";
 import { Suspense } from "react";
-import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import {
-  OrthographicCamera,
-  shaderMaterial,
-  useTexture,
-} from "@react-three/drei";
+import { useTexture } from "@react-three/drei";
 import * as monaco from "monaco-editor";
 import { loader } from "@monaco-editor/react";
 import Editor from "@monaco-editor/react";
 import TextField from "@mui/material/TextField";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import ImageIcon from "@mui/icons-material/Image";
 
 import styles from "./styles/ShaderPlayground.module.css";
@@ -126,7 +121,6 @@ export default function ShaderPlayground() {
   const [inputFragmentShader, setInputFragmentShader] = React.useState(
     defaultFragmentShader
   );
-  const cameraRef = React.useRef<THREE.OrthographicCamera>(null);
   const [width, setWidth] = React.useState(1920);
   const [height, setHeight] = React.useState(1080);
   const [screenshotFilename, setScreenshotFilename] =
