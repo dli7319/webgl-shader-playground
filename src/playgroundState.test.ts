@@ -78,6 +78,19 @@ describe("playgroundReducer", () => {
     expect(fixed.compileError).toBeNull();
   });
 
+  it("setTextureError reports and clears texture failures", () => {
+    const failed = playgroundReducer(start, {
+      type: "setTextureError",
+      error: 'Could not load texture "bad.png"',
+    });
+    expect(failed.textureError).toBe('Could not load texture "bad.png"');
+    const fixed = playgroundReducer(failed, {
+      type: "setTextureError",
+      error: null,
+    });
+    expect(fixed.textureError).toBeNull();
+  });
+
   it("actions never mutate the previous state", () => {
     const frozen = Object.freeze({ ...start });
     playgroundReducer(frozen, { type: "editSource", source: "x" });

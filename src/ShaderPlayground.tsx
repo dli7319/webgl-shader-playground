@@ -1,11 +1,11 @@
 import React from "react";
-import * as THREE from "three";
 
 import styles from "./styles/ShaderPlayground.module.css";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
 import { usePlaygroundState } from "./usePlaygroundState";
+import { loadTextureWithFallback } from "./textures";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
@@ -23,6 +23,7 @@ export default function ShaderPlayground() {
     setDownloadShaderFilename,
     pickImage,
     setCompileError,
+    setTextureError,
   } = usePlaygroundState();
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -57,17 +58,26 @@ export default function ShaderPlayground() {
     previewRef.current?.setFragmentShader(state.compiledShader);
   }, [state.compiledShader]);
 
-  // Load the tDiffuse texture (bundled path or picked image data URL).
+  // Load the tDiffuse texture (bundled path or picked image data URL),
+  // falling back to the default texture when the load fails.
   React.useEffect(() => {
     let cancelled = false;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(state.texturePath, (texture) => {
-      if (cancelled) {
-        texture.dispose();
-        return;
+    loadTextureWithFallback(
+      state.texturePath,
+      (texture) => {
+        if (cancelled) {
+          texture.dispose();
+          return;
+        }
+        previewRef.current?.setTexture(texture);
+        setTextureError(null);
+      },
+      (message) => {
+        if (!cancelled) {
+          setTextureError(message);
+        }
       }
-      previewRef.current?.setTexture(texture);
-    });
+    );
     return () => {
       cancelled = true;
     };
@@ -123,6 +133,7 @@ export default function ShaderPlayground() {
         onScreenshotFilenameChange={setScreenshotFilename}
         onCaptureScreenshot={captureScreenshot}
         compileError={state.compileError}
+        textureError={state.textureError}
       />
       <EditorPane
         shaderSource={state.editorSource}
