@@ -29,11 +29,53 @@ monaco.languages.register({ id: "glsl" });
 monaco.languages.setMonarchTokensProvider("glsl", language);
 loader.config({ monaco });
 
+// Warm Paper editor themes: paper-warm background with terracotta keywords.
+monaco.editor.defineTheme("warm-paper-light", {
+  base: "vs",
+  inherit: true,
+  rules: [
+    { token: "comment", foreground: "8a7a5f", fontStyle: "italic" },
+    { token: "keyword", foreground: "b85032" },
+    { token: "number", foreground: "4f7942" },
+    { token: "string", foreground: "4f7942" },
+  ],
+  colors: {
+    "editor.background": "#FFFDF7",
+    "editor.foreground": "#2E2A24",
+    "editorLineNumber.foreground": "#B3A184",
+    "editorLineNumber.activeForeground": "#6F6455",
+    "editor.lineHighlightBackground": "#F2EAD9",
+    "editor.selectionBackground": "#E8CDBC",
+    "editorCursor.foreground": "#B85032",
+    "editorIndentGuide.background": "#E2D8C6",
+  },
+});
+monaco.editor.defineTheme("warm-paper-dark", {
+  base: "vs-dark",
+  inherit: true,
+  rules: [
+    { token: "comment", foreground: "9d907c", fontStyle: "italic" },
+    { token: "keyword", foreground: "e07a54" },
+    { token: "number", foreground: "8fbf7f" },
+    { token: "string", foreground: "8fbf7f" },
+  ],
+  colors: {
+    "editor.background": "#26221D",
+    "editor.foreground": "#ECE5D9",
+    "editorLineNumber.foreground": "#6F6455",
+    "editorLineNumber.activeForeground": "#A89B87",
+    "editor.lineHighlightBackground": "#2E2921",
+    "editor.selectionBackground": "#4A3427",
+    "editorCursor.foreground": "#E07A54",
+    "editorIndentGuide.background": "#3D362E",
+  },
+});
+
 export interface MonacoGlslEditorProps {
   height: string;
   width: string;
   defaultValue: string;
-  options: { fontSize: number; wordWrap: "on" | "off" };
+  options: { fontSize: number; wordWrap: "on" | "off"; fontFamily?: string };
   theme: "light" | "dark";
   onChange: (value: string) => void;
 }
@@ -57,7 +99,7 @@ export function MonacoGlslEditor({
       language="glsl"
       defaultValue={defaultValue}
       options={options}
-      theme={theme === "dark" ? "vs-dark" : "light"}
+      theme={theme === "dark" ? "warm-paper-dark" : "warm-paper-light"}
       onChange={(value, _event) => {
         onChange(value ?? "");
       }}

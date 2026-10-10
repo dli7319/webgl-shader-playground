@@ -290,26 +290,34 @@ export default function ShaderPlayground() {
 
   return (
     <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex justify-end gap-2">
-        <Button variant="outlined" onClick={toggleTheme}>
-          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-        </Button>
-        {recordingSupported ? (
-          <Button
-            variant="outlined"
-            tone={isRecording ? "warning" : undefined}
-            onClick={toggleRecording}
-          >
-            {isRecording ? "Stop recording" : "Record (WebM)"}
+      <header className="mx-2 mt-3 flex flex-wrap items-end justify-between gap-3 px-2">
+        <div>
+          <h1 className="section-title text-2xl">WebGL Shader Playground</h1>
+          <p className="mt-2 mb-0 text-xs uppercase tracking-[0.18em] text-muted">
+            an artist&rsquo;s sketchbook for shaders
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outlined" onClick={toggleTheme}>
+            {state.themeMode === "light" ? "Dark theme" : "Light theme"}
           </Button>
-        ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-          Settings
-        </Button>
-      </div>
+          {recordingSupported ? (
+            <Button
+              variant="outlined"
+              className={isRecording ? "btn-recording" : undefined}
+              onClick={toggleRecording}
+            >
+              {isRecording ? "Stop recording" : "Record (WebM)"}
+            </Button>
+          ) : null}
+          <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+            Settings
+          </Button>
+        </div>
+      </header>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
+          className="surface-inset mx-2 my-3 flex items-center gap-2 p-3 text-sm"
           role="status"
         >
           <span className="grow">Unsaved draft from your last session is available.</span>
@@ -323,8 +331,7 @@ export default function ShaderPlayground() {
             Restore
           </Button>
           <Button
-            variant="outlined"
-            tone="warning"
+            tone="danger"
             onClick={() => {
               clearDraft(window.localStorage);
               setDraftDismissed(true);
@@ -334,7 +341,7 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
+      <div className="m-2 flex flex-row items-start gap-4 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
