@@ -20,7 +20,13 @@ import { createToastStore } from "./toast";
 import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { clearDraft, loadDraft, saveDraft } from "./draftStore";
-import { downloadTextFile } from "./download";
+import { downloadTextFile, triggerDownload } from "./download";
+import {
+  createRecordingSession,
+  pickRecordingMimeType,
+  recordingFilename,
+  type RecordingSession,
+} from "./recorder";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
 
 export default function ShaderPlayground() {
@@ -247,12 +253,57 @@ export default function ShaderPlayground() {
     return () => window.removeEventListener("keydown", onKeyDown, true);
   }, [state.editorSource, state.downloadShaderFilename]);
 
+  const [isRecording, setIsRecording] = React.useState(false);
+  const recordingRef = React.useRef<RecordingSession | null>(null);
+  const recordingSupported = React.useMemo(
+    () =>
+      typeof window.MediaRecorder === "function" &&
+      pickRecordingMimeType(
+        window.MediaRecorder.isTypeSupported.bind(window.MediaRecorder)
+      ) !== null,
+    []
+  );
+
+  async function toggleRecording() {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    if (!isRecording) {
+      try {
+        recordingRef.current = createRecordingSession(canvas);
+        setIsRecording(true);
+      } catch {
+        toastStore.add("Recording is not supported in this browser");
+      }
+      return;
+    }
+    const session = recordingRef.current;
+    recordingRef.current = null;
+    setIsRecording(false);
+    if (session) {
+      const filename = recordingFilename();
+      const blob = await session.stop();
+      triggerDownload(URL.createObjectURL(blob), filename);
+      toastStore.add(`Recording saved as ${filename}`);
+    }
+  }
+
   return (
     <div className={styles.app}>
       <div className={styles.toolbar}>
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
+        {recordingSupported ? (
+          <Button
+            variant="outlined"
+            tone={isRecording ? "warning" : undefined}
+            onClick={toggleRecording}
+          >
+            {isRecording ? "Stop recording" : "Record (WebM)"}
+          </Button>
+        ) : null}
         <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
           Settings
         </Button>
