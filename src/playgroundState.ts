@@ -23,6 +23,8 @@ export interface PlaygroundState {
   compileError: string | null;
   /** Latest texture load failure message, or null when the texture loaded. */
   textureError: string | null;
+  /** Latest screenshot failure message, or null when the capture succeeded. */
+  screenshotError: string | null;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -36,6 +38,7 @@ export const initialPlaygroundState: PlaygroundState = {
   texturePath: DEFAULT_TEXTURE_PATH,
   compileError: null,
   textureError: null,
+  screenshotError: null,
 };
 
 export type PlaygroundAction =
@@ -49,7 +52,8 @@ export type PlaygroundAction =
   | { type: "setDownloadShaderFilename"; filename: string }
   | { type: "pickImage"; texturePath: string }
   | { type: "setCompileError"; error: string | null }
-  | { type: "setTextureError"; error: string | null };
+  | { type: "setTextureError"; error: string | null }
+  | { type: "setScreenshotError"; error: string | null };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -78,5 +82,7 @@ export function playgroundReducer(
       return { ...state, compileError: action.error };
     case "setTextureError":
       return { ...state, textureError: action.error };
+    case "setScreenshotError":
+      return { ...state, screenshotError: action.error };
   }
 }

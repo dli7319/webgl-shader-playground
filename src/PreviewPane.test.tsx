@@ -5,7 +5,11 @@ import { PreviewPane } from "./PreviewPane";
 
 afterEach(cleanup);
 
-function renderPane(compileError?: string | null, textureError?: string | null) {
+function renderPane(
+  compileError?: string | null,
+  textureError?: string | null,
+  screenshotError?: string | null
+) {
   return render(
     <PreviewPane
       canvasRef={{ current: null }}
@@ -18,6 +22,7 @@ function renderPane(compileError?: string | null, textureError?: string | null) 
       onCaptureScreenshot={() => {}}
       compileError={compileError}
       textureError={textureError}
+      screenshotError={screenshotError}
     />
   );
 }
@@ -56,5 +61,13 @@ describe("PreviewPane compile error banner", () => {
   it("shows both notices when both are set", () => {
     renderPane("ERROR: bad shader", 'Could not load texture "bad.png"');
     expect(screen.getAllByRole("alert")).toHaveLength(2);
+  });
+
+  it("shows the screenshot failure notice", () => {
+    renderPane(null, null, 'Unsupported screenshot format: "shot.gif"');
+    const alerts = screen.getAllByRole("alert");
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].textContent).toContain("Screenshot error");
+    expect(alerts[0].textContent).toContain("shot.gif");
   });
 });
