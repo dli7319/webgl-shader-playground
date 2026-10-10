@@ -33,6 +33,42 @@ describe("isShadertoyShader", () => {
     const both = "void mainImage(out vec4 c, in vec2 p) {}\nvoid main() {}";
     expect(isShadertoyShader(both)).toBe(false);
   });
+
+  it("claims legacy Shadertoy shaders (main + host uniforms)", () => {
+    // iq's "Raymarching primitives" (Xds3zN) in its original 2013 form.
+    const legacy = `
+void main( void )
+{
+    vec2 q = gl_FragCoord.xy/iResolution.xy;
+    vec2 mo = iMouse.xy/iResolution.xy;
+    float time = 15.0 + iGlobalTime;
+    gl_FragColor = vec4( q, time + mo.x, 1.0 );
+}`;
+    expect(isShadertoyShader(legacy)).toBe(true);
+  });
+
+  it("does not claim plain shaders that merely mention nothing host-like", () => {
+    expect(isShadertoyShader("void main() { gl_FragColor = vec4(1.0); }")).toBe(false);
+    expect(isShadertoyShader("uniform sampler2D tDiffuse;\nvoid main() {}")).toBe(false);
+  });
+});
+
+describe("buildShadertoyFragment — legacy dialect", () => {
+  const legacy = `uniform vec3 iResolution;
+void main( void )
+{
+    gl_FragColor = vec4( iResolution.xy / 100.0, iGlobalTime, 1.0 );
+}`;
+
+  it("prefixes uniforms but adds no mainImage wrapper", () => {
+    const built = buildShadertoyFragment(legacy);
+    expect(built).toContain("uniform vec3 iResolution;");
+    expect(built.match(/uniform vec3 iResolution;/g)).toHaveLength(1);
+    expect(built).toContain("#define iGlobalTime iTime");
+    expect(built).toContain("void main( void )");
+    expect(built).not.toContain("SHADERTOY_WRAPPER");
+    expect(built).not.toContain("mainImage(shadertoyColor");
+  });
 });
 
 describe("buildShadertoyFragment", () => {
