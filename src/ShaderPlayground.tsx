@@ -13,6 +13,7 @@ import ImageIcon from "@mui/icons-material/Image";
 
 import styles from "./styles/ShaderPlayground.module.css";
 import { mimeTypeForImageFilename } from "./files";
+import { downloadDataUrlFile, downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
 import defaultFragmentShader from "./shaders/fragment_shader.frag";
 import { language } from "./glsl";
@@ -80,10 +81,7 @@ function Scene({
     renderer.render(scene, camera);
     const imageData = renderer.domElement.toDataURL(mimeType);
     if (imageData) {
-      const a = document.createElement("a");
-      a.download = screenshotFilename;
-      a.href = imageData;
-      a.click();
+      downloadDataUrlFile(screenshotFilename, imageData);
     }
     setScreenshotFilename("");
   }
@@ -123,10 +121,7 @@ export default function ShaderPlayground() {
   }
 
   function downloadShader() {
-    const a = document.createElement("a");
-    a.download = downloadShaderFilename;
-    a.href = "data:text/plain," + encodeURIComponent(inputFragmentShader);
-    a.click();
+    downloadTextFile(downloadShaderFilename, inputFragmentShader);
   }
 
   function captureScreenshot() {
