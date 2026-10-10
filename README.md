@@ -41,7 +41,7 @@ and export screenshots or the shader source when you're happy with it.
 
 ## Development
 
-Requirements: Node.js 20+.
+Requirements: Node.js 22+.
 
 ```sh
 npm ci          # install dependencies

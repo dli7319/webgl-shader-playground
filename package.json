@@ -19,7 +19,7 @@
   "author": "dli7319",
   "license": "MIT",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "overrides": {
     "dompurify": "^3.4.16",
