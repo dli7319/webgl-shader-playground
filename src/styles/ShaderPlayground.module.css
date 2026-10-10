@@ -219,6 +219,13 @@
 .screenshotButton {
   flex-grow: 1;
 }
+.editorFallback {
+  padding: 1rem;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  min-height: 40vh;
+  box-sizing: border-box;
+}
 .runShaderButton {
   display: block !important;
   margin: 0.5rem auto !important;
