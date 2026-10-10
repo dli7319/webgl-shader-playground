@@ -14,18 +14,22 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-2 flex items-center gap-2 px-2 py-1 text-sm text-ink opacity-85"
+      className="mt-2 flex items-center gap-2 border-t border-edge px-1 py-2 text-sm"
       role="status"
     >
       <span
-        className={`size-2.5 rounded-full ${status === "error" ? "bg-[#d32f2f]" : "bg-[#2e9e44]"}`}
+        className={`size-2 rounded-full ${status === "error" ? "bg-error" : "bg-success"}`}
         aria-hidden="true"
       />
-      <span>{STATUS_LABELS[status]}</span>
-      <span aria-hidden="true">·</span>
-      <span>{duration}</span>
-      <span aria-hidden="true">·</span>
-      <span>
+      <span className="font-medium text-ink">{STATUS_LABELS[status]}</span>
+      <span className="text-muted" aria-hidden="true">
+        ·
+      </span>
+      <span className="font-mono text-xs text-muted">{duration}</span>
+      <span className="text-muted" aria-hidden="true">
+        ·
+      </span>
+      <span className="font-mono text-xs text-muted">
         Export {width}×{height}
       </span>
     </div>

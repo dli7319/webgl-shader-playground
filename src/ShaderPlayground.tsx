@@ -290,14 +290,18 @@ export default function ShaderPlayground() {
 
   return (
     <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex justify-end gap-2">
+      <header className="flex items-center gap-2 border-b border-edge px-3 py-2">
+        <span className="text-[0.8125rem] font-semibold tracking-[-0.01em]">
+          WebGL Shader Playground
+        </span>
+        <span className="grow" />
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
         {recordingSupported ? (
           <Button
             variant="outlined"
-            tone={isRecording ? "warning" : undefined}
+            tone={isRecording ? "live" : undefined}
             onClick={toggleRecording}
           >
             {isRecording ? "Stop recording" : "Record (WebM)"}
@@ -306,13 +310,15 @@ export default function ShaderPlayground() {
         <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
           Settings
         </Button>
-      </div>
+      </header>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
+          className="mx-3 mt-2 flex items-center gap-2 rounded-[6px] border border-edge px-2.5 py-2 text-sm"
           role="status"
         >
-          <span className="grow">Unsaved draft from your last session is available.</span>
+          <span className="grow text-muted">
+            Unsaved draft from your last session is available.
+          </span>
           <Button
             variant="outlined"
             onClick={() => {
@@ -324,7 +330,7 @@ export default function ShaderPlayground() {
           </Button>
           <Button
             variant="outlined"
-            tone="warning"
+            tone="danger"
             onClick={() => {
               clearDraft(window.localStorage);
               setDraftDismissed(true);
@@ -334,7 +340,7 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
+      <div className="m-3 flex flex-row gap-3 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}

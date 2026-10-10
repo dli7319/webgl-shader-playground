@@ -25,7 +25,8 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="my-2 flex flex-col gap-2 rounded-lg bg-panel p-2">
+    <div className="flex flex-col gap-2 p-2.5">
+      <span className="section-label">Saved shaders</span>
       <div className="flex items-center gap-2">
         <TextField
           label="Save as"
@@ -42,11 +43,14 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
         </Button>
       </div>
       {entries.length === 0 ? (
-        <p className="m-0 text-sm opacity-70">No saved shaders yet.</p>
+        <p className="m-0 text-sm text-muted">No saved shaders yet.</p>
       ) : (
-        <ul className="m-0 flex max-h-40 list-none flex-col gap-1.5 overflow-y-auto p-0">
+        <ul className="m-0 flex max-h-40 list-none flex-col overflow-y-auto p-0">
           {entries.map((entry) => (
-            <li key={entry.id} className="flex items-center gap-2">
+            <li
+              key={entry.id}
+              className="flex items-center gap-2 border-t border-edge py-1.5 first:border-t-0 first:pt-0"
+            >
               <span className="grow overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                 {entry.name}
               </span>
@@ -55,7 +59,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
               </Button>
               <Button
                 variant="outlined"
-                tone="warning"
+                tone="danger"
                 onClick={() => store.remove(entry.id)}
               >
                 Delete

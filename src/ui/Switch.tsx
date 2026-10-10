@@ -6,9 +6,9 @@ export interface SwitchProps {
   label: string;
 }
 
-const SWITCH_LABEL = "my-1 inline-flex cursor-pointer items-center gap-1.5 text-sm";
+const SWITCH_LABEL = "my-1 inline-flex cursor-pointer items-center gap-1.5 text-sm text-ink";
 const SWITCH_INPUT =
-  "size-[1.1rem] accent-[var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+  "size-[1.05rem] accent-[var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 /** Checkbox-based switch with a visible label. */
 export function Switch({ checked, onChange, label }: SwitchProps) {

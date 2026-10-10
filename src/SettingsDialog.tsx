@@ -10,9 +10,8 @@ export interface SettingsDialogProps {
   onClose: () => void;
 }
 
-const FIELD = "flex flex-col gap-1.5 text-sm";
-const FIELD_INPUT =
-  "w-24 rounded border border-edge bg-transparent px-2 py-[0.35rem] text-ink [font:inherit]";
+const FIELD = "flex flex-col gap-1.5 text-sm text-muted";
+const FIELD_INPUT = "input-quiet w-24";
 
 /** Modal-less settings panel with the persisted preferences. */
 export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
@@ -23,8 +22,8 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
       aria-modal="true"
       aria-label="Settings"
     >
-      <div className="flex min-w-[280px] flex-col gap-3 rounded-lg border border-edge bg-app px-5 py-4 text-ink">
-        <h2 className="m-0 text-lg">Settings</h2>
+      <div className="surface-panel flex min-w-[280px] flex-col gap-3 bg-app px-5 py-4 text-ink shadow-[0_8px_28px_rgba(0,0,0,0.22)]">
+        <h2 className="m-0 text-base font-semibold tracking-[-0.01em]">Settings</h2>
         <label className={FIELD}>
           Editor font size
           <input
@@ -55,20 +54,22 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
           Theme
           <div>
             <Button
-              variant={settings.themeMode === "light" ? "contained" : "outlined"}
+              variant="outlined"
+              className={settings.themeMode === "light" ? "btn-selected" : ""}
               onClick={() => onChange({ themeMode: "light" })}
             >
               Light
             </Button>{" "}
             <Button
-              variant={settings.themeMode === "dark" ? "contained" : "outlined"}
+              variant="outlined"
+              className={settings.themeMode === "dark" ? "btn-selected" : ""}
               onClick={() => onChange({ themeMode: "dark" })}
             >
               Dark
             </Button>
           </div>
         </div>
-        <Button variant="contained" onClick={onClose}>
+        <Button variant="outlined" onClick={onClose}>
           Close
         </Button>
       </div>
