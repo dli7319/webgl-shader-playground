@@ -47,7 +47,7 @@ export function EditorPane({
 }: EditorPaneProps) {
   return (
     <div className={styles.rightColumn}>
-      <div id="editorParent">
+      <div id="editorParent" role="region" aria-label="Shader editor">
         <Editor
           height="40vh"
           width="80vh"
@@ -73,6 +73,9 @@ export function EditorPane({
             className={styles.screenshotOption}
             value={downloadShaderFilename}
             variant="outlined"
+            slotProps={{
+              htmlInput: { "aria-label": "Shader download filename" },
+            }}
             onChange={(e) => onDownloadShaderFilenameChange(e.target.value)}
           />
           <Button variant="outlined" onClick={onDownloadShader}>
@@ -89,6 +92,8 @@ export function EditorPane({
           Pick tDiffuse Image
           <VisuallyHiddenInput
             type="file"
+            aria-label="Choose a texture image"
+            accept="image/*"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
