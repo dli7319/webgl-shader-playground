@@ -1,9 +1,9 @@
 import React from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 
 import styles from "./styles/ShaderPlayground.module.css";
 import { StatusBar } from "./StatusBar";
+import { Button } from "./ui/Button";
+import { TextField } from "./ui/TextField";
 import type { CompileStatus } from "./status";
 
 export interface PreviewPaneProps {
@@ -81,27 +81,24 @@ export function PreviewPane({
           type="number"
           className={styles.screenshotOption}
           value={width}
-          variant="outlined"
-          slotProps={{ htmlInput: { "aria-label": "Screenshot width in pixels" } }}
-          onChange={(e) => onWidthChange(Number(e.target.value))}
+          aria-label="Screenshot width in pixels"
+          onChange={(v) => onWidthChange(Number(v))}
         />
         <TextField
           label="Height"
           type="number"
           className={styles.screenshotOption}
           value={height}
-          variant="outlined"
-          slotProps={{ htmlInput: { "aria-label": "Screenshot height in pixels" } }}
-          onChange={(e) => onHeightChange(Number(e.target.value))}
+          aria-label="Screenshot height in pixels"
+          onChange={(v) => onHeightChange(Number(v))}
         />
         <TextField
           label="Filename"
           type="text"
           className={styles.screenshotOption}
           value={screenshotFilename}
-          variant="outlined"
-          slotProps={{ htmlInput: { "aria-label": "Screenshot filename" } }}
-          onChange={(e) => onScreenshotFilenameChange(e.target.value)}
+          aria-label="Screenshot filename"
+          onChange={onScreenshotFilenameChange}
         />
         <Button
           className={styles.screenshotButton}
