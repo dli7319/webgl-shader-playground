@@ -28,6 +28,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.ts"],
+    exclude: ["**/node_modules/**", "tests/e2e/**"],
     server: {
       deps: {
         // Must go through Vite so the react -> preact/compat aliases apply.
