@@ -46,6 +46,8 @@ export function usePlaygroundState(initialOverrides?: Partial<PlaygroundState>) 
       setEditorFontSize: (size: number) => dispatch({ type: "setEditorFontSize", size }),
       setWordWrap: (enabled: boolean) => dispatch({ type: "setWordWrap", enabled }),
       setThemeMode: (mode: "light" | "dark") => dispatch({ type: "setThemeMode", mode }),
+      undoEditor: () => dispatch({ type: "undoEditor" }),
+      redoEditor: () => dispatch({ type: "redoEditor" }),
     }),
     []
   );

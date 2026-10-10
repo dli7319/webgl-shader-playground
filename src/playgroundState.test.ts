@@ -124,6 +124,21 @@ describe("playgroundReducer", () => {
     expect(state.themeMode).toBe("dark");
   });
 
+  it("runShader snapshots history; undo/redo step through applied sources", () => {
+    let state = playgroundReducer(start, {
+      type: "editSource",
+      source: "first",
+    });
+    state = playgroundReducer(state, { type: "runShader" });
+    state = playgroundReducer(state, { type: "editSource", source: "second" });
+    state = playgroundReducer(state, { type: "runShader" });
+
+    state = playgroundReducer(state, { type: "undoEditor" });
+    expect(state.editorSource).toBe("first");
+    state = playgroundReducer(state, { type: "redoEditor" });
+    expect(state.editorSource).toBe("second");
+  });
+
   it("setCompileError reports and clears GLSL errors", () => {
     const failed = playgroundReducer(start, {
       type: "setCompileError",

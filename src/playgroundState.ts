@@ -7,6 +7,13 @@ import {
   DEFAULT_TEXTURE_PATH,
 } from "./constants";
 import { clampZoom, FIT_ZOOM, zoomIn, zoomOut } from "./zoom";
+import {
+  createHistory,
+  pushHistory,
+  redoHistory,
+  undoHistory,
+  type History,
+} from "./history";
 
 export interface PlaygroundState {
   /** Editor contents (may be dirty relative to compiledShader). */
@@ -40,6 +47,8 @@ export interface PlaygroundState {
   editorFontSize: number;
   /** Monaco word wrap. */
   wordWrap: boolean;
+  /** Applied-shader history (snapshots at each run). */
+  history: History<string>;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -61,6 +70,7 @@ export const initialPlaygroundState: PlaygroundState = {
   zoomPercent: FIT_ZOOM,
   editorFontSize: 14,
   wordWrap: false,
+  history: createHistory(defaultFragmentShader),
 };
 
 /** Merges persisted settings (or other overrides) into the initial state. */
@@ -92,7 +102,9 @@ export type PlaygroundAction =
   | { type: "zoomOut" }
   | { type: "setEditorFontSize"; size: number }
   | { type: "setWordWrap"; enabled: boolean }
-  | { type: "setThemeMode"; mode: "light" | "dark" };
+  | { type: "setThemeMode"; mode: "light" | "dark" }
+  | { type: "undoEditor" }
+  | { type: "redoEditor" };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -101,8 +113,18 @@ export function playgroundReducer(
   switch (action.type) {
     case "editSource":
       return { ...state, editorSource: action.source };
-    case "runShader":
-      return { ...state, compiledShader: state.editorSource };
+    case "runShader": {
+      const history = pushHistory(state.history, state.editorSource);
+      return { ...state, compiledShader: state.editorSource, history };
+    }
+    case "undoEditor": {
+      const history = undoHistory(state.history);
+      return { ...state, history, editorSource: history.present };
+    }
+    case "redoEditor": {
+      const history = redoHistory(state.history);
+      return { ...state, history, editorSource: history.present };
+    }
     case "setWidth":
       return { ...state, width: action.width };
     case "setHeight":
