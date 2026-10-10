@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Button } from "./ui/Button";
 import { Switch } from "./ui/Switch";
 import type { Settings } from "./settings";
@@ -10,21 +9,21 @@ export interface SettingsDialogProps {
   onClose: () => void;
 }
 
-const FIELD = "flex flex-col gap-1.5 text-sm";
+const FIELD = "flex flex-col gap-1.5 text-sm micro-label";
 const FIELD_INPUT =
-  "w-24 rounded border border-edge bg-transparent px-2 py-[0.35rem] text-ink [font:inherit]";
+  "w-24 rounded-[2px] border border-edge bg-transparent px-2 py-[0.35rem] text-sm normal-case tracking-normal text-ink [font-family:var(--font-mono)] focus:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 /** Modal-less settings panel with the persisted preferences. */
 export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
   return (
     <div
-      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/45"
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/55"
       role="dialog"
       aria-modal="true"
       aria-label="Settings"
     >
-      <div className="flex min-w-[280px] flex-col gap-3 rounded-lg border border-edge bg-app px-5 py-4 text-ink">
-        <h2 className="m-0 text-lg">Settings</h2>
+      <div className="surface-panel flex min-w-[280px] flex-col gap-3 px-5 py-4 text-ink shadow-[0_0_24px_var(--glow)]">
+        <h2 className="m-0 text-xl text-accent glow">Settings</h2>
         <label className={FIELD}>
           Editor font size
           <input
@@ -68,7 +67,7 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
             </Button>
           </div>
         </div>
-        <Button variant="contained" onClick={onClose}>
+        <Button variant="outlined" onClick={onClose}>
           Close
         </Button>
       </div>

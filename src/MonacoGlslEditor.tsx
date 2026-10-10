@@ -29,11 +29,62 @@ monaco.languages.register({ id: "glsl" });
 monaco.languages.setMonarchTokensProvider("glsl", language);
 loader.config({ monaco });
 
+/** Phosphor Terminal editor themes: CRT green dark + printout light. */
+monaco.editor.defineTheme("phosphor-dark", {
+  base: "vs-dark",
+  inherit: true,
+  rules: [
+    { token: "comment", foreground: "3f7a4f", fontStyle: "italic" },
+    { token: "keyword", foreground: "33ff66" },
+    { token: "type", foreground: "b8f5c0" },
+    { token: "number", foreground: "ffb347" },
+    { token: "string", foreground: "ffb347" },
+    { token: "delimiter", foreground: "7cc98a" },
+  ],
+  colors: {
+    "editor.background": "#0f1a10",
+    "editor.foreground": "#b8f5c0",
+    "editorLineNumber.foreground": "#2c5c3c",
+    "editorLineNumber.activeForeground": "#33ff66",
+    "editorCursor.foreground": "#33ff66",
+    "editor.selectionBackground": "#1e4d2b99",
+    "editor.lineHighlightBackground": "#132117",
+    "editorIndentGuide.background1": "#1e4d2b",
+  },
+});
+
+monaco.editor.defineTheme("phosphor-print", {
+  base: "vs",
+  inherit: true,
+  rules: [
+    { token: "comment", foreground: "7c8a72", fontStyle: "italic" },
+    { token: "keyword", foreground: "1d6b35" },
+    { token: "type", foreground: "22301f" },
+    { token: "number", foreground: "b3261e" },
+    { token: "string", foreground: "b3261e" },
+    { token: "delimiter", foreground: "5c6b52" },
+  ],
+  colors: {
+    "editor.background": "#f3f0e7",
+    "editor.foreground": "#22301f",
+    "editorLineNumber.foreground": "#b9b39e",
+    "editorLineNumber.activeForeground": "#1d6b35",
+    "editorCursor.foreground": "#1d6b35",
+    "editor.selectionBackground": "#b9b39e66",
+    "editor.lineHighlightBackground": "#e9e5d8",
+    "editorIndentGuide.background1": "#b9b39e",
+  },
+});
+
 export interface MonacoGlslEditorProps {
   height: string;
   width: string;
   defaultValue: string;
-  options: { fontSize: number; wordWrap: "on" | "off" };
+  options: {
+    fontSize: number;
+    wordWrap: "on" | "off";
+    fontFamily?: string;
+  };
   theme: "light" | "dark";
   onChange: (value: string) => void;
 }
@@ -57,7 +108,7 @@ export function MonacoGlslEditor({
       language="glsl"
       defaultValue={defaultValue}
       options={options}
-      theme={theme === "dark" ? "vs-dark" : "light"}
+      theme={theme === "dark" ? "phosphor-dark" : "phosphor-print"}
       onChange={(value, _event) => {
         onChange(value ?? "");
       }}

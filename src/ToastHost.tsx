@@ -1,5 +1,4 @@
 import React from "react";
-
 import type { ToastStore } from "./toast";
 
 const TOAST_TIMEOUT_MS = 4000;
@@ -28,7 +27,7 @@ export function ToastHost({ store }: ToastHostProps) {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className="flex items-center gap-3 rounded-lg border border-accent bg-panel px-3 py-2 text-sm text-ink shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+          className="surface-panel flex items-center gap-3 px-3 py-2 text-sm text-ink shadow-[0_0_12px_var(--glow)]"
         >
           <span>{toast.message}</span>
           <button

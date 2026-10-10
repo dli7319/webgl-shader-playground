@@ -12,6 +12,9 @@ const MonacoGlslEditor = React.lazy(() =>
   }))
 );
 
+const FILE_PICKER_LABEL =
+  "edge-accent inline-flex min-h-9 min-w-16 cursor-pointer items-center justify-center gap-2 rounded-[2px] px-4 py-[0.45rem] font-display text-[1.15rem] leading-none uppercase tracking-[0.14em] text-accent glow transition-colors hover:bg-accent hover:text-on-accent hover:shadow-[0_0_12px_var(--glow)]";
+
 export interface EditorPaneProps {
   shaderSource: string;
   onShaderSourceChange: (source: string) => void;
@@ -55,6 +58,10 @@ export function EditorPane({
   return (
     <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
       <div id="editorParent" role="region" aria-label="Shader editor">
+        <div className="mb-1 flex items-baseline gap-2" aria-hidden="true">
+          <span className="section-label">GLSL source</span>
+          <span className="micro-label grow opacity-60">buffer 01</span>
+        </div>
         <React.Suspense
           fallback={
             <div className="min-h-[40vh] box-border p-4 text-sm opacity-70">
@@ -69,6 +76,8 @@ export function EditorPane({
             options={{
               fontSize: editorFontSize,
               wordWrap: wordWrap ? "on" : "off",
+              fontFamily:
+                '"IBM Plex Mono", ui-monospace, SFMono-Regular, Monaco, "Cascadia Code", monospace',
             }}
             theme={themeMode}
             onChange={onShaderSourceChange}
@@ -82,7 +91,7 @@ export function EditorPane({
             Redo
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={onRunShader}
             className="mx-auto my-2 block w-full"
           >
@@ -93,11 +102,14 @@ export function EditorPane({
             onChange={onToggleAutoRun}
             label="Auto-run while typing"
           />
-          <Button variant="outlined" tone="warning" onClick={onResetShader}>
+          <Button variant="outlined" tone="danger" onClick={onResetShader}>
             Reset to default shader
           </Button>
         </div>
-        <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+        <div className="surface-panel my-2 flex flex-row flex-wrap items-center gap-2 p-2">
+          <span className="micro-label" aria-hidden="true">
+            [ export ]
+          </span>
           <TextField
             label="Filename"
             type="text"
@@ -111,7 +123,7 @@ export function EditorPane({
           </Button>
         </div>
         <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
-        <label className="min-w-16 cursor-pointer rounded border border-accent bg-accent px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] text-white transition-colors [font:inherit] hover:brightness-110">
+        <label className={FILE_PICKER_LABEL}>
           <ImageIcon /> Pick tDiffuse Image
           <input
             type="file"

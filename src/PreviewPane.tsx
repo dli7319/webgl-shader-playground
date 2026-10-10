@@ -1,5 +1,4 @@
 import React from "react";
-
 import { StatusBar } from "./StatusBar";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
@@ -26,9 +25,9 @@ export interface PreviewPaneProps {
 }
 
 const ERROR_BOX =
-  "my-2 rounded-lg border p-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
-const COMPILE_ERROR = `${ERROR_BOX} border-[#f5c2c0] bg-[#fdecea] text-[#b3261e]`;
-const WARN_ERROR = `${ERROR_BOX} border-[#ffd591] bg-[#fff4e5] text-[#8c4a00]`;
+  "error-box my-2 p-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
+const COMPILE_ERROR = ERROR_BOX;
+const WARN_ERROR = `${ERROR_BOX} opacity-90`;
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
 export function PreviewPane({
@@ -52,10 +51,15 @@ export function PreviewPane({
 }: PreviewPaneProps) {
   return (
     <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
+      <div className="mb-1 flex items-baseline gap-2" aria-hidden="true">
+        <span className="section-label">CRT preview</span>
+        <span className="micro-label grow opacity-60">viewport 00</span>
+      </div>
       <canvas
         ref={canvasRef}
         role="img"
         aria-label="Shader preview output"
+        className="edge"
         style={{
           aspectRatio: width / height,
           width: `${zoomPercent}%`,
@@ -98,7 +102,10 @@ export function PreviewPane({
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+      <div className="surface-panel my-2 flex flex-row flex-wrap items-center gap-2 p-2">
+        <span className="micro-label" aria-hidden="true">
+          [ capture ]
+        </span>
         <TextField
           label="Width"
           type="number"

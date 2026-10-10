@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 /*
+ * PHOSPHOR TERMINAL — a CRT terminal for shaders.
+ *
  * Theme colors map to CSS variables that flip with [data-theme="dark"] so
  * utilities like bg-app / text-ink work in both themes.
  */
@@ -10,31 +12,170 @@
   --color-ink: var(--text);
   --color-accent: var(--accent);
   --color-edge: var(--border);
+  --color-danger: var(--danger);
+  --color-on-accent: var(--on-accent);
+  --font-display: "VT323", "IBM Plex Mono", ui-monospace, monospace;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Monaco,
+    "Cascadia Code", monospace;
 }
 
+/* Light scheme = "printout": warm paper, hairline dotted rules. */
 :root {
-  --bg: #ffffff;
-  --panel: #eeeeee;
-  --text: #1a1a1a;
-  --accent: #1976d2;
-  --border: rgba(0, 0, 0, 0.23);
+  --bg: #f3f0e7;
+  --panel: #e9e5d8;
+  --text: #22301f;
+  --accent: #1d6b35;
+  --border: #b9b39e;
+  --danger: #b3261e;
+  --on-accent: #f3f0e7;
+  --dot-success: #2e7d32;
+  --dot-error: #c62828;
+  --glow: rgba(29, 107, 53, 0.18);
+  --glow-text: transparent;
+  --rule-w: 1px;
+  --rule-style: dotted;
+  --scanline: rgba(34, 48, 31, 0);
+  --mono-size: 0.8125rem;
 }
 
+/* Dark scheme = live CRT: phosphor green on near-black, 2px rules. */
 :root[data-theme="dark"] {
-  --bg: #141414;
-  --panel: #262626;
-  --text: #e8e8e8;
-  --accent: #90caf9;
-  --border: rgba(255, 255, 255, 0.3);
+  --bg: #0a0f0a;
+  --panel: #0f1a10;
+  --text: #b8f5c0;
+  --accent: #33ff66;
+  --border: #1e4d2b;
+  --danger: #ffb347;
+  --on-accent: #05140a;
+  --dot-success: #33ff66;
+  --dot-error: #ff5f56;
+  --glow: rgba(51, 255, 102, 0.35);
+  --glow-text: rgba(51, 255, 102, 0.45);
+  --rule-w: 2px;
+  --rule-style: solid;
+  --scanline: rgba(0, 0, 0, 0.07);
+  --mono-size: 0.875rem;
 }
 
 html {
   height: 100%;
+  background: var(--bg);
 }
 
 body {
   display: flex;
   margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--mono-size);
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* CRT scanline texture — dark scheme only, extremely subtle. */
+:root[data-theme="dark"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--scanline) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+@layer components {
+  /* Structural rule shared by panels and controls. */
+  .edge {
+    border: var(--rule-w) var(--rule-style) var(--border);
+    border-radius: 2px;
+  }
+
+  .edge-accent {
+    border: var(--rule-w) var(--rule-style) var(--accent);
+    border-radius: 2px;
+  }
+
+  .edge-danger {
+    border: var(--rule-w) var(--rule-style) var(--danger);
+    border-radius: 2px;
+  }
+
+  /* Panel surface for grouped controls. */
+  .surface-panel {
+    background: var(--panel);
+    border: var(--rule-w) var(--rule-style) var(--border);
+    border-radius: 2px;
+  }
+
+  /* Utilitarian bracketed label — decorative only (aria-hidden). */
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    text-shadow: 0 0 8px var(--glow-text);
+  }
+
+  .section-label::before {
+    content: "[ ";
+  }
+
+  .section-label::after {
+    content: " ]";
+  }
+
+  .micro-label {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 0.65rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    opacity: 0.75;
+  }
+
+  /* Faint phosphor glow on accent-colored text (dark scheme only). */
+  .glow {
+    text-shadow: 0 0 8px var(--glow-text);
+  }
+
+  /* Error / warning readouts. */
+  .error-box {
+    border: var(--rule-w) var(--rule-style) var(--danger);
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--danger) 8%, transparent);
+    color: var(--danger);
+  }
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 400;
+  }
+
+  strong {
+    font-family: var(--font-display);
+    font-size: 1.15em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  code,
+  pre,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

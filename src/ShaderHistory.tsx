@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
 import { createShaderStore } from "./shaderStore";
@@ -25,7 +24,11 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="my-2 flex flex-col gap-2 rounded-lg bg-panel p-2">
+    <div className="surface-panel my-2 flex flex-col gap-2 p-2">
+      <div className="flex items-baseline gap-2" aria-hidden="true">
+        <span className="section-label">Archive</span>
+        <span className="micro-label grow opacity-60">saved shaders</span>
+      </div>
       <div className="flex items-center gap-2">
         <TextField
           label="Save as"
@@ -53,11 +56,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
               <Button variant="outlined" onClick={() => onApply(entry.source)}>
                 Load
               </Button>
-              <Button
-                variant="outlined"
-                tone="warning"
-                onClick={() => store.remove(entry.id)}
-              >
+              <Button variant="outlined" tone="danger" onClick={() => store.remove(entry.id)}>
                 Delete
               </Button>
             </li>
