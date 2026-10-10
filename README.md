@@ -61,6 +61,7 @@ Other scripts:
 ## Project structure
 
 ```
+public/                # static build inputs (index.html, default texture)
 src/
   ShaderPlayground.tsx   # main app component (preview + editor + controls)
   glsl.ts                # GLSL Monarch language definition for Monaco

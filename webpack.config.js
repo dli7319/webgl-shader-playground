@@ -1,4 +1,5 @@
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -9,9 +10,9 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx|tsx|ts)$/,
+        test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        loader: "babel-loader",
+        loader: "ts-loader",
       },
       {
         test: /\.css$/i,
@@ -26,15 +27,21 @@ module.exports = {
   resolve: {
     extensions: ["*", ".tsx", ".ts", ".js", ".jsx"],
   },
-  plugins: [new MonacoWebpackPlugin()],
+  plugins: [
+    new MonacoWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [{ from: "public", to: "." }],
+    }),
+  ],
   output: {
     filename: "main.js",
     path: path.resolve(__dirname, "dist"),
+    clean: true,
   },
   devServer: {
     hot: true,
     static: {
-      directory: path.join(__dirname, "dist"),
+      directory: path.join(__dirname, "public"),
     },
     compress: true,
   },
