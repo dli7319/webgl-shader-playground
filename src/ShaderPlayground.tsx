@@ -224,7 +224,7 @@ export default function ShaderPlayground() {
             width="80vh"
             language="glsl"
             defaultValue={inputFragmentShader}
-            onChange={(value, event) => {
+            onChange={(value, _event) => {
               setInputFragmentShader(value);
             }}
           />
