@@ -15,6 +15,7 @@ import { createDebouncer } from "./debounce";
 import { compileStatusFrom } from "./status";
 import { confirmReset, isDirty } from "./guard";
 import { FIT_ZOOM } from "./zoom";
+import { canRedo, canUndo } from "./history";
 import { createToastStore } from "./toast";
 import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
@@ -46,6 +47,8 @@ export default function ShaderPlayground() {
     setEditorFontSize,
     setWordWrap,
     setThemeMode,
+    undoEditor,
+    redoEditor,
   } = usePlaygroundState(React.useMemo(() => loadSettings(window.localStorage), []));
 
   const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -275,6 +278,10 @@ export default function ShaderPlayground() {
           onResetShader={resetShader}
           editorFontSize={state.editorFontSize}
           wordWrap={state.wordWrap}
+          canUndo={canUndo(state.history)}
+          canRedo={canRedo(state.history)}
+          onUndo={undoEditor}
+          onRedo={redoEditor}
         />
       </div>
       <ToastHost store={toastStore} />

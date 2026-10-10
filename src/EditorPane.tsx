@@ -26,6 +26,10 @@ export interface EditorPaneProps {
   onResetShader: () => void;
   editorFontSize: number;
   wordWrap: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
 /** GLSL editor plus run/download/texture controls. */
@@ -42,6 +46,10 @@ export function EditorPane({
   onResetShader,
   editorFontSize,
   wordWrap,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
 }: EditorPaneProps) {
   return (
     <div className={styles.rightColumn}>
@@ -61,6 +69,12 @@ export function EditorPane({
           />
         </React.Suspense>
         <div>
+          <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
+            Undo
+          </Button>{" "}
+          <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
+            Redo
+          </Button>
           <Button
             variant="outlined"
             onClick={onRunShader}
