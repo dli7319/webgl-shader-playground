@@ -59,7 +59,12 @@ export function EditorPane({
           <span>Shader</span>
           <span className="font-mono text-[10px] tracking-[0.1em] opacity-70">GLSL</span>
         </div>
-        <div id="editorParent" role="region" aria-label="Shader editor" className="flex flex-col gap-2 p-2">
+        <div
+          id="editorParent"
+          role="region"
+          aria-label="Shader editor"
+          className="flex flex-col gap-2 p-2"
+        >
           <React.Suspense
             fallback={
               <div className="well min-h-[40vh] box-border p-4 text-[11px] uppercase tracking-[0.1em] opacity-70">

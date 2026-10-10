@@ -52,7 +52,9 @@ export function PreviewPane({
       <section className="surface-panel flex flex-col">
         <div className="panel-title">
           <span>Preview</span>
-          <span className="font-mono text-[10px] tracking-[0.1em] opacity-70">GLSL → WebGL</span>
+          <span className="font-mono text-[10px] tracking-[0.1em] opacity-70">
+            GLSL → WebGL
+          </span>
         </div>
         <div className="flex flex-col gap-1.5 p-2">
           <div className="well overflow-auto p-1">
@@ -70,11 +72,21 @@ export function PreviewPane({
           </div>
           <div className="flex items-center gap-1.5">
             <div className="seg-strip">
-              <button type="button" className="seg-btn" onClick={onZoomOut} aria-label="Zoom out">
+              <button
+                type="button"
+                className="seg-btn"
+                onClick={onZoomOut}
+                aria-label="Zoom out"
+              >
                 −
               </button>
               <span className="seg-readout">{zoomPercent}%</span>
-              <button type="button" className="seg-btn" onClick={onZoomIn} aria-label="Zoom in">
+              <button
+                type="button"
+                className="seg-btn"
+                onClick={onZoomIn}
+                aria-label="Zoom in"
+              >
                 +
               </button>
               <button type="button" className="seg-btn" onClick={onZoomFit}>

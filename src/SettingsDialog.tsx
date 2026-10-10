@@ -9,7 +9,8 @@ export interface SettingsDialogProps {
   onClose: () => void;
 }
 
-const FIELD = "flex items-center justify-between gap-3 text-[11px] font-medium uppercase tracking-[0.06em]";
+const FIELD =
+  "flex items-center justify-between gap-3 text-[11px] font-medium uppercase tracking-[0.06em]";
 const FIELD_INPUT =
   "well h-6 w-20 px-2 text-[11px] text-ink [font-family:inherit] focus:outline-2 focus-visible:outline-accent";
 

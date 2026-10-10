@@ -22,8 +22,7 @@ const SKINS: Record<string, string> = {
   "outlined:live": "border-err bg-transparent text-err hover:bg-[var(--hover)]",
   "contained:default":
     "border-accent-fill bg-accent-fill text-on-accent hover:brightness-110",
-  "contained:danger":
-    "border-danger bg-danger text-on-accent hover:brightness-110",
+  "contained:danger": "border-danger bg-danger text-on-accent hover:brightness-110",
   "contained:live": "border-err bg-err text-on-accent hover:brightness-110",
 };
 

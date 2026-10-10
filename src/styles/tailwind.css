@@ -41,7 +41,8 @@
   --error: #b5342f;
   --banner-bg: rgba(181, 52, 47, 0.1);
   --font-ui: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-code: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-code:
+    "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 :root[data-theme="dark"] {
