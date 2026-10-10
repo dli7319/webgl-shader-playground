@@ -289,29 +289,41 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex justify-end gap-2">
-        <Button variant="outlined" onClick={toggleTheme}>
+    <div className="flex min-h-screen flex-col bg-app text-ink">
+      {/* The toolbar: one 28px strip, buttons flush at the same height. */}
+      <header className="flex h-7 items-stretch gap-1.5 border-b border-edge bg-panel px-1.5">
+        <span className="flex select-none items-center px-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] opacity-70">
+          WebGL Shader Playground
+        </span>
+        <span className="flex items-center px-1 font-mono text-[10px] tracking-[0.12em] opacity-70">
+          GLSL / WEBGL
+        </span>
+        <span className="grow" />
+        <Button size="strip" variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
         {recordingSupported ? (
           <Button
+            size="strip"
             variant="outlined"
-            tone={isRecording ? "warning" : undefined}
+            tone={isRecording ? "live" : "default"}
             onClick={toggleRecording}
           >
             {isRecording ? "Stop recording" : "Record (WebM)"}
           </Button>
         ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+        <Button size="strip" variant="outlined" onClick={() => setSettingsOpen(true)}>
           Settings
         </Button>
-      </div>
+      </header>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
+          className="surface-panel mx-2 mt-2 flex items-center gap-2 px-2 py-1.5 text-[11px]"
           role="status"
         >
+          <span className="select-none text-[10px] font-semibold uppercase tracking-[0.14em] opacity-70">
+            Draft
+          </span>
           <span className="grow">Unsaved draft from your last session is available.</span>
           <Button
             variant="outlined"
@@ -324,7 +336,7 @@ export default function ShaderPlayground() {
           </Button>
           <Button
             variant="outlined"
-            tone="warning"
+            tone="danger"
             onClick={() => {
               clearDraft(window.localStorage);
               setDraftDismissed(true);
@@ -334,7 +346,7 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
+      <div className="flex flex-row gap-2 p-2 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}

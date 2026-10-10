@@ -11,13 +11,14 @@ export interface TextFieldProps {
 
 let nextId = 0;
 
-const FIELD = "relative inline-flex min-w-[120px] grow";
+const FIELD =
+  "well group inline-flex h-6 min-w-[120px] grow items-center overflow-hidden focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-accent";
 const INPUT =
-  "peer box-border w-full rounded border border-edge bg-transparent px-3 pt-3 pb-1 text-ink [font:inherit] focus:border-accent focus:shadow-[0_0_0_1px_var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+  "order-2 h-full w-full min-w-0 bg-transparent px-2 text-[11px] text-ink [font-family:inherit] focus:outline-none";
 const LABEL =
-  "pointer-events-none absolute left-[0.65rem] top-[0.55rem] text-base text-ink opacity-75 transition-all duration-100 peer-focus:top-[0.15rem] peer-focus:text-[0.7rem] peer-[&:not(:placeholder-shown)]:top-[0.15rem] peer-[&:not(:placeholder-shown)]:text-[0.7rem]";
+  "order-1 flex h-full select-none items-center whitespace-nowrap border-r border-edge bg-[var(--hover)] px-2 text-[10px] font-semibold uppercase tracking-[0.1em]";
 
-/** Outlined text field with a floating label. */
+/** Flat inset well: tiny-caps label prefix + dense 24px input. */
 export function TextField({
   label,
   value,
