@@ -1,7 +1,6 @@
 import React from "react";
 
 import { formatDuration, STATUS_LABELS, type CompileStatus } from "./status";
-
 export interface StatusBarProps {
   status: CompileStatus;
   runDurationMs: number | null;
@@ -18,14 +17,20 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
       role="status"
     >
       <span
-        className={`size-2.5 rounded-full ${status === "error" ? "bg-[#d32f2f]" : "bg-[#2e9e44]"}`}
+        className={`size-2.5 rounded-full ${
+          status === "error"
+            ? "bg-[var(--danger)] shadow-[0_0_8px_rgba(224,30,90,0.55)]"
+            : "bg-[var(--success)] shadow-[0_0_8px_rgba(51,224,143,0.5)]"
+        }`}
         aria-hidden="true"
       />
-      <span>{STATUS_LABELS[status]}</span>
+      <span className="font-semibold uppercase tracking-[0.14em]">
+        {STATUS_LABELS[status]}
+      </span>
       <span aria-hidden="true">·</span>
-      <span>{duration}</span>
+      <span className="tabular-nums">{duration}</span>
       <span aria-hidden="true">·</span>
-      <span>
+      <span className="uppercase tracking-[0.12em] opacity-80">
         Export {width}×{height}
       </span>
     </div>

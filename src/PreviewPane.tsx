@@ -25,10 +25,11 @@ export interface PreviewPaneProps {
   onZoomFit: () => void;
 }
 
+const ERROR_LABEL = "text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[var(--danger)]";
 const ERROR_BOX =
-  "my-2 rounded-lg border p-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
-const COMPILE_ERROR = `${ERROR_BOX} border-[#f5c2c0] bg-[#fdecea] text-[#b3261e]`;
-const WARN_ERROR = `${ERROR_BOX} border-[#ffd591] bg-[#fff4e5] text-[#8c4a00]`;
+  "surface-panel my-2 border-l-4 border-l-[var(--danger)] px-3 py-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
+const COMPILE_ERROR = `${ERROR_BOX} shadow-[inset_0_0_0_1px_var(--danger)]`;
+const WARN_ERROR = ERROR_BOX;
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
 export function PreviewPane({
@@ -52,21 +53,26 @@ export function PreviewPane({
 }: PreviewPaneProps) {
   return (
     <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
-      <canvas
-        ref={canvasRef}
-        role="img"
-        aria-label="Shader preview output"
-        style={{
-          aspectRatio: width / height,
-          width: `${zoomPercent}%`,
-          height: "unset",
-        }}
-      />
+      <div className="glow-frame">
+        <canvas
+          ref={canvasRef}
+          role="img"
+          aria-label="Shader preview output"
+          className="hud-clip border border-edge"
+          style={{
+            aspectRatio: width / height,
+            width: `${zoomPercent}%`,
+            height: "unset",
+          }}
+        />
+      </div>
       <div className="mt-1 flex items-center gap-2">
         <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
           −
         </Button>
-        <span className="min-w-14 text-center text-sm">{zoomPercent}%</span>
+        <span className="min-w-14 text-center text-sm tabular-nums">
+          {zoomPercent}%
+        </span>
         <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
           +
         </Button>
@@ -82,23 +88,23 @@ export function PreviewPane({
       />
       {compileError ? (
         <div className={COMPILE_ERROR} role="alert">
-          <strong>Shader error</strong>
+          <strong className={ERROR_LABEL}>Shader error</strong>
           <pre>{compileError}</pre>
         </div>
       ) : null}
       {textureError ? (
         <div className={WARN_ERROR} role="alert">
-          <strong>Texture error</strong>
+          <strong className={ERROR_LABEL}>Texture error</strong>
           <pre>{textureError}</pre>
         </div>
       ) : null}
       {screenshotError ? (
         <div className={WARN_ERROR} role="alert">
-          <strong>Screenshot error</strong>
+          <strong className={ERROR_LABEL}>Screenshot error</strong>
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+      <div className="surface-panel my-2 flex flex-row flex-wrap items-center gap-2 p-2">
         <TextField
           label="Width"
           type="number"

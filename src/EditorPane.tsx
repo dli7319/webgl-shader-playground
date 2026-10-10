@@ -12,6 +12,10 @@ const MonacoGlslEditor = React.lazy(() =>
   }))
 );
 
+const CONTROL_PANEL = "surface-panel my-2 flex flex-col gap-2 p-3";
+const PICK_LABEL =
+  "hud-clip inline-flex min-w-16 cursor-pointer items-center justify-center gap-2 border border-edge bg-transparent px-4 py-[0.4rem] text-sm font-semibold uppercase tracking-[0.08em] text-ink transition-colors [font:inherit] hover:border-accent hover:bg-[var(--tint-accent)] hover:text-accent";
+
 export interface EditorPaneProps {
   shaderSource: string;
   onShaderSourceChange: (source: string) => void;
@@ -69,24 +73,27 @@ export function EditorPane({
             options={{
               fontSize: editorFontSize,
               wordWrap: wordWrap ? "on" : "off",
+              fontFamily: '"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace',
             }}
             theme={themeMode}
             onChange={onShaderSourceChange}
           />
         </React.Suspense>
-        <div>
-          <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
-            Undo
-          </Button>{" "}
-          <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
-            Redo
-          </Button>
+        <div className={CONTROL_PANEL}>
+          <div className="flex flex-row flex-wrap gap-2">
+            <Button variant="outlined" onClick={onUndo} disabled={!canUndo} className="grow">
+              Undo
+            </Button>
+            <Button variant="outlined" onClick={onRedo} disabled={!canRedo} className="grow">
+              Redo
+            </Button>
+          </div>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={onRunShader}
-            className="mx-auto my-2 block w-full"
+            className="mx-auto block w-full"
           >
-            Run Shader (Ctrl+Enter)
+            Run Shader (<span className="key-hint">Ctrl+Enter</span>)
           </Button>
           <Switch
             checked={autoRun}
@@ -97,7 +104,7 @@ export function EditorPane({
             Reset to default shader
           </Button>
         </div>
-        <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+        <div className="surface-panel my-2 flex flex-row flex-wrap items-center gap-2 p-2">
           <TextField
             label="Filename"
             type="text"
@@ -107,32 +114,34 @@ export function EditorPane({
             onChange={onDownloadShaderFilenameChange}
           />
           <Button variant="outlined" onClick={onDownloadShader}>
-            Download Shader (Ctrl+S)
+            Download Shader (<span className="key-hint">Ctrl+S</span>)
           </Button>
         </div>
         <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
-        <label className="min-w-16 cursor-pointer rounded border border-accent bg-accent px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] text-white transition-colors [font:inherit] hover:brightness-110">
-          <ImageIcon /> Pick tDiffuse Image
-          <input
-            type="file"
-            className="sr-only"
-            aria-label="Choose a texture image"
-            accept="image/*"
-            onChange={(e) => {
-              const file = (e.target as HTMLInputElement).files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                  const dataUrl = e.target?.result;
-                  if (typeof dataUrl === "string") {
-                    onPickImage(dataUrl);
-                  }
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
-          />
-        </label>
+        <div className="btn-shell my-2">
+          <label className={PICK_LABEL}>
+            <ImageIcon /> Pick tDiffuse Image
+            <input
+              type="file"
+              className="sr-only"
+              aria-label="Choose a texture image"
+              accept="image/*"
+              onChange={(e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                    const dataUrl = e.target?.result;
+                    if (typeof dataUrl === "string") {
+                      onPickImage(dataUrl);
+                    }
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+          </label>
+        </div>
       </div>
     </div>
   );

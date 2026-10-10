@@ -12,19 +12,19 @@ export interface SettingsDialogProps {
 
 const FIELD = "flex flex-col gap-1.5 text-sm";
 const FIELD_INPUT =
-  "w-24 rounded border border-edge bg-transparent px-2 py-[0.35rem] text-ink [font:inherit]";
+  "hud-clip w-24 border border-edge bg-[var(--field-bg)] px-2 py-[0.35rem] text-ink [font:inherit] focus:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 /** Modal-less settings panel with the persisted preferences. */
 export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
   return (
     <div
-      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/45"
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/55"
       role="dialog"
       aria-modal="true"
       aria-label="Settings"
     >
-      <div className="flex min-w-[280px] flex-col gap-3 rounded-lg border border-edge bg-app px-5 py-4 text-ink">
-        <h2 className="m-0 text-lg">Settings</h2>
+      <div className="surface-panel flex min-w-[280px] flex-col gap-3 px-5 py-4 text-ink">
+        <h2 className="m-0 text-lg font-bold uppercase tracking-[0.18em]">Settings</h2>
         <label className={FIELD}>
           Editor font size
           <input
@@ -53,13 +53,13 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
         />
         <div className={FIELD}>
           Theme
-          <div>
+          <div className="flex flex-row gap-2">
             <Button
               variant={settings.themeMode === "light" ? "contained" : "outlined"}
               onClick={() => onChange({ themeMode: "light" })}
             >
               Light
-            </Button>{" "}
+            </Button>
             <Button
               variant={settings.themeMode === "dark" ? "contained" : "outlined"}
               onClick={() => onChange({ themeMode: "dark" })}

@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 /*
- * Theme colors map to CSS variables that flip with [data-theme="dark"] so
- * utilities like bg-app / text-ink work in both themes.
+ * NEON GRID — cyberpunk synthwave HUD.
+ * Neon signal colors on deep space, angular tech geometry, glow as depth.
+ * Glow is decorative (wrappers, backgrounds); text stays clean.
  */
 @theme inline {
   --color-app: var(--bg);
@@ -10,22 +11,54 @@
   --color-ink: var(--text);
   --color-accent: var(--accent);
   --color-edge: var(--border);
+  --color-live: var(--accent-2);
+  --color-danger: var(--danger);
+  --font-ui: "Rajdhani", "Bahnschrift", "DIN Alternate", "Arial Narrow", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 :root {
-  --bg: #ffffff;
-  --panel: #eeeeee;
-  --text: #1a1a1a;
-  --accent: #1976d2;
-  --border: rgba(0, 0, 0, 0.23);
+  /* 'daylight HUD' — geometric, calmer. */
+  --bg: #f2f0fa;
+  --panel: #ffffff;
+  --text: #1b1233;
+  --accent: #7c1fff;
+  --accent-2: #d1009c;
+  --border: #d8d2ee;
+  --danger: #e01e5a;
+  --success: #0f7a3d;
+  --on-accent: #ffffff;
+  --field-bg: #f7f5fd;
+  --tint-accent: rgba(124, 31, 255, 0.08);
+  --tint-live: rgba(209, 0, 156, 0.1);
+  --glow-accent: rgba(124, 31, 255, 0.35);
+  --glow-live: rgba(209, 0, 156, 0.4);
+  --grid-line: #7c1fff;
+  --grid-opacity: 0.025;
+  --panel-edge: rgba(27, 18, 51, 0.08);
+  --shadow-panel: 0 2px 10px rgba(27, 18, 51, 0.08);
 }
 
 :root[data-theme="dark"] {
-  --bg: #141414;
-  --panel: #262626;
-  --text: #e8e8e8;
-  --accent: #90caf9;
-  --border: rgba(255, 255, 255, 0.3);
+  /* Deep space: neon signal colors over #0b0616. */
+  --bg: #0b0616;
+  --panel: #150b29;
+  --text: #e9e4ff;
+  --accent: #00e5ff;
+  --accent-2: #ff2bd6;
+  --border: #2a1b4d;
+  --danger: #ff3864;
+  --success: #33e08f;
+  --on-accent: #001014;
+  --field-bg: #0e0620;
+  --tint-accent: rgba(0, 229, 255, 0.08);
+  --tint-live: rgba(255, 43, 214, 0.14);
+  --glow-accent: rgba(0, 229, 255, 0.35);
+  --glow-live: rgba(255, 43, 214, 0.45);
+  --grid-line: #7c5cff;
+  --grid-opacity: 0.03;
+  --panel-edge: rgba(0, 229, 255, 0.1);
+  --shadow-panel: 0 0 24px rgba(0, 0, 0, 0.45);
 }
 
 html {
@@ -35,6 +68,105 @@ html {
 body {
   display: flex;
   margin: 0;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* Faint 24px grid texture — depth behind the panels. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: var(--grid-opacity);
+}
+
+@layer components {
+  /* Angular tech geometry: 10px corner cuts, top-left + bottom-right. */
+  .hud-clip {
+    clip-path: polygon(
+      10px 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%,
+      0 10px
+    );
+  }
+
+  .surface-panel {
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    clip-path: polygon(
+      10px 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%,
+      0 10px
+    );
+    box-shadow:
+      inset 0 1px 0 var(--panel-edge),
+      var(--shadow-panel);
+  }
+
+  /* Glow lives on wrappers: clip-path clips same-element shadows. */
+  .btn-shell {
+    display: inline-flex;
+    filter: drop-shadow(0 0 12px transparent);
+  }
+  .btn-shell-primary {
+    filter: drop-shadow(0 0 12px var(--glow-accent));
+  }
+  .btn-shell:focus-within {
+    filter: drop-shadow(0 0 12px var(--glow-accent));
+  }
+  .btn-shell-live {
+    filter: drop-shadow(0 0 12px var(--glow-live));
+    animation: live-pulse 1.6s ease-in-out infinite;
+  }
+
+  .field-glow:focus-within {
+    filter: drop-shadow(0 0 12px var(--glow-accent));
+  }
+
+  /* Hero glow around the clipped preview canvas. */
+  .glow-frame {
+    display: block;
+    filter: drop-shadow(0 0 12px var(--glow-accent));
+  }
+
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+
+  /* Magenta underline on keyboard hints; the text itself stays clean. */
+  .key-hint {
+    text-decoration: underline;
+    text-decoration-color: var(--accent-2);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px var(--glow-live));
+  }
+  50% {
+    filter: drop-shadow(0 0 18px var(--glow-live));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

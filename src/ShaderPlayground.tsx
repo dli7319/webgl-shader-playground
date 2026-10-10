@@ -289,15 +289,23 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex justify-end gap-2">
+    <div className="min-h-screen text-ink">
+      <header className="mx-2 mt-2 flex items-center justify-end gap-2">
+        <div className="grow">
+          <h1 className="m-0 text-xl font-bold uppercase tracking-[0.22em]">
+            Shader Playground
+          </h1>
+          <p className="m-0 text-[0.68rem] font-semibold uppercase tracking-[0.18em] opacity-60">
+            WebGL · GLSL fragment lab
+          </p>
+        </div>
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
         {recordingSupported ? (
           <Button
             variant="outlined"
-            tone={isRecording ? "warning" : undefined}
+            tone={isRecording ? "live" : undefined}
             onClick={toggleRecording}
           >
             {isRecording ? "Stop recording" : "Record (WebM)"}
@@ -306,10 +314,10 @@ export default function ShaderPlayground() {
         <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
           Settings
         </Button>
-      </div>
+      </header>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
+          className="surface-panel my-2 mx-2 flex items-center gap-2 p-2 text-sm"
           role="status"
         >
           <span className="grow">Unsaved draft from your last session is available.</span>

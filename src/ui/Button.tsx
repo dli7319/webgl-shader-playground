@@ -2,21 +2,24 @@ import React from "react";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "outlined" | "contained";
-  tone?: "default" | "warning";
+  tone?: "default" | "warning" | "live";
 }
 
 const BASE =
-  "min-w-16 cursor-pointer rounded px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
-const VARIANTS: Record<string, string> = {
-  outlined: "border border-edge text-accent hover:bg-[rgba(25,118,210,0.04)]",
-  contained: "border border-accent bg-accent text-white hover:brightness-110",
-};
-const TONES: Record<string, string> = {
-  default: "",
-  warning: "border-[#ed6c02] text-[#ed6c02]",
-};
+  "hud-clip w-full min-w-16 cursor-pointer px-4 py-[0.4rem] text-sm font-semibold uppercase tracking-[0.08em] transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
+const OUTLINED =
+  "border border-edge bg-transparent text-ink hover:border-accent hover:bg-[var(--tint-accent)] hover:text-accent";
+const OUTLINED_DANGER =
+  "border border-[var(--danger)] bg-transparent text-[var(--danger)] hover:bg-[var(--danger)] hover:text-[var(--on-accent)]";
+const OUTLINED_LIVE =
+  "inline-flex items-center justify-center gap-2 border border-[var(--accent-2)] bg-transparent text-ink hover:bg-[var(--tint-live)]";
+const CONTAINED =
+  "border border-accent bg-accent text-[var(--on-accent)] hover:brightness-110";
 
-/** Lightweight button matching the app's control styling. */
+/**
+ * Lightweight button matching the app's control styling. The chamfered button
+ * is wrapped in a shell so the neon glow survives the clip-path.
+ */
 export function Button({
   variant = "outlined",
   tone = "default",
@@ -24,8 +27,25 @@ export function Button({
   type,
   ...rest
 }: ButtonProps) {
-  const classes = [BASE, VARIANTS[variant], TONES[tone], className]
+  const skin =
+    variant === "contained"
+      ? CONTAINED
+      : tone === "warning"
+        ? OUTLINED_DANGER
+        : tone === "live"
+          ? OUTLINED_LIVE
+          : OUTLINED;
+  const shellClasses = [
+    "btn-shell",
+    variant === "contained" ? "btn-shell-primary" : "",
+    tone === "live" ? "btn-shell-live" : "",
+    className,
+  ]
     .filter(Boolean)
     .join(" ");
-  return <button type={type ?? "button"} className={classes} {...rest} />;
+  return (
+    <span className={shellClasses}>
+      <button type={type ?? "button"} className={[BASE, skin].join(" ")} {...rest} />
+    </span>
+  );
 }
