@@ -32,6 +32,9 @@ export function usePlaygroundState() {
       toggleAutoRun: () => dispatch({ type: "toggleAutoRun" }),
       reportRun: (durationMs: number) => dispatch({ type: "reportRun", durationMs }),
       resetEditorSource: () => dispatch({ type: "resetEditor" }),
+      setZoom: (percent: number) => dispatch({ type: "setZoom", percent }),
+      zoomIn: () => dispatch({ type: "zoomIn" }),
+      zoomOut: () => dispatch({ type: "zoomOut" }),
     }),
     []
   );

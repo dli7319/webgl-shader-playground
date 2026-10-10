@@ -20,6 +20,10 @@ export interface PreviewPaneProps {
   screenshotError?: string | null;
   status: CompileStatus;
   runDurationMs: number | null;
+  zoomPercent: number;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+  onZoomFit: () => void;
 }
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
@@ -37,6 +41,10 @@ export function PreviewPane({
   screenshotError,
   status,
   runDurationMs,
+  zoomPercent,
+  onZoomIn,
+  onZoomOut,
+  onZoomFit,
 }: PreviewPaneProps) {
   return (
     <div className={styles.leftColumn}>
@@ -47,10 +55,22 @@ export function PreviewPane({
         aria-label="Shader preview output"
         style={{
           aspectRatio: width / height,
-          width: "unset",
+          width: `${zoomPercent}%`,
           height: "unset",
         }}
       />
+      <div className={styles.zoomControls}>
+        <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
+          −
+        </Button>
+        <span className={styles.zoomValue}>{zoomPercent}%</span>
+        <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
+          +
+        </Button>
+        <Button variant="outlined" onClick={onZoomFit}>
+          Fit
+        </Button>
+      </div>
       <StatusBar
         status={status}
         runDurationMs={runDurationMs}

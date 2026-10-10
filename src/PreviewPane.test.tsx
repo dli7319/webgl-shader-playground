@@ -25,6 +25,10 @@ function renderPane(
       screenshotError={screenshotError}
       status={compileError ? "error" : "compiled"}
       runDurationMs={compileError ? null : 3.2}
+      zoomPercent={100}
+      onZoomIn={() => {}}
+      onZoomOut={() => {}}
+      onZoomFit={() => {}}
     />
   );
 }
