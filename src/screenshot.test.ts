@@ -117,7 +117,7 @@ describe("captureAndDownloadSceneScreenshot", () => {
       width: 10,
       height: 10,
     });
-    expect(ok).toBe(true);
+    expect(ok.ok).toBe(true);
     expect(clickSpy).toHaveBeenCalledTimes(1);
     clickSpy.mockRestore();
   });
@@ -125,12 +125,15 @@ describe("captureAndDownloadSceneScreenshot", () => {
   it("returns false and logs on unsupported filenames", () => {
     useFake();
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const ok = captureAndDownloadSceneScreenshot(scene, camera, {
+    const result = captureAndDownloadSceneScreenshot(scene, camera, {
       filename: "shot.bmp",
       width: 10,
       height: 10,
     });
-    expect(ok).toBe(false);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toContain("shot.bmp");
+    }
     expect(errorSpy).toHaveBeenCalled();
     errorSpy.mockRestore();
   });

@@ -24,6 +24,7 @@ export default function ShaderPlayground() {
     pickImage,
     setCompileError,
     setTextureError,
+    setScreenshotError,
   } = usePlaygroundState();
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -108,11 +109,12 @@ export default function ShaderPlayground() {
     }
     const preview = previewRef.current;
     if (preview) {
-      captureAndDownloadSceneScreenshot(preview.scene, preview.camera, {
+      const result = captureAndDownloadSceneScreenshot(preview.scene, preview.camera, {
         filename: state.pendingScreenshotFilename,
         width: state.width,
         height: state.height,
       });
+      setScreenshotError(result.ok ? null : result.error);
     }
     screenshotTaken();
   }, [state.pendingScreenshotFilename, state.width, state.height]);
@@ -134,6 +136,7 @@ export default function ShaderPlayground() {
         onCaptureScreenshot={captureScreenshot}
         compileError={state.compileError}
         textureError={state.textureError}
+        screenshotError={state.screenshotError}
       />
       <EditorPane
         shaderSource={state.editorSource}

@@ -15,6 +15,7 @@ export interface PreviewPaneProps {
   onCaptureScreenshot: () => void;
   compileError?: string | null;
   textureError?: string | null;
+  screenshotError?: string | null;
 }
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
@@ -29,6 +30,7 @@ export function PreviewPane({
   onCaptureScreenshot,
   compileError,
   textureError,
+  screenshotError,
 }: PreviewPaneProps) {
   return (
     <div className={styles.leftColumn}>
@@ -51,6 +53,12 @@ export function PreviewPane({
         <div className={styles.textureError} role="alert">
           <strong>Texture error</strong>
           <pre>{textureError}</pre>
+        </div>
+      ) : null}
+      {screenshotError ? (
+        <div className={styles.textureError} role="alert">
+          <strong>Screenshot error</strong>
+          <pre>{screenshotError}</pre>
         </div>
       ) : null}
       <div className={styles.screenshotControls}>

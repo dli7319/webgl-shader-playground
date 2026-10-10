@@ -91,6 +91,19 @@ describe("playgroundReducer", () => {
     expect(fixed.textureError).toBeNull();
   });
 
+  it("setScreenshotError reports and clears capture failures", () => {
+    const failed = playgroundReducer(start, {
+      type: "setScreenshotError",
+      error: 'Unsupported screenshot format: "shot.gif"',
+    });
+    expect(failed.screenshotError).toContain("shot.gif");
+    const fixed = playgroundReducer(failed, {
+      type: "setScreenshotError",
+      error: null,
+    });
+    expect(fixed.screenshotError).toBeNull();
+  });
+
   it("actions never mutate the previous state", () => {
     const frozen = Object.freeze({ ...start });
     playgroundReducer(frozen, { type: "editSource", source: "x" });

@@ -26,6 +26,8 @@ export function usePlaygroundState() {
         dispatch({ type: "setCompileError", error }),
       setTextureError: (error: string | null) =>
         dispatch({ type: "setTextureError", error }),
+      setScreenshotError: (error: string | null) =>
+        dispatch({ type: "setScreenshotError", error }),
     }),
     []
   );

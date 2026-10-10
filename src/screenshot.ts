@@ -70,20 +70,20 @@ export function captureSceneToDataUrl(
 }
 
 /**
- * Captures the scene and triggers a browser download. Returns false and logs
- * when the capture failed (unsupported filename, encoding failure).
+ * Captures the scene and triggers a browser download. Returns the result so
+ * callers can surface failures; errors are also logged.
  */
 export function captureAndDownloadSceneScreenshot(
   scene: THREE.Scene,
   camera: THREE.Camera,
   options: ScreenshotOptions
-): boolean {
+): ScreenshotResult {
   const result = captureSceneToDataUrl(scene, camera, options);
   if (!result.ok) {
     logger.error(result.error);
-    return false;
+    return result;
   }
   logger.debug(`Captured ${options.filename} at ${options.width}x${options.height}`);
   downloadDataUrlFile(options.filename, result.dataUrl);
-  return true;
+  return result;
 }
