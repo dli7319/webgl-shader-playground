@@ -1,11 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { collectPageErrors, openApp } from "./support";
+import { collectPageErrors, openApp, openModule } from "./support";
 
 test("app boots with preview, editor, and controls", async ({ page }) => {
   const errors = collectPageErrors(page);
   await openApp(page);
 
   await expect(page.getByRole("button", { name: /run shader/i })).toBeVisible();
+  // Secondary config hides behind the OUTPUT disclosure, whose readout header
+  // still reports the export state at rest.
+  await expect(page.getByRole("button", { name: /output/i })).toBeVisible();
+  await openModule(page, /output/i);
   await expect(page.getByRole("button", { name: /screenshot!/i })).toBeVisible();
   await expect(page.getByRole("region", { name: "Shader editor" })).toBeVisible();
   await expect(

@@ -1,19 +1,12 @@
 import React from "react";
-
 import { StatusBar } from "./StatusBar";
 import { Button } from "./ui/Button";
-import { TextField } from "./ui/TextField";
 import type { CompileStatus } from "./status";
 
 export interface PreviewPaneProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   width: number;
   height: number;
-  onWidthChange: (width: number) => void;
-  onHeightChange: (height: number) => void;
-  screenshotFilename: string;
-  onScreenshotFilenameChange: (filename: string) => void;
-  onCaptureScreenshot: () => void;
   compileError?: string | null;
   textureError?: string | null;
   screenshotError?: string | null;
@@ -31,16 +24,15 @@ const ERROR_BOX =
 const COMPILE_ERROR = `${ERROR_BOX} shadow-[inset_0_0_0_1px_var(--danger)]`;
 const WARN_ERROR = ERROR_BOX;
 
-/** Preview canvas plus the screenshot/export controls beneath it. */
+/**
+ * VIEWPORT module — the bracketed preview bay with its telemetry strip
+ * (status, zoom cluster, output size readouts). Export controls moved to the
+ * OUTPUT module in the right stack.
+ */
 export function PreviewPane({
   canvasRef,
   width,
   height,
-  onWidthChange,
-  onHeightChange,
-  screenshotFilename,
-  onScreenshotFilenameChange,
-  onCaptureScreenshot,
   compileError,
   textureError,
   screenshotError,
@@ -52,40 +44,50 @@ export function PreviewPane({
   onZoomFit,
 }: PreviewPaneProps) {
   return (
-    <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
-      <div className="glow-frame">
-        <canvas
-          ref={canvasRef}
-          role="img"
-          aria-label="Shader preview output"
-          className="hud-clip border border-edge"
-          style={{
-            aspectRatio: width / height,
-            width: `${zoomPercent}%`,
-            height: "unset",
-          }}
-        />
+    <div className="flex w-1/2 min-w-0 grow flex-col max-[900px]:w-full">
+      <div className="surface-panel">
+        <div className="hud-module-head">
+          <span className="hud-module-title">VIEWPORT</span>
+          <span className="hud-readout grow overflow-hidden text-ellipsis whitespace-nowrap opacity-75">
+            Live output
+          </span>
+        </div>
+        <div className="glow-frame hud-frame p-4">
+          <canvas
+            ref={canvasRef}
+            role="img"
+            aria-label="Shader preview output"
+            className="hud-clip border border-edge"
+            style={{
+              aspectRatio: width / height,
+              width: `${zoomPercent}%`,
+              height: "unset",
+            }}
+          />
+        </div>
+        <div className="hud-telemetry">
+          <StatusBar
+            status={status}
+            runDurationMs={runDurationMs}
+            width={width}
+            height={height}
+          />
+          <div className="flex items-center gap-2">
+            <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
+              −
+            </Button>
+            <span className="hud-readout min-w-14 text-center text-sm">
+              {zoomPercent}%
+            </span>
+            <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
+              +
+            </Button>
+            <Button variant="outlined" onClick={onZoomFit}>
+              Fit
+            </Button>
+          </div>
+        </div>
       </div>
-      <div className="mt-1 flex items-center gap-2">
-        <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
-          −
-        </Button>
-        <span className="min-w-14 text-center text-sm tabular-nums">
-          {zoomPercent}%
-        </span>
-        <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
-          +
-        </Button>
-        <Button variant="outlined" onClick={onZoomFit}>
-          Fit
-        </Button>
-      </div>
-      <StatusBar
-        status={status}
-        runDurationMs={runDurationMs}
-        width={width}
-        height={height}
-      />
       {compileError ? (
         <div className={COMPILE_ERROR} role="alert">
           <strong className={ERROR_LABEL}>Shader error</strong>
@@ -104,35 +106,6 @@ export function PreviewPane({
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className="surface-panel my-2 flex flex-row flex-wrap items-center gap-2 p-2">
-        <TextField
-          label="Width"
-          type="number"
-          className="grow"
-          value={width}
-          aria-label="Screenshot width in pixels"
-          onChange={(v) => onWidthChange(Number(v))}
-        />
-        <TextField
-          label="Height"
-          type="number"
-          className="grow"
-          value={height}
-          aria-label="Screenshot height in pixels"
-          onChange={(v) => onHeightChange(Number(v))}
-        />
-        <TextField
-          label="Filename"
-          type="text"
-          className="grow"
-          value={screenshotFilename}
-          aria-label="Screenshot filename"
-          onChange={onScreenshotFilenameChange}
-        />
-        <Button className="grow" variant="outlined" onClick={onCaptureScreenshot}>
-          Screenshot!
-        </Button>
-      </div>
     </div>
   );
 }

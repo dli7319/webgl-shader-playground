@@ -12,3 +12,15 @@ export async function openApp(page: Page): Promise<void> {
   await page.goto("/");
   await expect(page.getByRole("img", { name: "Shader preview output" })).toBeVisible();
 }
+
+/**
+ * Opens a collapsed right-rail HUD module by its readout header (the layout
+ * keeps secondary config behind state-reporting disclosures).
+ */
+export async function openModule(page: Page, name: RegExp): Promise<void> {
+  const header = page.getByRole("button", { name });
+  if ((await header.getAttribute("aria-expanded")) !== "true") {
+    await header.click();
+  }
+  await expect(header).toHaveAttribute("aria-expanded", "true");
+}

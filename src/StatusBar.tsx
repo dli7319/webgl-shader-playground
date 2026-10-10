@@ -1,5 +1,4 @@
 import React from "react";
-
 import { formatDuration, STATUS_LABELS, type CompileStatus } from "./status";
 export interface StatusBarProps {
   status: CompileStatus;
@@ -8,12 +7,12 @@ export interface StatusBarProps {
   height: number;
 }
 
-/** Small read-only strip under the preview summarizing playground state. */
+/** Telemetry readouts inside the VIEWPORT strip: status, timing, output size. */
 export function StatusBar({ status, runDurationMs, width, height }: StatusBarProps) {
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-2 flex items-center gap-2 px-2 py-1 text-sm text-ink opacity-85"
+      className="flex grow items-center gap-2 text-sm text-ink opacity-85"
       role="status"
     >
       <span
@@ -24,13 +23,13 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
         }`}
         aria-hidden="true"
       />
-      <span className="font-semibold uppercase tracking-[0.14em]">
+      <span className="hud-readout">
         {STATUS_LABELS[status]}
       </span>
       <span aria-hidden="true">·</span>
-      <span className="tabular-nums">{duration}</span>
+      <span className="hud-readout tabular-nums">{duration}</span>
       <span aria-hidden="true">·</span>
-      <span className="uppercase tracking-[0.12em] opacity-80">
+      <span className="hud-readout opacity-80">
         Export {width}×{height}
       </span>
     </div>

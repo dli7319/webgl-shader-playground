@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { openApp } from "./support";
+import { openApp, openModule } from "./support";
 
 test("download shader exports the editor source", async ({ page }) => {
   await openApp(page);
+  await openModule(page, /output/i);
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /download shader/i }).click();
@@ -14,6 +15,7 @@ test("download shader exports the editor source", async ({ page }) => {
 
 test("picking a texture image updates the preview without errors", async ({ page }) => {
   await openApp(page);
+  await openModule(page, /input/i);
   const canvas = page.locator("canvas").first();
   const before = await canvas.screenshot();
 

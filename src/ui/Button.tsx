@@ -6,11 +6,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const BASE =
-  "hud-clip w-full min-w-16 cursor-pointer px-4 py-[0.4rem] text-sm font-semibold uppercase tracking-[0.08em] transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
+  "hud-clip w-full min-w-16 cursor-pointer whitespace-nowrap px-4 py-[0.4rem] text-sm font-semibold uppercase tracking-[0.08em] transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
 const OUTLINED =
   "border border-edge bg-transparent text-ink hover:border-accent hover:bg-[var(--tint-accent)] hover:text-accent";
 const OUTLINED_DANGER =
-  "border border-[var(--danger)] bg-transparent text-[var(--danger)] hover:bg-[var(--danger)] hover:text-[var(--on-accent)]";
+  "border border-[var(--danger)] bg-[var(--tint-danger)] text-[var(--danger)] hover:bg-[var(--danger)] hover:text-[var(--on-accent)]";
 const OUTLINED_LIVE =
   "inline-flex items-center justify-center gap-2 border border-[var(--accent-2)] bg-transparent text-ink hover:bg-[var(--tint-live)]";
 const CONTAINED =

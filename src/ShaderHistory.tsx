@@ -1,16 +1,33 @@
 import React from "react";
-
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
+import { HudModule } from "./ui/HudModule";
 import { createShaderStore } from "./shaderStore";
 
 export interface ShaderHistoryProps {
   currentSource: string;
   onApply: (source: string) => void;
+  canUndo: boolean;
+  canRedo: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
+  onResetShader: () => void;
 }
 
-/** Named shader saves backed by localStorage. */
-export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
+/**
+ * HISTORY module — the editor's timeline (Undo/Redo), named shader saves
+ * (name + Save shader + list), and the destructive factory reset. Collapsed
+ * behind a readout header that always reports how many saves exist.
+ */
+export function ShaderHistory({
+  currentSource,
+  onApply,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+  onResetShader,
+}: ShaderHistoryProps) {
   const store = React.useMemo(() => createShaderStore(window.localStorage), []);
   const entries = React.useSyncExternalStore(store.subscribe, store.getSnapshot);
   const [name, setName] = React.useState("");
@@ -25,7 +42,28 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="surface-panel my-2 flex flex-col gap-2 p-2">
+    <HudModule
+      title="HISTORY"
+      summary={entries.length === 0 ? "no saves" : `${entries.length} saved`}
+    >
+      <div className="flex flex-row flex-wrap gap-2">
+        <Button
+          variant="outlined"
+          onClick={onUndo}
+          disabled={!canUndo}
+          className="grow"
+        >
+          Undo
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={onRedo}
+          disabled={!canRedo}
+          className="grow"
+        >
+          Redo
+        </Button>
+      </div>
       <div className="flex items-center gap-2">
         <TextField
           label="Save as"
@@ -64,6 +102,9 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
           ))}
         </ul>
       )}
-    </div>
+      <Button variant="outlined" tone="warning" onClick={onResetShader}>
+        Reset to default shader
+      </Button>
+    </HudModule>
   );
 }

@@ -15,11 +15,6 @@ function renderPane(
       canvasRef={{ current: null }}
       width={1920}
       height={1080}
-      onWidthChange={() => {}}
-      onHeightChange={() => {}}
-      screenshotFilename="screenshot.png"
-      onScreenshotFilenameChange={() => {}}
-      onCaptureScreenshot={() => {}}
       compileError={compileError}
       textureError={textureError}
       screenshotError={screenshotError}
@@ -32,6 +27,22 @@ function renderPane(
     />
   );
 }
+
+describe("PreviewPane VIEWPORT module", () => {
+  it("labels the module with a readout header", () => {
+    renderPane();
+    expect(screen.getByText("VIEWPORT")).toBeTruthy();
+    expect(screen.getByText("Live output")).toBeTruthy();
+  });
+
+  it("keeps the zoom cluster one group in the telemetry strip", () => {
+    renderPane();
+    expect(screen.getByRole("button", { name: "Zoom out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Fit" })).toBeTruthy();
+    expect(screen.getByText("100%")).toBeTruthy();
+  });
+});
 
 describe("PreviewPane compile error banner", () => {
   it("shows the GLSL error message as an alert", () => {
@@ -46,11 +57,10 @@ describe("PreviewPane compile error banner", () => {
     expect(screen.queryByRole("alert", { hidden: false })).toBeNull();
   });
 
-  it("renders the screenshot controls regardless of errors", () => {
+  it("renders the zoom controls regardless of errors", () => {
     renderPane("ERROR: bad shader");
-    expect(screen.getByText("Screenshot!")).toBeTruthy();
-    expect(screen.getByLabelText("Width")).toBeTruthy();
-    expect(screen.getByLabelText("Height")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Fit" })).toBeTruthy();
   });
 
   it("shows the texture load failure notice", () => {
@@ -80,10 +90,9 @@ describe("PreviewPane compile error banner", () => {
   it("exposes accessible names for the preview and its controls", () => {
     renderPane();
     expect(screen.getByRole("img", { name: "Shader preview output" })).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot width in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot height in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot filename")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Screenshot!" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Fit" })).toBeTruthy();
   });
 
   it("shows the status bar", () => {

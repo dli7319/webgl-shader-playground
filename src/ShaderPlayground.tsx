@@ -3,6 +3,7 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { ModuleStack } from "./ModuleStack";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
@@ -289,8 +290,8 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className="min-h-screen text-ink">
-      <header className="mx-2 mt-2 flex items-center justify-end gap-2">
+    <div className="flex min-h-screen min-w-0 flex-col text-ink">
+      <header className="mx-2 mt-2 flex flex-wrap items-center justify-end gap-2">
         <div className="grow">
           <h1 className="m-0 text-xl font-bold uppercase tracking-[0.22em]">
             Shader Playground
@@ -302,15 +303,6 @@ export default function ShaderPlayground() {
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
-        {recordingSupported ? (
-          <Button
-            variant="outlined"
-            tone={isRecording ? "live" : undefined}
-            onClick={toggleRecording}
-          >
-            {isRecording ? "Stop recording" : "Record (WebM)"}
-          </Button>
-        ) : null}
         <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
           Settings
         </Button>
@@ -342,9 +334,31 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
-        <PreviewPane
-          canvasRef={canvasRef}
+      <div className="m-2 flex min-h-0 min-w-0 grow flex-row items-stretch gap-2 max-[1100px]:flex-col">
+        <div className="flex min-w-0 grow basis-0 flex-row gap-2 max-[900px]:flex-col">
+          <PreviewPane
+            canvasRef={canvasRef}
+            width={state.width}
+            height={state.height}
+            compileError={state.compileError}
+            textureError={state.textureError}
+            screenshotError={state.screenshotError}
+            status={compileStatusFrom(state.hasRun, state.compileError)}
+            runDurationMs={state.runDurationMs}
+            zoomPercent={state.zoomPercent}
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            onZoomFit={fitZoom}
+          />
+          <EditorPane
+            shaderSource={state.editorSource}
+            onShaderSourceChange={editSource}
+            editorFontSize={state.editorFontSize}
+            wordWrap={state.wordWrap}
+            themeMode={state.themeMode}
+          />
+        </div>
+        <ModuleStack
           width={state.width}
           height={state.height}
           onWidthChange={setWidth}
@@ -352,36 +366,52 @@ export default function ShaderPlayground() {
           screenshotFilename={state.screenshotFilename}
           onScreenshotFilenameChange={setScreenshotFilename}
           onCaptureScreenshot={captureScreenshot}
-          compileError={state.compileError}
-          textureError={state.textureError}
-          screenshotError={state.screenshotError}
-          status={compileStatusFrom(state.hasRun, state.compileError)}
-          runDurationMs={state.runDurationMs}
-          zoomPercent={state.zoomPercent}
-          onZoomIn={zoomIn}
-          onZoomOut={zoomOut}
-          onZoomFit={fitZoom}
-        />
-        <EditorPane
-          shaderSource={state.editorSource}
-          onShaderSourceChange={editSource}
-          onRunShader={runShader}
           downloadShaderFilename={state.downloadShaderFilename}
           onDownloadShaderFilenameChange={setDownloadShaderFilename}
           onDownloadShader={downloadShader}
-          onPickImage={pickImage}
-          autoRun={state.autoRun}
-          onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
-          editorFontSize={state.editorFontSize}
-          wordWrap={state.wordWrap}
-          themeMode={state.themeMode}
+          currentSource={state.editorSource}
+          onApplySource={editSource}
           canUndo={canUndo(state.history)}
           canRedo={canRedo(state.history)}
           onUndo={undoEditor}
           onRedo={redoEditor}
+          onResetShader={resetShader}
+          autoRun={state.autoRun}
+          onToggleAutoRun={toggleAutoRun}
+          onPickImage={pickImage}
+          texturePath={state.texturePath}
         />
       </div>
+      <footer className="hud-action-bar sticky bottom-0 z-20 mx-2 mb-2 flex flex-wrap items-center gap-3 px-3 py-2">
+        <div className="flex grow flex-row flex-wrap items-center gap-2">
+          <Button
+            variant="contained"
+            className="min-w-56"
+            onClick={runShader}
+          >
+            Run Shader (<span className="key-hint">Ctrl+Enter</span>)
+          </Button>
+          {recordingSupported ? (
+            <Button
+              variant="outlined"
+              tone={isRecording ? "live" : undefined}
+              onClick={toggleRecording}
+            >
+              {isRecording ? "Stop recording" : "Record (WebM)"}
+            </Button>
+          ) : null}
+        </div>
+        <span
+          className="hud-readout whitespace-nowrap"
+          aria-hidden="true"
+          style={{
+            color: isRecording ? "var(--accent-2)" : "var(--text)",
+            opacity: isRecording ? 1 : 0.55,
+          }}
+        >
+          {isRecording ? "● REC" : "○ REC"}
+        </span>
+      </footer>
       <ToastHost store={toastStore} />
       {settingsOpen ? (
         <SettingsDialog

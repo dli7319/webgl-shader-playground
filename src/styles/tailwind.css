@@ -31,6 +31,9 @@
   --field-bg: #f7f5fd;
   --tint-accent: rgba(124, 31, 255, 0.08);
   --tint-live: rgba(209, 0, 156, 0.1);
+  /* Danger labels only pass AA on the pure-white panel fill (4.66:1);
+     any tint over white drops them below 4.5:1, so this stays transparent. */
+  --tint-danger: transparent;
   --glow-accent: rgba(124, 31, 255, 0.35);
   --glow-live: rgba(209, 0, 156, 0.4);
   --grid-line: #7c1fff;
@@ -53,6 +56,7 @@
   --field-bg: #0e0620;
   --tint-accent: rgba(0, 229, 255, 0.08);
   --tint-live: rgba(255, 43, 214, 0.14);
+  --tint-danger: rgba(255, 56, 100, 0.1);
   --glow-accent: rgba(0, 229, 255, 0.35);
   --glow-live: rgba(255, 43, 214, 0.45);
   --grid-line: #7c5cff;
@@ -71,6 +75,15 @@ body {
   font-family: var(--font-ui);
   font-weight: 500;
   letter-spacing: 0.01em;
+}
+
+/* App mount node: shrink-to-fit viewport on narrow screens (the flex item
+   of body must not enforce its content's min width). */
+body > main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
 }
 
 /* Faint 24px grid texture — depth behind the panels. */
@@ -148,6 +161,98 @@ body::before {
     letter-spacing: 0.18em;
     text-transform: uppercase;
     opacity: 0.65;
+  }
+
+  /* ---- HUD dashboard chrome ---------------------------------------- */
+
+  /* Telemetry readout type: tracked uppercase, tabular figures. */
+  .hud-readout {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.8;
+  }
+
+  /* Module header bar: title + state readout. Interactive when it is a
+     <button> (collapsible module); static otherwise. */
+  .hud-module-head {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.85rem;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--tint-accent);
+    color: var(--text);
+    text-align: left;
+    font: inherit;
+    transition: background-color 0.15s ease;
+  }
+  button.hud-module-head {
+    cursor: pointer;
+  }
+  button.hud-module-head:hover {
+    background-color: var(--tint-live);
+  }
+
+  .hud-module-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  /* Telemetry strip under the viewport canvas. */
+  .hud-telemetry {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    padding: 0.55rem 0.85rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Bottom action bar — the operate strip (Run / Record / flags). */
+  .hud-action-bar {
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    clip-path: polygon(
+      10px 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%,
+      0 10px
+    );
+    box-shadow: var(--shadow-panel);
+  }
+
+  /* VIEWPORT bracket frame: neon corner ticks around the canvas bay. */
+  .hud-frame {
+    position: relative;
+  }
+  .hud-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--accent), var(--accent)) 0 0 / 22px 2px,
+      linear-gradient(var(--accent), var(--accent)) 0 0 / 2px 22px,
+      linear-gradient(var(--accent), var(--accent)) 100% 0 / 22px 2px,
+      linear-gradient(var(--accent), var(--accent)) 100% 0 / 2px 22px,
+      linear-gradient(var(--accent), var(--accent)) 0 100% / 22px 2px,
+      linear-gradient(var(--accent), var(--accent)) 0 100% / 2px 22px,
+      linear-gradient(var(--accent), var(--accent)) 100% 100% / 22px 2px,
+      linear-gradient(var(--accent), var(--accent)) 100% 100% / 2px 22px;
+    background-repeat: no-repeat;
+    opacity: 0.9;
   }
 
   /* Magenta underline on keyboard hints; the text itself stays clean. */
