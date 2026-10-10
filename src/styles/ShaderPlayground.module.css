@@ -5,6 +5,16 @@
   margin: 0.5rem;
 }
 
+@media (max-width: 900px) {
+  .mainDiv {
+    flex-direction: column;
+  }
+  .leftColumn,
+  .rightColumn {
+    width: 100%;
+  }
+}
+
 .leftColumn {
   flex-grow: 1;
   display: flex;
@@ -71,7 +81,6 @@
 }
 .downloadShaderOptions {
   margin: 0.5rem 0rem;
-  display: flex;
   background: #eee;
   border-radius: 0.5rem;
   padding: 0.5rem;
