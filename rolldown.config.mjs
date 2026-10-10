@@ -31,13 +31,15 @@ export default defineConfig([
       minify: true,
     },
     // Rolldown does not bundle CSS or raw text: route them through moduleTypes.
+    // postcss injects CSS (Monaco's global stylesheets included) with class
+    // names INTACT — CSS-module hashing here breaks Monaco's runtime DOM.
     moduleTypes: {
       ".css": "js",
       ".frag": "text",
       ".vert": "text",
     },
     plugins: [
-      postcss({ modules: true, inject: true }),
+      postcss({ inject: true }),
       copy({
         targets: [
           { src: "public/*", dest: "dist" },

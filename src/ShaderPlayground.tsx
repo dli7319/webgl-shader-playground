@@ -1,6 +1,5 @@
 import React from "react";
 
-import styles from "./styles/ShaderPlayground.module.css";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
@@ -290,8 +289,8 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className={styles.app}>
-      <div className={styles.toolbar}>
+    <div className="min-h-screen bg-app text-ink">
+      <div className="mx-2 mt-2 flex justify-end gap-2">
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
@@ -309,8 +308,11 @@ export default function ShaderPlayground() {
         </Button>
       </div>
       {pendingDraft && !draftDismissed ? (
-        <div className={styles.draftBanner} role="status">
-          <span>Unsaved draft from your last session is available.</span>
+        <div
+          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
+          role="status"
+        >
+          <span className="grow">Unsaved draft from your last session is available.</span>
           <Button
             variant="outlined"
             onClick={() => {
@@ -332,7 +334,7 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className={styles.mainDiv}>
+      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
@@ -365,6 +367,7 @@ export default function ShaderPlayground() {
           onResetShader={resetShader}
           editorFontSize={state.editorFontSize}
           wordWrap={state.wordWrap}
+          themeMode={state.themeMode}
           canUndo={canUndo(state.history)}
           canRedo={canRedo(state.history)}
           onUndo={undoEditor}

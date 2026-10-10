@@ -1,7 +1,5 @@
 import React from "react";
 
-import styles from "./styles/ShaderPlayground.module.css";
-import controls from "./styles/controls.module.css";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
 import { Switch } from "./ui/Switch";
@@ -27,6 +25,7 @@ export interface EditorPaneProps {
   onResetShader: () => void;
   editorFontSize: number;
   wordWrap: boolean;
+  themeMode: "light" | "dark";
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
@@ -47,16 +46,21 @@ export function EditorPane({
   onResetShader,
   editorFontSize,
   wordWrap,
+  themeMode,
   canUndo,
   canRedo,
   onUndo,
   onRedo,
 }: EditorPaneProps) {
   return (
-    <div className={styles.rightColumn}>
+    <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
       <div id="editorParent" role="region" aria-label="Shader editor">
         <React.Suspense
-          fallback={<div className={styles.editorFallback}>Loading editor…</div>}
+          fallback={
+            <div className="min-h-[40vh] box-border p-4 text-sm opacity-70">
+              Loading editor…
+            </div>
+          }
         >
           <MonacoGlslEditor
             height="40vh"
@@ -66,6 +70,7 @@ export function EditorPane({
               fontSize: editorFontSize,
               wordWrap: wordWrap ? "on" : "off",
             }}
+            theme={themeMode}
             onChange={onShaderSourceChange}
           />
         </React.Suspense>
@@ -79,7 +84,7 @@ export function EditorPane({
           <Button
             variant="outlined"
             onClick={onRunShader}
-            className={styles.runShaderButton}
+            className="mx-auto my-2 block w-full"
           >
             Run Shader (Ctrl+Enter)
           </Button>
@@ -92,11 +97,11 @@ export function EditorPane({
             Reset to default shader
           </Button>
         </div>
-        <div className={styles.downloadShaderOptions}>
+        <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
           <TextField
             label="Filename"
             type="text"
-            className={styles.screenshotOption}
+            className="grow"
             value={downloadShaderFilename}
             aria-label="Shader download filename"
             onChange={onDownloadShaderFilenameChange}
@@ -106,11 +111,11 @@ export function EditorPane({
           </Button>
         </div>
         <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
-        <label className={`${controls.button} ${controls.contained}`}>
+        <label className="min-w-16 cursor-pointer rounded border border-accent bg-accent px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] text-white transition-colors [font:inherit] hover:brightness-110">
           <ImageIcon /> Pick tDiffuse Image
           <input
             type="file"
-            className={controls.visuallyHidden}
+            className="sr-only"
             aria-label="Choose a texture image"
             accept="image/*"
             onChange={(e) => {

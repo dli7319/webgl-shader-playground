@@ -9,8 +9,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prebuild": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "prebuild": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && npm run build:css",
     "build": "rolldown -c",
+    "build:css": "tailwindcss -i src/styles/tailwind.css -o dist/app.css --minify",
+    "predev": "npm run prebuild",
     "size": "node scripts/check-size.ts",
     "test:e2e": "playwright test",
     "typecheck:e2e": "tsc -p tests/e2e/tsconfig.json --noEmit",
@@ -36,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.0",
+    "@tailwindcss/cli": "^4.3.3",
     "@testing-library/preact": "^3.2.4",
     "@types/node": "^26.6.5",
     "@types/three": "^0.186.0",
@@ -49,6 +52,7 @@
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-serve": "^3.0.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.1",
     "vitest": "^5.0.3"

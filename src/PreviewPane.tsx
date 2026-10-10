@@ -1,6 +1,5 @@
 import React from "react";
 
-import styles from "./styles/ShaderPlayground.module.css";
 import { StatusBar } from "./StatusBar";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
@@ -26,6 +25,11 @@ export interface PreviewPaneProps {
   onZoomFit: () => void;
 }
 
+const ERROR_BOX =
+  "my-2 rounded-lg border p-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
+const COMPILE_ERROR = `${ERROR_BOX} border-[#f5c2c0] bg-[#fdecea] text-[#b3261e]`;
+const WARN_ERROR = `${ERROR_BOX} border-[#ffd591] bg-[#fff4e5] text-[#8c4a00]`;
+
 /** Preview canvas plus the screenshot/export controls beneath it. */
 export function PreviewPane({
   canvasRef,
@@ -47,10 +51,9 @@ export function PreviewPane({
   onZoomFit,
 }: PreviewPaneProps) {
   return (
-    <div className={styles.leftColumn}>
+    <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
       <canvas
         ref={canvasRef}
-        className={styles.canvas}
         role="img"
         aria-label="Shader preview output"
         style={{
@@ -59,11 +62,11 @@ export function PreviewPane({
           height: "unset",
         }}
       />
-      <div className={styles.zoomControls}>
+      <div className="mt-1 flex items-center gap-2">
         <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
           −
         </Button>
-        <span className={styles.zoomValue}>{zoomPercent}%</span>
+        <span className="min-w-14 text-center text-sm">{zoomPercent}%</span>
         <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
           +
         </Button>
@@ -78,28 +81,28 @@ export function PreviewPane({
         height={height}
       />
       {compileError ? (
-        <div className={styles.compileError} role="alert">
+        <div className={COMPILE_ERROR} role="alert">
           <strong>Shader error</strong>
           <pre>{compileError}</pre>
         </div>
       ) : null}
       {textureError ? (
-        <div className={styles.textureError} role="alert">
+        <div className={WARN_ERROR} role="alert">
           <strong>Texture error</strong>
           <pre>{textureError}</pre>
         </div>
       ) : null}
       {screenshotError ? (
-        <div className={styles.textureError} role="alert">
+        <div className={WARN_ERROR} role="alert">
           <strong>Screenshot error</strong>
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className={styles.screenshotControls}>
+      <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
         <TextField
           label="Width"
           type="number"
-          className={styles.screenshotOption}
+          className="grow"
           value={width}
           aria-label="Screenshot width in pixels"
           onChange={(v) => onWidthChange(Number(v))}
@@ -107,7 +110,7 @@ export function PreviewPane({
         <TextField
           label="Height"
           type="number"
-          className={styles.screenshotOption}
+          className="grow"
           value={height}
           aria-label="Screenshot height in pixels"
           onChange={(v) => onHeightChange(Number(v))}
@@ -115,16 +118,12 @@ export function PreviewPane({
         <TextField
           label="Filename"
           type="text"
-          className={styles.screenshotOption}
+          className="grow"
           value={screenshotFilename}
           aria-label="Screenshot filename"
           onChange={onScreenshotFilenameChange}
         />
-        <Button
-          className={styles.screenshotButton}
-          variant="outlined"
-          onClick={onCaptureScreenshot}
-        >
+        <Button className="grow" variant="outlined" onClick={onCaptureScreenshot}>
           Screenshot!
         </Button>
       </div>

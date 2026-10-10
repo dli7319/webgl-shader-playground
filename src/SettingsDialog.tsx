@@ -1,6 +1,5 @@
 import React from "react";
 
-import styles from "./styles/ShaderPlayground.module.css";
 import { Button } from "./ui/Button";
 import { Switch } from "./ui/Switch";
 import type { Settings } from "./settings";
@@ -11,18 +10,22 @@ export interface SettingsDialogProps {
   onClose: () => void;
 }
 
+const FIELD = "flex flex-col gap-1.5 text-sm";
+const FIELD_INPUT =
+  "w-24 rounded border border-edge bg-transparent px-2 py-[0.35rem] text-ink [font:inherit]";
+
 /** Modal-less settings panel with the persisted preferences. */
 export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
   return (
     <div
-      className={styles.dialogOverlay}
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/45"
       role="dialog"
       aria-modal="true"
       aria-label="Settings"
     >
-      <div className={styles.dialog}>
-        <h2 className={styles.dialogTitle}>Settings</h2>
-        <label className={styles.dialogField}>
+      <div className="flex min-w-[280px] flex-col gap-3 rounded-lg border border-edge bg-app px-5 py-4 text-ink">
+        <h2 className="m-0 text-lg">Settings</h2>
+        <label className={FIELD}>
           Editor font size
           <input
             type="number"
@@ -30,6 +33,7 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
             max={32}
             value={settings.editorFontSize}
             aria-label="Editor font size"
+            className={FIELD_INPUT}
             onChange={(e) =>
               onChange({
                 editorFontSize: Number((e.target as HTMLInputElement).value),
@@ -47,7 +51,7 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
           onChange={() => onChange({ autoRun: !settings.autoRun })}
           label="Auto-run while typing"
         />
-        <div className={styles.dialogField}>
+        <div className={FIELD}>
           Theme
           <div>
             <Button
