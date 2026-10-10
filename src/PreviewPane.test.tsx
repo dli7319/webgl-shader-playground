@@ -15,11 +15,6 @@ function renderPane(
       canvasRef={{ current: null }}
       width={1920}
       height={1080}
-      onWidthChange={() => {}}
-      onHeightChange={() => {}}
-      screenshotFilename="screenshot.png"
-      onScreenshotFilenameChange={() => {}}
-      onCaptureScreenshot={() => {}}
       compileError={compileError}
       textureError={textureError}
       screenshotError={screenshotError}
@@ -46,11 +41,14 @@ describe("PreviewPane compile error banner", () => {
     expect(screen.queryByRole("alert", { hidden: false })).toBeNull();
   });
 
-  it("renders the screenshot controls regardless of errors", () => {
+  // The export controls moved to the Export sheet (layout pass); what stays
+  // on the canvas island regardless of errors is the zoom cluster + status.
+  it("renders the zoom cluster and status regardless of errors", () => {
     renderPane("ERROR: bad shader");
-    expect(screen.getByText("Screenshot!")).toBeTruthy();
-    expect(screen.getByLabelText("Width")).toBeTruthy();
-    expect(screen.getByLabelText("Height")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Fit" })).toBeTruthy();
+    expect(screen.getByRole("status")).toBeTruthy();
   });
 
   it("shows the texture load failure notice", () => {
@@ -77,13 +75,12 @@ describe("PreviewPane compile error banner", () => {
     expect(alerts[0].textContent).toContain("shot.gif");
   });
 
-  it("exposes accessible names for the preview and its controls", () => {
+  it("exposes accessible names for the preview and its zoom cluster", () => {
     renderPane();
     expect(screen.getByRole("img", { name: "Shader preview output" })).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot width in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot height in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot filename")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Screenshot!" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Fit" })).toBeTruthy();
   });
 
   it("shows the status bar", () => {

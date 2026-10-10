@@ -6,7 +6,10 @@ test("app boots with preview, editor, and controls", async ({ page }) => {
   await openApp(page);
 
   await expect(page.getByRole("button", { name: /run shader/i })).toBeVisible();
+  // Export controls now live behind the dock's Export sheet.
+  await page.getByRole("button", { name: /^export/i }).click();
   await expect(page.getByRole("button", { name: /screenshot!/i })).toBeVisible();
+  await page.getByRole("button", { name: /^close/i }).click();
   await expect(page.getByRole("region", { name: "Shader editor" })).toBeVisible();
   await expect(
     page.getByRole("status").filter({ hasText: "Compiled" }).first()

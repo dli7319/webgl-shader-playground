@@ -133,3 +133,76 @@ untouched. This is a visual-only exploration; no tests needed expectation
 updates.
 
 **Verification:** `npm run build:css && npx tsc --noEmit && npx eslint . && npm test` (148/148 unit tests pass) `&& npm run build` — all green.
+
+## Layout pass — floating glass islands + a macOS-style glass dock
+
+**Spatial concept.** The two-column wall-of-controls is gone. Three floating
+glass islands sit over the aurora mesh: the preview is the large dominant
+canvas card (56%), the editor a subordinate glass panel beside it (44%), and
+every action lives in a detached, bottom-centered **glass dock** — Run Shader
+is the glowing dock item, and export/history/settings are glass sheets that
+rise above the dock, each opened from a dock item that carries a tiny live
+summary of what's inside. On <900px the islands stack (preview first) and the
+dock stays a floating bottom bar with sheets as near-full-width bottom sheets.
+
+**Surface archetype: mixed — Operate / Configure / Monitor.**
+- *Operate* (always available, no mode change): preview island (canvas + zoom
+  cluster) and the dock (Run, theme, openers).
+- *Configure*: the glass sheets (Export / History / Settings) above the dock.
+- *Monitor*: status chip + compile/texture/screenshot banners pinned to the
+  canvas island — they recolor in place on state change, nothing moves.
+
+**Decision counts** (interactive controls on the always-visible surface;
+read-only readouts like the zoom % and status chip excluded):
+**before 20 → after 10.**
+Visible now: `−` `+` `Fit` (zoom cluster), `Undo`, `Redo`, `Run Shader
+(Ctrl+Enter)` (the single filled/primary, visible without opening anything),
+`Dark theme`/`Light theme`, and the three dock openers `Export` / `History` /
+`Settings`.
+
+**Where each object's controls live** (one object, one group — nothing split):
+- **Zoom cluster** (`−`/value/`+`/`Fit`) → one pill group on the preview island.
+- **Screenshot export** (Width + Height + Filename + `Screenshot!`) → Export
+  sheet, group "Screenshot (PNG)".
+- **Shader file** (Filename + `Download Shader (Ctrl+S)`) → Export sheet, group
+  "Shader file (GLSL)".
+- **Video** (`Record (WebM)` / `Stop recording`) → Export sheet, group
+  "Video (WebM)".
+- **History** (name + `Save shader` + list of `Load`/`Delete`) → History sheet
+  (its empty state is neutral and carries a direct save affordance).
+- **Settings** (Editor font size, `Word wrap`, `Auto-run while typing`, Theme
+  `Light`/`Dark`, `Pick tDiffuse Image`, `Reset to default shader` danger row)
+  → Settings sheet.
+
+**Disclosed state reported beside each opener** (dock labels):
+- Export: `1920×1080 · screenshot.png` + `fragment.frag` (size + both
+  filenames), plus a pulsing `REC` badge while a recording is live — the badge
+  is an in-place flag swap, no block ever moves.
+- History: `3 saved` / `No saves`.
+- Settings: `14px · wrap off · auto on` + `tDiffuse: <file or "default texture">`.
+The open dock item is marked `aria-expanded="true"` and glows quietly.
+
+**Test expectations changed in this commit** (labels/roles/behavior untouched):
+- `PreviewPane.test.tsx` "renders the screenshot controls regardless of errors"
+  → "renders the zoom cluster and status regardless of errors": the export
+  controls left the preview pane, and what must survive errors is the canvas
+  island's monitor surface. The old screenshot-controls expectations moved to
+  the new `ExportSheet.test.tsx` ("renders the full screenshot export group",
+  "exposes accessible names for the export controls") — same strings, now
+  encoding their home in the Export sheet.
+- `PreviewPane.test.tsx` accessible-names test now covers the preview + zoom
+  cluster only.
+- New `ActionDock.test.tsx` pins the dock contract: the primary is visible
+  without opening anything, every opener carries its state summary, the REC
+  flag appears while recording, and the open item reports `aria-expanded`.
+- E2E (not executed here — Playwright browsers are single-session) placement
+  expectations updated to open the relevant sheet first (smoke/flows/screenshot
+  click the `Export`/`Settings` dock items before touching disclosed controls;
+  `settings.spec.ts` matches the Settings opener by `/^settings/i` since its
+  accessible name now includes the state summary). All pinned label strings
+  survive exactly.
+
+**Verification:** `npm run build:css && npx tsc --noEmit && npx eslint . &&
+npm test` (160/160 unit tests pass — 148 original + 12 new for the dock and
+sheets) `&& npm run build` — all green. Screenshots above are from the styling
+pass and will be re-taken for this layout.

@@ -1,17 +1,20 @@
 import React from "react";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
-import { createShaderStore } from "./shaderStore";
+import { createShaderStore, type ShaderStore } from "./shaderStore";
 
 export interface ShaderHistoryProps {
   currentSource: string;
   onApply: (source: string) => void;
+  /** Optional shared store (the dock reads its entry count from the same one). */
+  store?: ShaderStore;
 }
 
 /** Named shader saves backed by localStorage. */
-export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
-  const store = React.useMemo(() => createShaderStore(window.localStorage), []);
-  const entries = React.useSyncExternalStore(store.subscribe, store.getSnapshot);
+export function ShaderHistory({ currentSource, onApply, store }: ShaderHistoryProps) {
+  const fallbackStore = React.useMemo(() => createShaderStore(window.localStorage), []);
+  const shaderStore = store ?? fallbackStore;
+  const entries = React.useSyncExternalStore(shaderStore.subscribe, shaderStore.getSnapshot);
   const [name, setName] = React.useState("");
 
   function handleSave() {
@@ -19,13 +22,13 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
     if (!trimmed) {
       return;
     }
-    store.save(trimmed, currentSource);
+    shaderStore.save(trimmed, currentSource);
     setName("");
   }
 
   return (
-    <div className="surface-panel flex flex-col gap-2 p-3">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-end gap-2">
         <TextField
           label="Save as"
           value={name}
@@ -41,7 +44,9 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
         </Button>
       </div>
       {entries.length === 0 ? (
-        <p className="m-0 text-sm opacity-70">No saved shaders yet.</p>
+        <p className="m-0 text-sm opacity-70">
+          No saved shaders yet — name the current shader above to keep it.
+        </p>
       ) : (
         <ul className="m-0 flex max-h-40 list-none flex-col gap-1.5 overflow-y-auto p-0">
           {entries.map((entry) => (
@@ -55,7 +60,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
               <Button
                 variant="outlined"
                 tone="warning"
-                onClick={() => store.remove(entry.id)}
+                onClick={() => shaderStore.remove(entry.id)}
               >
                 Delete
               </Button>

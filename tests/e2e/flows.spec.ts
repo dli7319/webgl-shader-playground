@@ -3,6 +3,7 @@ import { openApp } from "./support";
 
 test("download shader exports the editor source", async ({ page }) => {
   await openApp(page);
+  await page.getByRole("button", { name: /^export/i }).click();
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /download shader/i }).click();
@@ -22,6 +23,7 @@ test("picking a texture image updates the preview without errors", async ({ page
     "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR4nGP8z8Dwn4GBgYEJAAAWAQMDNTXnWAAAAABJRU5ErkJggg==",
     "base64"
   );
+  await page.getByRole("button", { name: /^settings/i }).click();
   await page.getByLabel("Choose a texture image").setInputFiles({
     name: "texture.png",
     mimeType: "image/png",

@@ -3,6 +3,10 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { ActionDock, type DockSheetName } from "./ActionDock";
+import { DockSheet } from "./DockSheet";
+import { ExportSheet } from "./ExportSheet";
+import { ShaderHistory } from "./ShaderHistory";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
@@ -20,6 +24,7 @@ import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { clearDraft, loadDraft, saveDraft } from "./draftStore";
 import { downloadTextFile, triggerDownload } from "./download";
+import { createShaderStore } from "./shaderStore";
 import {
   createRecordingSession,
   pickRecordingMimeType,
@@ -57,9 +62,19 @@ export default function ShaderPlayground() {
     redoEditor,
   } = usePlaygroundState(React.useMemo(() => loadSettings(window.localStorage), []));
 
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  // Which glass sheet is open above the dock (none by default).
+  const [openSheet, setOpenSheet] = React.useState<DockSheetName | null>(null);
+  const [textureLabel, setTextureLabel] = React.useState("default texture");
   const [pendingDraft] = React.useState(() => loadDraft(window.localStorage));
   const [draftDismissed, setDraftDismissed] = React.useState(false);
+
+  // Shared shader store: the history sheet and the dock's "N saved" summary
+  // read the same source of truth.
+  const shaderStore = React.useMemo(() => createShaderStore(window.localStorage), []);
+  const savedShaders = React.useSyncExternalStore(
+    shaderStore.subscribe,
+    shaderStore.getSnapshot
+  );
 
   // Auto-save the editor as a draft (skipped while the restore prompt is
   // still up, so mounting the app can't clobber the previous session's draft).
@@ -227,6 +242,11 @@ export default function ShaderPlayground() {
     }
   }
 
+  function handlePickImage(dataUrl: string, fileName: string) {
+    setTextureLabel(fileName);
+    pickImage(dataUrl);
+  }
+
   // Warn before leaving the page with uncompiled edits.
   React.useEffect(() => {
     function onBeforeUnload(event: BeforeUnloadEvent) {
@@ -288,25 +308,12 @@ export default function ShaderPlayground() {
     }
   }
 
+  function toggleSheet(sheet: DockSheetName) {
+    setOpenSheet((current) => (current === sheet ? null : sheet));
+  }
+
   return (
-    <div className="min-h-screen text-ink">
-      <div className="glass mx-3 mt-3 flex justify-end gap-2 rounded-full p-2">
-        <Button variant="outlined" onClick={toggleTheme}>
-          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-        </Button>
-        {recordingSupported ? (
-          <Button
-            variant="outlined"
-            className={isRecording ? "is-recording" : undefined}
-            onClick={toggleRecording}
-          >
-            {isRecording ? "Stop recording" : "Record (WebM)"}
-          </Button>
-        ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-          Settings
-        </Button>
-      </div>
+    <div className="min-h-screen pb-32 text-ink">
       {pendingDraft && !draftDismissed ? (
         <div
           className="surface-panel mx-3 my-3 flex items-center gap-2 px-4 py-3 text-sm"
@@ -334,16 +341,11 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-3 flex flex-row gap-3 max-[900px]:flex-col">
+      <div className="mx-3 mt-3 flex flex-row items-stretch gap-3 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
           height={state.height}
-          onWidthChange={setWidth}
-          onHeightChange={setHeight}
-          screenshotFilename={state.screenshotFilename}
-          onScreenshotFilenameChange={setScreenshotFilename}
-          onCaptureScreenshot={captureScreenshot}
           compileError={state.compileError}
           textureError={state.textureError}
           screenshotError={state.screenshotError}
@@ -357,14 +359,6 @@ export default function ShaderPlayground() {
         <EditorPane
           shaderSource={state.editorSource}
           onShaderSourceChange={editSource}
-          onRunShader={runShader}
-          downloadShaderFilename={state.downloadShaderFilename}
-          onDownloadShaderFilenameChange={setDownloadShaderFilename}
-          onDownloadShader={downloadShader}
-          onPickImage={pickImage}
-          autoRun={state.autoRun}
-          onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
           editorFontSize={state.editorFontSize}
           wordWrap={state.wordWrap}
           themeMode={state.themeMode}
@@ -374,8 +368,56 @@ export default function ShaderPlayground() {
           onRedo={redoEditor}
         />
       </div>
-      <ToastHost store={toastStore} />
-      {settingsOpen ? (
+      <ActionDock
+        onRunShader={runShader}
+        themeMode={state.themeMode}
+        onToggleTheme={toggleTheme}
+        openSheet={openSheet}
+        onToggleSheet={toggleSheet}
+        width={state.width}
+        height={state.height}
+        screenshotFilename={state.screenshotFilename}
+        downloadShaderFilename={state.downloadShaderFilename}
+        isRecording={isRecording}
+        savedCount={savedShaders.length}
+        editorFontSize={state.editorFontSize}
+        wordWrap={state.wordWrap}
+        autoRun={state.autoRun}
+        textureLabel={textureLabel}
+      />
+      {openSheet === "export" ? (
+        <ExportSheet
+          width={state.width}
+          height={state.height}
+          onWidthChange={setWidth}
+          onHeightChange={setHeight}
+          screenshotFilename={state.screenshotFilename}
+          onScreenshotFilenameChange={setScreenshotFilename}
+          onCaptureScreenshot={captureScreenshot}
+          downloadShaderFilename={state.downloadShaderFilename}
+          onDownloadShaderFilenameChange={setDownloadShaderFilename}
+          onDownloadShader={downloadShader}
+          recordingSupported={recordingSupported}
+          isRecording={isRecording}
+          onToggleRecording={toggleRecording}
+          onClose={() => setOpenSheet(null)}
+        />
+      ) : null}
+      {openSheet === "history" ? (
+        <DockSheet title="History" onClose={() => setOpenSheet(null)}>
+          <div className="sheet-group">
+            <span className="sheet-group-label">Saved shaders</span>
+            <div className="w-full">
+              <ShaderHistory
+                store={shaderStore}
+                currentSource={state.editorSource}
+                onApply={editSource}
+              />
+            </div>
+          </div>
+        </DockSheet>
+      ) : null}
+      {openSheet === "settings" ? (
         <SettingsDialog
           settings={{
             themeMode: state.themeMode,
@@ -383,10 +425,14 @@ export default function ShaderPlayground() {
             editorFontSize: state.editorFontSize,
             wordWrap: state.wordWrap,
           }}
+          textureLabel={textureLabel}
           onChange={applySettings}
-          onClose={() => setSettingsOpen(false)}
+          onPickImage={handlePickImage}
+          onResetShader={resetShader}
+          onClose={() => setOpenSheet(null)}
         />
       ) : null}
+      <ToastHost store={toastStore} />
     </div>
   );
 }

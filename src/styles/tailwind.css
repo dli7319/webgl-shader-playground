@@ -261,6 +261,196 @@
     box-shadow: 0 0 18px -2px var(--glow);
     animation: aurora-pulse 1.8s ease-in-out infinite;
   }
+
+  /* ---------------------------------------------------------------------
+   * Floating glass dock (macOS-style): detached action bar at the bottom.
+   * ------------------------------------------------------------------ */
+  .dock {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 50%;
+    z-index: 1000;
+    display: flex;
+    max-width: calc(100vw - 1.5rem);
+    align-items: stretch;
+    gap: 0.375rem;
+    padding: 0.5rem;
+    overflow-x: auto;
+    border: 1px solid var(--glass-border);
+    border-radius: 9999px;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    backdrop-filter: blur(20px) saturate(1.3);
+    box-shadow: var(--shadow-card);
+    transform: translateX(-50%);
+    scrollbar-width: none;
+  }
+
+  .dock::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Dock items: one pill language, one box height, stacked label + summary. */
+  .dock-item {
+    position: relative;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 5.5rem;
+    height: 3.5rem;
+    padding: 0.3rem 0.95rem;
+    white-space: nowrap;
+  }
+
+  .dock-item-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .dock-item-summary {
+    max-width: 11rem;
+    overflow: hidden;
+    font-size: 0.625rem;
+    font-weight: 500;
+    line-height: 1.15;
+    opacity: 0.72;
+    text-overflow: ellipsis;
+  }
+
+  /* Sheet open: the dock item glows quietly in place. */
+  .dock-item[aria-expanded="true"] {
+    border-color: var(--accent);
+    background: var(--btn-hover);
+    box-shadow: 0 0 20px -6px var(--glow-strong);
+  }
+
+  /* The single filled primary: the glowing Run dock item. */
+  .dock-item-primary {
+    justify-content: center;
+    min-width: 11rem;
+  }
+
+  .dock-item-primary .dock-item-label {
+    font-size: 0.85rem;
+  }
+
+  .dock-sep {
+    flex: 0 0 auto;
+    width: 1px;
+    margin: 0.55rem 0.25rem;
+    background: var(--glass-border);
+  }
+
+  /* Live recording flag on the dock item (state swap in place). */
+  .dock-badge {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.25rem;
+    padding: 0.05rem 0.45rem;
+    border: 1px solid var(--accent);
+    border-radius: 9999px;
+    background: var(--panel);
+    color: var(--accent);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    box-shadow: 0 0 16px -2px var(--glow);
+    animation: aurora-pulse 1.8s ease-in-out infinite;
+  }
+
+  /* ---------------------------------------------------------------------
+   * Glass sheets: disclosed control groups that rise above the dock.
+   * ------------------------------------------------------------------ */
+  .sheet-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+  }
+
+  .sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 8, 30, 0.25);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
+
+  .sheet {
+    position: absolute;
+    bottom: 6.5rem;
+    left: 50%;
+    box-sizing: border-box;
+    width: min(720px, calc(100vw - 2rem));
+    max-height: min(62vh, 560px);
+    padding: 1.15rem 1.35rem 1.35rem;
+    overflow-y: auto;
+    transform: translateX(-50%);
+  }
+
+  .sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .sheet-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  /* One object per group; groups stack and are separated by hairlines. */
+  .sheet-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.65rem;
+    padding: 0.85rem 0 0.35rem;
+  }
+
+  .sheet-group + .sheet-group {
+    border-top: 1px solid var(--glass-border);
+  }
+
+  .sheet-group-label {
+    width: 100%;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+
+  .sheet-note {
+    width: 100%;
+    margin: 0.25rem 0 0;
+    font-size: 0.78rem;
+    opacity: 0.72;
+  }
+
+  /* Slim caption on the editor island header. */
+  .pane-caption {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 900px) {
+    .dock {
+      bottom: 0.85rem;
+    }
+
+    .sheet {
+      bottom: 5.75rem;
+      width: calc(100vw - 1.25rem);
+      max-height: 68vh;
+    }
+  }
 }
 
 @keyframes aurora-pulse {

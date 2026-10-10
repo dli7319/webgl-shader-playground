@@ -1,11 +1,16 @@
 import React from "react";
+import { DockSheet } from "./DockSheet";
 import { Button } from "./ui/Button";
 import { Switch } from "./ui/Switch";
+import { ImageIcon } from "./ui/icons";
 import type { Settings } from "./settings";
 
 export interface SettingsDialogProps {
   settings: Settings;
+  textureLabel: string;
   onChange: (patch: Partial<Settings>) => void;
+  onPickImage: (dataUrl: string, fileName: string) => void;
+  onResetShader: () => void;
   onClose: () => void;
 }
 
@@ -13,17 +18,19 @@ const FIELD = "flex flex-col gap-1.5 text-sm";
 const FIELD_INPUT =
   "w-24 rounded-2xl border border-[var(--input-border)] bg-[var(--input-bg)] px-2 py-[0.35rem] text-ink [font:inherit] focus:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
-/** Modal-less settings panel with the persisted preferences. */
-export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
+/** Settings sheet behind the dock: preferences, texture, and the danger row. */
+export function SettingsDialog({
+  settings,
+  textureLabel,
+  onChange,
+  onPickImage,
+  onResetShader,
+  onClose,
+}: SettingsDialogProps) {
   return (
-    <div
-      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/40 backdrop-blur-md"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Settings"
-    >
-      <div className="surface-panel flex min-w-[280px] flex-col gap-3 px-6 py-5 text-ink shadow-[var(--shadow-card)]">
-        <h2 className="m-0 text-lg font-bold">Settings</h2>
+    <DockSheet title="Settings" onClose={onClose}>
+      <div className="sheet-group">
+        <span className="sheet-group-label">Editor</span>
         <label className={FIELD}>
           Editor font size
           <input
@@ -67,10 +74,42 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
             </Button>
           </div>
         </div>
-        <Button variant="outlined" onClick={onClose}>
-          Close
-        </Button>
       </div>
-    </div>
+      <div className="sheet-group">
+        <span className="sheet-group-label">Texture</span>
+        <p className="sheet-note">tDiffuse: {textureLabel}</p>
+        <label className="btn self-start">
+          <ImageIcon /> Pick tDiffuse Image
+          <input
+            type="file"
+            className="sr-only"
+            aria-label="Choose a texture image"
+            accept="image/*"
+            onChange={(e) => {
+              const file = (e.target as HTMLInputElement).files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                  const dataUrl = ev.target?.result;
+                  if (typeof dataUrl === "string") {
+                    onPickImage(dataUrl, file.name);
+                  }
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+          />
+        </label>
+      </div>
+      <div className="sheet-group">
+        <span className="sheet-group-label">Danger zone</span>
+        <Button variant="outlined" tone="warning" onClick={onResetShader}>
+          Reset to default shader
+        </Button>
+        <p className="sheet-note">
+          Restores the default fragment shader (asks for confirmation first).
+        </p>
+      </div>
+    </DockSheet>
   );
 }
