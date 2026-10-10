@@ -6,11 +6,18 @@ test("app boots with preview, editor, and controls", async ({ page }) => {
   await openApp(page);
 
   await expect(page.getByRole("button", { name: /run shader/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /screenshot!/i })).toBeVisible();
   await expect(page.getByRole("region", { name: "Shader editor" })).toBeVisible();
   await expect(
     page.getByRole("status").filter({ hasText: "Compiled" }).first()
   ).toBeVisible();
+
+  // The screenshot controls live behind the Export state chip.
+  await page.getByRole("button", { name: /^export/i }).click();
+  await expect(page.getByRole("button", { name: /screenshot!/i })).toBeVisible();
+  await page
+    .getByRole("dialog", { name: "Export" })
+    .getByRole("button", { name: "Close" })
+    .click();
 
   // The preview canvas has a real drawing surface sized to the layout.
   const canvas = page.locator("canvas").first();
@@ -28,8 +35,12 @@ test("app boots with preview, editor, and controls", async ({ page }) => {
 
 test("theme toggle switches the document theme", async ({ page }) => {
   await openApp(page);
-  await page.getByRole("button", { name: /dark theme/i }).click();
+  // The theme toggle lives in the Settings sheet.
+  await page.getByRole("button", { name: /^settings/i }).click();
+  const dialog = page.getByRole("dialog", { name: "Settings" });
+  await dialog.getByRole("button", { name: /dark theme/i }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("button", { name: /light theme/i }).click();
+  await dialog.getByRole("button", { name: /light theme/i }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await dialog.getByRole("button", { name: "Close" }).click();
 });

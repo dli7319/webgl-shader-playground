@@ -5,16 +5,14 @@ import { formatDuration, STATUS_LABELS, type CompileStatus } from "./status";
 export interface StatusBarProps {
   status: CompileStatus;
   runDurationMs: number | null;
-  width: number;
-  height: number;
 }
 
-/** Small read-only strip under the preview summarizing playground state. */
-export function StatusBar({ status, runDurationMs, width, height }: StatusBarProps) {
+/** Compact read-only chip beside the preview summarizing compile state. */
+export function StatusBar({ status, runDurationMs }: StatusBarProps) {
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="pill-island mt-2 inline-flex items-center gap-2 self-start px-3 py-1 text-sm"
+      className="pill-island inline-flex items-center gap-2 self-start px-3 py-1 text-sm"
       role="status"
     >
       <span
@@ -28,12 +26,6 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
         ·
       </span>
       <span className="text-muted">{duration}</span>
-      <span className="text-muted" aria-hidden="true">
-        ·
-      </span>
-      <span className="text-muted">
-        Export {width}×{height}
-      </span>
     </div>
   );
 }

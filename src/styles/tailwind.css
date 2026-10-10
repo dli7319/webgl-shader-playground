@@ -40,16 +40,17 @@
   --warn-ink: #8c4a00;
 
   /* Neumorphic material: diffused dual shadows (warm light + cool shade) */
-  --shadow-raised: 6px 6px 12px rgba(163, 177, 198, 0.45),
-    -6px -6px 12px rgba(255, 255, 255, 0.8);
-  --shadow-raised-sm: 3px 3px 7px rgba(163, 177, 198, 0.4),
-    -3px -3px 7px rgba(255, 255, 255, 0.85);
-  --shadow-inset: inset 4px 4px 8px rgba(163, 177, 198, 0.45),
+  --shadow-raised:
+    6px 6px 12px rgba(163, 177, 198, 0.45), -6px -6px 12px rgba(255, 255, 255, 0.8);
+  --shadow-raised-sm:
+    3px 3px 7px rgba(163, 177, 198, 0.4), -3px -3px 7px rgba(255, 255, 255, 0.85);
+  --shadow-inset:
+    inset 4px 4px 8px rgba(163, 177, 198, 0.45),
     inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-  --shadow-inset-sm: inset 2px 2px 5px rgba(163, 177, 198, 0.4),
+  --shadow-inset-sm:
+    inset 2px 2px 5px rgba(163, 177, 198, 0.4),
     inset -2px -2px 5px rgba(255, 255, 255, 0.85);
-  --shadow-glow: 0 10px 22px rgba(20, 184, 166, 0.35),
-    0 2px 6px rgba(20, 184, 166, 0.25);
+  --shadow-glow: 0 10px 22px rgba(20, 184, 166, 0.35), 0 2px 6px rgba(20, 184, 166, 0.25);
   --glow-soft: rgba(20, 184, 166, 0.3);
 }
 
@@ -73,16 +74,15 @@
   --warn-border: #6b5a2e;
   --warn-ink: #fde68a;
 
-  --shadow-raised: 6px 6px 12px rgba(0, 0, 0, 0.45),
-    -6px -6px 12px rgba(255, 255, 255, 0.05);
-  --shadow-raised-sm: 3px 3px 7px rgba(0, 0, 0, 0.4),
-    -3px -3px 7px rgba(255, 255, 255, 0.05);
-  --shadow-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.45),
-    inset -4px -4px 8px rgba(255, 255, 255, 0.05);
-  --shadow-inset-sm: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.05);
-  --shadow-glow: 0 10px 22px rgba(45, 212, 191, 0.22),
-    0 2px 6px rgba(45, 212, 191, 0.16);
+  --shadow-raised:
+    6px 6px 12px rgba(0, 0, 0, 0.45), -6px -6px 12px rgba(255, 255, 255, 0.05);
+  --shadow-raised-sm:
+    3px 3px 7px rgba(0, 0, 0, 0.4), -3px -3px 7px rgba(255, 255, 255, 0.05);
+  --shadow-inset:
+    inset 4px 4px 8px rgba(0, 0, 0, 0.45), inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+  --shadow-inset-sm:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.4), inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+  --shadow-glow: 0 10px 22px rgba(45, 212, 191, 0.22), 0 2px 6px rgba(45, 212, 191, 0.16);
   --glow-soft: rgba(45, 212, 191, 0.22);
 }
 
@@ -95,9 +95,17 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Nunito", ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Nunito",
+    ui-rounded,
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
 }
 
 ::selection {
@@ -147,12 +155,56 @@ body {
     box-shadow: var(--shadow-inset-sm);
   }
 
-  /* Floating pill island (zoom controls, status strip, toolbar) */
+  /* Floating pill island (zoom controls, status strip) */
   .pill-island {
     border-radius: 999px;
     background: var(--panel);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-raised-sm);
+  }
+
+  /* Floating control cushion: the single primary action + state chips */
+  .control-cushion {
+    border-radius: 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-raised);
+  }
+
+  /* Compact state chip: label + read-only summary, opens a soft bottom sheet */
+  .state-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-raised-sm);
+    padding: 0.45rem 1rem;
+    font: inherit;
+    font-size: 0.85rem;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    transition: box-shadow 0.15s ease;
+  }
+  .state-chip:hover {
+    box-shadow: var(--shadow-raised);
+  }
+  .state-chip:active {
+    box-shadow: var(--shadow-inset-sm);
+  }
+  .state-chip:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Bottom sheet grab handle */
+  .sheet-grabber {
+    width: 44px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--border);
   }
 
   .text-muted {

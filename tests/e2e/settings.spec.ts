@@ -4,12 +4,12 @@ import { openApp } from "./support";
 test("settings persist across a full reload", async ({ page }) => {
   await openApp(page);
 
-  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("button", { name: /^settings/i }).click();
   const dialog = page.getByRole("dialog", { name: "Settings" });
   await expect(dialog).toBeVisible();
 
-  // Dark theme via the settings dialog.
-  await dialog.getByRole("button", { name: "Dark" }).click();
+  // Dark theme via the settings sheet.
+  await dialog.getByRole("button", { name: /dark theme/i }).click();
   await dialog.getByRole("button", { name: "Close" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
@@ -17,8 +17,8 @@ test("settings persist across a full reload", async ({ page }) => {
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
-  // Font size persisted too: change it, reload, read it back from the dialog.
-  await page.getByRole("button", { name: "Settings" }).click();
+  // Font size persisted too: change it, reload, read it back from the sheet.
+  await page.getByRole("button", { name: /^settings/i }).click();
   const fontSize = page.getByLabel("Editor font size");
   await fontSize.fill("20");
   await page
@@ -27,6 +27,6 @@ test("settings persist across a full reload", async ({ page }) => {
     .click();
 
   await page.reload();
-  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("button", { name: /^settings/i }).click();
   await expect(page.getByLabel("Editor font size")).toHaveValue("20");
 });

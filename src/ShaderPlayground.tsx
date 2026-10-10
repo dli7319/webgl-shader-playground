@@ -3,6 +3,9 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { ExportControls } from "./ExportControls";
+import { TextureControls } from "./TextureControls";
+import { ShaderHistory } from "./ShaderHistory";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
@@ -43,7 +46,6 @@ export default function ShaderPlayground() {
     setCompileError,
     setTextureError,
     setScreenshotError,
-    toggleTheme,
     toggleAutoRun,
     reportRun,
     resetEditorSource,
@@ -290,60 +292,40 @@ export default function ShaderPlayground() {
 
   return (
     <div className="min-h-screen bg-app text-ink">
-      <div className="pill-island mx-3 mt-3 flex flex-wrap items-center justify-end gap-2 p-1.5">
-        <Button variant="outlined" onClick={toggleTheme}>
-          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-        </Button>
-        {recordingSupported ? (
-          <Button
-            variant="outlined"
-            tone={isRecording ? "warning" : undefined}
-            onClick={toggleRecording}
+      <div className="mx-auto flex w-full max-w-[820px] flex-col gap-4 px-4 pb-32 pt-4">
+        {pendingDraft && !draftDismissed ? (
+          <div
+            className="surface-panel flex flex-wrap items-center gap-2 p-3 text-sm"
+            role="status"
           >
-            {isRecording ? "Stop recording" : "Record (WebM)"}
-          </Button>
+            <span className="grow">
+              Unsaved draft from your last session is available.
+            </span>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                editSource(pendingDraft);
+                setDraftDismissed(true);
+              }}
+            >
+              Restore
+            </Button>
+            <Button
+              variant="outlined"
+              tone="warning"
+              onClick={() => {
+                clearDraft(window.localStorage);
+                setDraftDismissed(true);
+              }}
+            >
+              Discard
+            </Button>
+          </div>
         ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-          Settings
-        </Button>
-      </div>
-      {pendingDraft && !draftDismissed ? (
-        <div
-          className="surface-panel mx-3 my-3 flex items-center gap-2 p-3 text-sm"
-          role="status"
-        >
-          <span className="grow">Unsaved draft from your last session is available.</span>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              editSource(pendingDraft);
-              setDraftDismissed(true);
-            }}
-          >
-            Restore
-          </Button>
-          <Button
-            variant="outlined"
-            tone="warning"
-            onClick={() => {
-              clearDraft(window.localStorage);
-              setDraftDismissed(true);
-            }}
-          >
-            Discard
-          </Button>
-        </div>
-      ) : null}
-      <div className="m-3 flex flex-row gap-3 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
           height={state.height}
-          onWidthChange={setWidth}
-          onHeightChange={setHeight}
-          screenshotFilename={state.screenshotFilename}
-          onScreenshotFilenameChange={setScreenshotFilename}
-          onCaptureScreenshot={captureScreenshot}
           compileError={state.compileError}
           textureError={state.textureError}
           screenshotError={state.screenshotError}
@@ -357,14 +339,6 @@ export default function ShaderPlayground() {
         <EditorPane
           shaderSource={state.editorSource}
           onShaderSourceChange={editSource}
-          onRunShader={runShader}
-          downloadShaderFilename={state.downloadShaderFilename}
-          onDownloadShaderFilenameChange={setDownloadShaderFilename}
-          onDownloadShader={downloadShader}
-          onPickImage={pickImage}
-          autoRun={state.autoRun}
-          onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
           editorFontSize={state.editorFontSize}
           wordWrap={state.wordWrap}
           themeMode={state.themeMode}
@@ -373,6 +347,49 @@ export default function ShaderPlayground() {
           onUndo={undoEditor}
           onRedo={redoEditor}
         />
+      </div>
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[1000] flex justify-center px-3 pb-3">
+        <div className="control-cushion pointer-events-auto flex w-full max-w-[820px] flex-wrap items-center justify-center gap-2 px-3 py-2.5">
+          <Button
+            variant="contained"
+            onClick={runShader}
+            className="px-6 py-[0.55rem] text-base"
+          >
+            Run Shader (Ctrl+Enter)
+          </Button>
+          <ExportControls
+            width={state.width}
+            height={state.height}
+            onWidthChange={setWidth}
+            onHeightChange={setHeight}
+            screenshotFilename={state.screenshotFilename}
+            onScreenshotFilenameChange={setScreenshotFilename}
+            onCaptureScreenshot={captureScreenshot}
+            downloadShaderFilename={state.downloadShaderFilename}
+            onDownloadShaderFilenameChange={setDownloadShaderFilename}
+            onDownloadShader={downloadShader}
+            isRecording={isRecording}
+            recordingSupported={recordingSupported}
+            onToggleRecording={toggleRecording}
+          />
+          <ShaderHistory
+            currentSource={state.editorSource}
+            onApply={editSource}
+            onResetShader={resetShader}
+          />
+          <TextureControls onPickImage={pickImage} />
+          <button
+            type="button"
+            className="state-chip"
+            onClick={() => setSettingsOpen(true)}
+          >
+            <span className="font-semibold">Settings</span>{" "}
+            <span className="text-muted">
+              {state.themeMode === "light" ? "Light" : "Dark"} · Auto-run{" "}
+              {state.autoRun ? "on" : "off"}
+            </span>
+          </button>
+        </div>
       </div>
       <ToastHost store={toastStore} />
       {settingsOpen ? (
