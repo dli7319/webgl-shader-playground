@@ -16,7 +16,19 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                // Keep `import styles from "*.module.css"` working — css-loader 7
+                // switched to named exports by default.
+                namedExport: false,
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.(vert|frag)$/,
