@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import ImageIcon from "@mui/icons-material/Image";
 
 import styles from "./styles/ShaderPlayground.module.css";
+import { mimeTypeForImageFilename } from "./files";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
 import defaultFragmentShader from "./shaders/fragment_shader.frag";
 import { language } from "./glsl";
@@ -31,12 +32,6 @@ const VisuallyHiddenInput = styled("input")({
 monaco.languages.register({ id: "glsl" });
 monaco.languages.setMonarchTokensProvider("glsl", language);
 loader.config({ monaco });
-
-const imageExtensionToMime = {
-  png: "image/png",
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-};
 
 function Scene({
   fragmentShader,
@@ -73,13 +68,11 @@ function Scene({
   const { scene, camera } = useThree();
 
   if (screenshotFilename) {
-    const filenameExtension = screenshotFilename.split(".").pop();
-    if (!filenameExtension || !(filenameExtension in imageExtensionToMime)) {
+    const mimeType = mimeTypeForImageFilename(screenshotFilename);
+    if (!mimeType) {
       console.error("Invalid screenshot filename");
-      return;
+      return null;
     }
-    const mimeType =
-      imageExtensionToMime[filenameExtension as keyof typeof imageExtensionToMime];
     const renderer = new THREE.WebGLRenderer({
       preserveDrawingBuffer: true,
     });
