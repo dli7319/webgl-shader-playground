@@ -63,7 +63,7 @@ export function EditorPane({
             onClick={onRunShader}
             className={styles.runShaderButton}
           >
-            Run Shader
+            Run Shader (Ctrl+Enter)
           </Button>
         </div>
         <div className={styles.downloadShaderOptions}>
@@ -79,7 +79,7 @@ export function EditorPane({
             onChange={(e) => onDownloadShaderFilenameChange(e.target.value)}
           />
           <Button variant="outlined" onClick={onDownloadShader}>
-            Download Shader
+            Download Shader (Ctrl+S)
           </Button>
         </div>
         <Button

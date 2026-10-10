@@ -9,6 +9,7 @@ import { EditorPane } from "./EditorPane";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
 import { applyThemeToDocument, buildTheme } from "./theme";
+import { handleShortcutEvent } from "./shortcuts";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
@@ -132,6 +133,19 @@ export default function ShaderPlayground() {
   function downloadShader() {
     downloadTextFile(state.downloadShaderFilename, state.editorSource);
   }
+
+  // Global shortcuts (capture phase so Monaco doesn't swallow them).
+  React.useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      handleShortcutEvent(event, {
+        onRun: runShader,
+        onDownload: () =>
+          downloadTextFile(state.downloadShaderFilename, state.editorSource),
+      });
+    }
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [state.editorSource, state.downloadShaderFilename]);
 
   return (
     <ThemeProvider theme={theme}>
