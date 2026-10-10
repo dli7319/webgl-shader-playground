@@ -31,8 +31,8 @@ soft 16px glass radii with fully pill-shaped buttons.
 | `--glass-border` | `rgba(255,255,255,0.40)` | `rgba(255,255,255,0.12)` |
 | `--btn-bg` | `rgba(255,255,255,0.72)` | `rgba(18,16,44,0.62)` (frosted indigo) |
 | `--input-bg` / `--input-border` | `rgba(255,255,255,0.85)` / `rgba(109,40,217,0.65)` | `rgba(255,255,255,0.08)` / `rgba(255,255,255,0.36)` |
-| `--glow` / `--glow-strong` (halo) | `rgba(109,40,217,0.38)` / `rgba(109,40,217,0.55)` | `rgba(103,232,249,0.32)` / `rgba(103,232,249,0.5)` |
-| mesh gradients | `#eef2ff`→`#f5e8ff`→`#e7f6ff` + cyan/violet/white blooms | `#12102b`→`#1e1145`→`#0d1b3e` + cyan/violet/sky blooms |
+| `--glow` / `--glow-strong` (halo) | `rgba(109,40,217,0.45)` / `rgba(109,40,217,0.6)` | `rgba(103,232,249,0.32)` / `rgba(103,232,249,0.5)` |
+| mesh gradients | `#eef2ff`→`#f0e4ff`→`#ddf1ff` + cyan/violet/white blooms | `#12102b`→`#1e1145`→`#0d1b3e` + cyan/violet/sky blooms |
 
 Two glass tiers, documented in `tailwind.css`: decorative `.glass`
 (airy 55%/6% white + `backdrop-blur(16px)`) for frames with no body text, and
@@ -40,7 +40,7 @@ Two glass tiers, documented in `tailwind.css`: decorative `.glass`
 
 ## What changed per surface
 
-- **App shell / background** (`tailwind.css` base): fixed `body::before` aurora
+- **App shell / background** (`tailwind.css` base): transparent app shell over a fixed `body::before` aurora
   gradient mesh (layered radial glows over a 155° three-stop gradient), tokens
   for both schemes, body font Plus Jakarta Sans. `THEME_BACKGROUNDS` updated to
   the mesh base colors so the pre-CSS flash matches.
@@ -80,21 +80,21 @@ the CSS), so these are worst-case ratios across the whole background.
 
 | Pair | Ratio |
 | --- | --- |
-| Body text on text panel (`--text` on `--panel`) | 14.88:1 |
-| Button text on glass button | 14.67:1 |
-| Button text on hover | 12.56:1 |
-| Input text in field | 15.21:1 |
-| Floating label @75% opacity | 6.74:1 |
-| Destructive text on danger button | 6.01:1 |
-| Destructive text on danger hover | 5.15:1 |
-| Error banner text on error fill | 5.40:1 |
+| Body text on text panel (`--text` on `--panel`) | 14.74:1 |
+| Button text on glass button | 14.44:1 |
+| Button text on hover | 12.37:1 |
+| Input text in field | 15.12:1 |
+| Floating label @75% opacity | 6.70:1 |
+| Destructive text on danger button | 5.92:1 |
+| Destructive text on danger hover | 5.07:1 |
+| Error banner text on error fill | 5.34:1 |
 | Filled button text (`--on-accent` on `--accent`) | 7.10:1 |
 | Filled button text on hover (brightness 1.08) | 6.12:1 |
-| Accent fill vs panel surface (≥3:1 required) | 6.90:1 |
-| Accent fill vs button surface (≥3:1 required) | 6.80:1 |
-| Accent text on button (recording state) | 6.80:1 |
-| Success dot vs status strip | 4.87:1 |
-| Error dot vs status strip | 4.69:1 |
+| Accent fill vs panel surface (≥3:1 required) | 6.83:1 |
+| Accent fill vs button surface (≥3:1 required) | 6.69:1 |
+| Accent text on button (recording state) | 6.69:1 |
+| Success dot vs status strip | 4.82:1 |
+| Error dot vs status strip | 4.64:1 |
 
 ### Dark
 

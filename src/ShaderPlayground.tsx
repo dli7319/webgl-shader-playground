@@ -289,7 +289,7 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className="min-h-screen bg-app text-ink">
+    <div className="min-h-screen text-ink">
       <div className="glass mx-3 mt-3 flex justify-end gap-2 rounded-full p-2">
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
