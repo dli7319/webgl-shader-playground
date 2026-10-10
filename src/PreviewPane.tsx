@@ -7,7 +7,7 @@ import { TextField } from "./ui/TextField";
 import type { CompileStatus } from "./status";
 
 export interface PreviewPaneProps {
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   width: number;
   height: number;
   onWidthChange: (width: number) => void;

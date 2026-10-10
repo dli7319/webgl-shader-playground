@@ -12,9 +12,28 @@ const glslLoader: Plugin = {
 
 export default defineConfig({
   plugins: [glslLoader],
+  resolve: {
+    alias: [
+      { find: /^react$/, replacement: "preact/compat" },
+      { find: /^react-dom\/client$/, replacement: "preact/compat/client" },
+      { find: /^react-dom$/, replacement: "preact/compat" },
+      { find: /^react\/jsx-runtime$/, replacement: "preact/jsx-runtime" },
+      {
+        find: /^react\/jsx-dev-runtime$/,
+        replacement: "preact/jsx-dev-runtime",
+      },
+      { find: /^react\/test-utils$/, replacement: "preact/test-utils" },
+    ],
+  },
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.{ts,tsx}"],
+    server: {
+      deps: {
+        // Must go through Vite so the react -> preact/compat aliases apply.
+        inline: [/@testing-library\//, /react-dom/, /^react$/],
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov"],

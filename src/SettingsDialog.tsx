@@ -30,7 +30,11 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
             max={32}
             value={settings.editorFontSize}
             aria-label="Editor font size"
-            onChange={(e) => onChange({ editorFontSize: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({
+                editorFontSize: Number((e.target as HTMLInputElement).value),
+              })
+            }
           />
         </label>
         <Switch
