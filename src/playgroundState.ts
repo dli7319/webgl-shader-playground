@@ -36,6 +36,10 @@ export interface PlaygroundState {
   runDurationMs: number | null;
   /** Preview zoom percentage (100 = fit to column). */
   zoomPercent: number;
+  /** Monaco font size. */
+  editorFontSize: number;
+  /** Monaco word wrap. */
+  wordWrap: boolean;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -55,7 +59,16 @@ export const initialPlaygroundState: PlaygroundState = {
   hasRun: false,
   runDurationMs: null,
   zoomPercent: FIT_ZOOM,
+  editorFontSize: 14,
+  wordWrap: false,
 };
+
+/** Merges persisted settings (or other overrides) into the initial state. */
+export function initialStateWith(
+  overrides: Partial<PlaygroundState> | undefined
+): PlaygroundState {
+  return { ...initialPlaygroundState, ...overrides };
+}
 
 export type PlaygroundAction =
   | { type: "editSource"; source: string }
@@ -76,7 +89,10 @@ export type PlaygroundAction =
   | { type: "resetEditor" }
   | { type: "setZoom"; percent: number }
   | { type: "zoomIn" }
-  | { type: "zoomOut" };
+  | { type: "zoomOut" }
+  | { type: "setEditorFontSize"; size: number }
+  | { type: "setWordWrap"; enabled: boolean }
+  | { type: "setThemeMode"; mode: "light" | "dark" };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -128,5 +144,14 @@ export function playgroundReducer(
       return { ...state, zoomPercent: zoomIn(state.zoomPercent) };
     case "zoomOut":
       return { ...state, zoomPercent: zoomOut(state.zoomPercent) };
+    case "setEditorFontSize":
+      return {
+        ...state,
+        editorFontSize: Math.min(32, Math.max(8, Math.round(action.size))),
+      };
+    case "setWordWrap":
+      return { ...state, wordWrap: action.enabled };
+    case "setThemeMode":
+      return { ...state, themeMode: action.mode };
   }
 }

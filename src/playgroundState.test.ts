@@ -110,6 +110,20 @@ describe("playgroundReducer", () => {
     expect(set.zoomPercent).toBe(400);
   });
 
+  it("settings actions update preferences", () => {
+    let state = playgroundReducer(start, {
+      type: "setEditorFontSize",
+      size: 20,
+    });
+    expect(state.editorFontSize).toBe(20);
+    state = playgroundReducer(state, { type: "setEditorFontSize", size: 999 });
+    expect(state.editorFontSize).toBe(32);
+    state = playgroundReducer(state, { type: "setWordWrap", enabled: true });
+    expect(state.wordWrap).toBe(true);
+    state = playgroundReducer(state, { type: "setThemeMode", mode: "dark" });
+    expect(state.themeMode).toBe("dark");
+  });
+
   it("setCompileError reports and clears GLSL errors", () => {
     const failed = playgroundReducer(start, {
       type: "setCompileError",

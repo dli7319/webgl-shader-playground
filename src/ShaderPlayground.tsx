@@ -8,6 +8,8 @@ import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
 import { applyThemeToDocument } from "./theme";
+import { loadSettings, saveSettings, type Settings } from "./settings";
+import { SettingsDialog } from "./SettingsDialog";
 import { handleShortcutEvent } from "./shortcuts";
 import { createDebouncer } from "./debounce";
 import { compileStatusFrom } from "./status";
@@ -41,7 +43,38 @@ export default function ShaderPlayground() {
     setZoom,
     zoomIn,
     zoomOut,
-  } = usePlaygroundState();
+    setEditorFontSize,
+    setWordWrap,
+    setThemeMode,
+  } = usePlaygroundState(React.useMemo(() => loadSettings(window.localStorage), []));
+
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+  // Persist the settings subset whenever it changes.
+  React.useEffect(() => {
+    const settings: Settings = {
+      themeMode: state.themeMode,
+      autoRun: state.autoRun,
+      editorFontSize: state.editorFontSize,
+      wordWrap: state.wordWrap,
+    };
+    saveSettings(window.localStorage, settings);
+  }, [state.themeMode, state.autoRun, state.editorFontSize, state.wordWrap]);
+
+  function applySettings(patch: Partial<Settings>) {
+    if (patch.themeMode !== undefined) {
+      setThemeMode(patch.themeMode);
+    }
+    if (patch.autoRun !== undefined) {
+      toggleAutoRun();
+    }
+    if (patch.editorFontSize !== undefined) {
+      setEditorFontSize(patch.editorFontSize);
+    }
+    if (patch.wordWrap !== undefined) {
+      setWordWrap(patch.wordWrap);
+    }
+  }
 
   const fitZoom = React.useCallback(() => setZoom(FIT_ZOOM), [setZoom]);
 
@@ -205,6 +238,9 @@ export default function ShaderPlayground() {
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
+        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+          Settings
+        </Button>
       </div>
       <div className={styles.mainDiv}>
         <PreviewPane
@@ -237,9 +273,23 @@ export default function ShaderPlayground() {
           autoRun={state.autoRun}
           onToggleAutoRun={toggleAutoRun}
           onResetShader={resetShader}
+          editorFontSize={state.editorFontSize}
+          wordWrap={state.wordWrap}
         />
       </div>
       <ToastHost store={toastStore} />
+      {settingsOpen ? (
+        <SettingsDialog
+          settings={{
+            themeMode: state.themeMode,
+            autoRun: state.autoRun,
+            editorFontSize: state.editorFontSize,
+            wordWrap: state.wordWrap,
+          }}
+          onChange={applySettings}
+          onClose={() => setSettingsOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }
