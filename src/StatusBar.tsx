@@ -14,14 +14,14 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-2 flex items-center gap-2 px-2 py-1 text-sm text-ink opacity-85"
+      className="mt-3 flex items-center gap-2 rounded-full border border-edge bg-sunken px-3.5 py-1.5 text-[13px] text-quiet"
       role="status"
     >
       <span
-        className={`size-2.5 rounded-full ${status === "error" ? "bg-[#d32f2f]" : "bg-[#2e9e44]"}`}
+        className={`size-2.5 rounded-full ${status === "error" ? "bg-error" : "bg-success"}`}
         aria-hidden="true"
       />
-      <span>{STATUS_LABELS[status]}</span>
+      <span className="font-medium text-ink">{STATUS_LABELS[status]}</span>
       <span aria-hidden="true">·</span>
       <span>{duration}</span>
       <span aria-hidden="true">·</span>

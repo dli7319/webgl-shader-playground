@@ -290,51 +290,66 @@ export default function ShaderPlayground() {
 
   return (
     <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex justify-end gap-2">
-        <Button variant="outlined" onClick={toggleTheme}>
-          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-        </Button>
-        {recordingSupported ? (
-          <Button
-            variant="outlined"
-            tone={isRecording ? "warning" : undefined}
-            onClick={toggleRecording}
-          >
-            {isRecording ? "Stop recording" : "Record (WebM)"}
+      <header className="mx-auto flex max-w-[1560px] flex-wrap items-center justify-between gap-3 px-6 pt-6">
+        <div className="flex items-baseline gap-3">
+          <h1 className="m-0 text-[20px] font-semibold tracking-[-0.01em]">
+            WebGL Shader Playground
+          </h1>
+          <span className="hidden text-[13px] text-quiet sm:inline">
+            GLSL · live preview
+          </span>
+        </div>
+        {/* Floating pill toolbar */}
+        <div className="pill-bar flex items-center gap-1.5 p-1.5">
+          <Button variant="outlined" onClick={toggleTheme}>
+            {state.themeMode === "light" ? "Dark theme" : "Light theme"}
           </Button>
-        ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-          Settings
-        </Button>
-      </div>
-      {pendingDraft && !draftDismissed ? (
-        <div
-          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
-          role="status"
-        >
-          <span className="grow">Unsaved draft from your last session is available.</span>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              editSource(pendingDraft);
-              setDraftDismissed(true);
-            }}
-          >
-            Restore
-          </Button>
-          <Button
-            variant="outlined"
-            tone="warning"
-            onClick={() => {
-              clearDraft(window.localStorage);
-              setDraftDismissed(true);
-            }}
-          >
-            Discard
+          {recordingSupported ? (
+            <Button
+              variant="outlined"
+              tone={isRecording ? "live" : undefined}
+              onClick={toggleRecording}
+            >
+              {isRecording ? "Stop recording" : "Record (WebM)"}
+            </Button>
+          ) : null}
+          <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+            Settings
           </Button>
         </div>
+      </header>
+      {pendingDraft && !draftDismissed ? (
+        <div className="mx-auto mt-4 max-w-[1560px] px-6">
+          <div
+            className="card-surface flex items-center gap-3 px-5 py-4 text-sm"
+            role="status"
+          >
+            <span className="grow">
+              Unsaved draft from your last session is available.
+            </span>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                editSource(pendingDraft);
+                setDraftDismissed(true);
+              }}
+            >
+              Restore
+            </Button>
+            <Button
+              variant="outlined"
+              tone="danger"
+              onClick={() => {
+                clearDraft(window.localStorage);
+                setDraftDismissed(true);
+              }}
+            >
+              Discard
+            </Button>
+          </div>
+        </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
+      <div className="mx-auto flex max-w-[1560px] flex-row items-start gap-6 p-6 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}

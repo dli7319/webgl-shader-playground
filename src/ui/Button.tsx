@@ -2,30 +2,40 @@ import React from "react";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "outlined" | "contained";
-  tone?: "default" | "warning";
+  tone?: "default" | "danger" | "live";
+  size?: "md" | "lg";
 }
 
 const BASE =
-  "min-w-16 cursor-pointer rounded px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
-const VARIANTS: Record<string, string> = {
-  outlined: "border border-edge text-accent hover:bg-[rgba(25,118,210,0.04)]",
-  contained: "border border-accent bg-accent text-white hover:brightness-110",
+  "inline-flex min-w-16 cursor-pointer items-center justify-center gap-2 rounded-[10px] border px-4 font-semibold transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-45";
+const SIZES: Record<string, string> = {
+  md: "h-10 text-sm",
+  lg: "h-12 px-5 text-[15px]",
 };
+const VARIANTS: Record<string, string> = {
+  // Quiet secondary: white pill, hairline border, subtle hover darkening.
+  outlined: "border-edge-strong bg-panel text-ink hover:bg-[var(--hover-fill)]",
+  // The one confident blue (Run Shader / dialog confirm).
+  contained:
+    "border-transparent bg-fill text-on-accent shadow-[0_1px_2px_rgba(0,0,0,0.14)] hover:brightness-[1.08] active:brightness-95",
+};
+// Tones replace the variant chrome so borders never collide.
 const TONES: Record<string, string> = {
-  default: "",
-  warning: "border-[#ed6c02] text-[#ed6c02]",
+  danger:
+    "border-[var(--danger-edge)] bg-panel text-danger hover:bg-[var(--danger-hover)]",
+  live: "border-[var(--live-edge)] bg-panel text-success hover:bg-[var(--live-hover)]",
 };
 
 /** Lightweight button matching the app's control styling. */
 export function Button({
   variant = "outlined",
   tone = "default",
+  size = "md",
   className,
   type,
   ...rest
 }: ButtonProps) {
-  const classes = [BASE, VARIANTS[variant], TONES[tone], className]
-    .filter(Boolean)
-    .join(" ");
+  const chrome = tone === "default" ? VARIANTS[variant] : TONES[tone];
+  const classes = [BASE, SIZES[size], chrome, className].filter(Boolean).join(" ");
   return <button type={type ?? "button"} className={classes} {...rest} />;
 }

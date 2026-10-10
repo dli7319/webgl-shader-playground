@@ -1,31 +1,110 @@
 @import "tailwindcss";
 
 /*
- * Theme colors map to CSS variables that flip with [data-theme="dark"] so
- * utilities like bg-app / text-ink work in both themes.
+ * "Studio Light" — floating white cards on a quiet gray canvas, one confident
+ * system blue, layered soft depth. Colors map to CSS variables that flip with
+ * [data-theme="dark"] so utilities like bg-app / text-ink work in both themes.
  */
 @theme inline {
   --color-app: var(--bg);
   --color-panel: var(--panel);
+  --color-sunken: var(--sunken);
   --color-ink: var(--text);
+  --color-quiet: var(--text-quiet);
   --color-accent: var(--accent);
+  --color-fill: var(--accent-fill);
+  --color-on-accent: var(--on-accent);
   --color-edge: var(--border);
+  --color-edge-strong: var(--border-strong);
+  --color-danger: var(--danger-ink);
+  --color-success: var(--success);
+  --color-error: var(--error);
 }
 
 :root {
-  --bg: #ffffff;
-  --panel: #eeeeee;
-  --text: #1a1a1a;
-  --accent: #1976d2;
-  --border: rgba(0, 0, 0, 0.23);
+  /* Surfaces */
+  --bg: #f5f5f7;
+  --panel: #ffffff;
+  --sunken: #f5f5f7;
+
+  /* Ink */
+  --text: #1d1d1f;
+  --text-quiet: #6e6e73;
+
+  /* One accent (system blue) + the AA-safe fill variant for text-bearing fills */
+  --accent: #0a84ff;
+  --accent-fill: #0071e3;
+  --on-accent: #ffffff;
+
+  /* Semantic states */
+  --danger: #ff3b30;
+  --danger-ink: #d70015;
+  --success: #1a7f37;
+  --error: #d70015;
+
+  /* Edges */
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.16);
+
+  /* Interaction washes */
+  --hover-fill: rgba(0, 0, 0, 0.05);
+  --focus-ring: rgba(10, 132, 255, 0.28);
+  --danger-edge: rgba(215, 0, 21, 0.35);
+  --danger-hover: rgba(215, 0, 21, 0.07);
+  --live-edge: rgba(26, 127, 55, 0.35);
+  --live-hover: rgba(26, 127, 55, 0.08);
+
+  /* Banners */
+  --banner-danger-bg: #fdecea;
+  --banner-danger-edge: rgba(215, 0, 21, 0.25);
+  --banner-danger-text: #b3261e;
+  --banner-warn-bg: #fff4e5;
+  --banner-warn-edge: rgba(140, 74, 0, 0.25);
+  --banner-warn-text: #8c4a00;
+
+  /* Depth */
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.08), 0 16px 48px rgba(0, 0, 0, 0.16);
+  --switch-off: #e9e9eb;
 }
 
 :root[data-theme="dark"] {
-  --bg: #141414;
-  --panel: #262626;
-  --text: #e8e8e8;
-  --accent: #90caf9;
-  --border: rgba(255, 255, 255, 0.3);
+  --bg: #1c1c1e;
+  --panel: #2c2c2e;
+  --sunken: #242426;
+
+  --text: #f5f5f7;
+  --text-quiet: #98989d;
+
+  --accent: #64d2ff;
+  --accent-fill: #0073e6;
+  --on-accent: #ffffff;
+
+  --danger: #ff453a;
+  --danger-ink: #ff8f87;
+  --success: #32d74b;
+  --error: #ff453a;
+
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+
+  --hover-fill: rgba(255, 255, 255, 0.07);
+  --focus-ring: rgba(100, 210, 255, 0.3);
+  --danger-edge: rgba(255, 69, 58, 0.4);
+  --danger-hover: rgba(255, 69, 58, 0.12);
+  --live-edge: rgba(50, 215, 75, 0.4);
+  --live-hover: rgba(50, 215, 75, 0.1);
+
+  --banner-danger-bg: rgba(255, 69, 58, 0.12);
+  --banner-danger-edge: rgba(255, 69, 58, 0.35);
+  --banner-danger-text: #ffa8a1;
+  --banner-warn-bg: rgba(255, 159, 10, 0.12);
+  --banner-warn-edge: rgba(255, 159, 10, 0.35);
+  --banner-warn-text: #ffc46b;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.4), 0 16px 48px rgba(0, 0, 0, 0.5);
+  --switch-off: #636366;
 }
 
 html {
@@ -35,6 +114,99 @@ html {
 body {
   display: flex;
   margin: 0;
+  background: var(--bg);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, "Segoe UI",
+    Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  /* Large floating card: the signature surface of the design. */
+  .card-surface {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Inset control cluster sitting inside a card. */
+  .inset-row {
+    background: var(--sunken);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  /* Floating pill chrome (top toolbar). */
+  .pill-bar {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-quiet);
+  }
+
+  .banner-danger {
+    background: var(--banner-danger-bg);
+    border: 1px solid var(--banner-danger-edge);
+    color: var(--banner-danger-text);
+    border-radius: 12px;
+  }
+
+  .banner-warn {
+    background: var(--banner-warn-bg);
+    border: 1px solid var(--banner-warn-edge);
+    color: var(--banner-warn-text);
+    border-radius: 12px;
+  }
+
+  /* SF-style switch: rounded track with a floating white knob. */
+  .switch-control {
+    appearance: none;
+    position: relative;
+    width: 2.5rem;
+    height: 1.5rem;
+    flex: none;
+    border-radius: 999px;
+    background: var(--switch-off);
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+
+  .switch-control::before {
+    content: "";
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 999px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: transform 150ms ease;
+  }
+
+  .switch-control:checked {
+    background: var(--accent-fill);
+  }
+
+  .switch-control:checked::before {
+    transform: translateX(1rem);
+  }
+
+  .switch-control:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
