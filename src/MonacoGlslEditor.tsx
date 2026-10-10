@@ -77,7 +77,7 @@ monaco.editor.defineTheme("dense-light", {
 export interface MonacoGlslEditorProps {
   height: string;
   width: string;
-  defaultValue: string;
+  value: string;
   options: {
     fontSize: number;
     wordWrap: "on" | "off";
@@ -94,7 +94,7 @@ export interface MonacoGlslEditorProps {
 export function MonacoGlslEditor({
   height,
   width,
-  defaultValue,
+  value,
   options,
   theme,
   onChange,
@@ -104,7 +104,7 @@ export function MonacoGlslEditor({
       height={height}
       width={width}
       language="glsl"
-      defaultValue={defaultValue}
+      value={value}
       options={options}
       theme={theme === "dark" ? "dense-dark" : "dense-light"}
       onChange={(value, _event) => {

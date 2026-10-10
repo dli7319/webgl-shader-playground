@@ -75,7 +75,7 @@ export function EditorPane({
             <MonacoGlslEditor
               height="40vh"
               width="100%"
-              defaultValue={shaderSource}
+              value={shaderSource}
               options={{
                 fontSize: editorFontSize,
                 wordWrap: wordWrap ? "on" : "off",

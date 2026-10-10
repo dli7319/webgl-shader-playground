@@ -39,6 +39,28 @@ and export screenshots or the shader source when you're happy with it.
    at that resolution.
 5. Click **Pick tDiffuse Image** to use your own texture.
 
+## Shadertoy shaders
+
+Paste any single-image shader from [shadertoy.com](https://www.shadertoy.com)
+unchanged and press Run — when the code defines `mainImage(...)`, the playground
+switches to Shadertoy mode automatically:
+
+- All standard uniforms are provided: `iResolution`, `iTime`, `iTimeDelta`,
+  `iFrame`, `iFrameRate`, `iSampleRate`, `iMouse`, `iDate`, `iChannelTime`,
+  `iChannelResolution`, and `iChannel0..3`.
+- Classic (`texture2D`, `gl_FragColor`) and modern (`texture`, `textureLod`,
+  `texelFetch`) GLSL idioms both compile unchanged.
+- Time-driven shaders animate automatically; `iMouse` follows your pointer on
+  the preview (xy = position while down, zw = click position, negated on
+  release — the Shadertoy convention).
+- The legacy `iGlobalTime` name keeps working.
+- `iChannel0..3` sample the playground's texture (the default kitten or the
+  `tDiffuse` image you pick).
+
+Not covered (yet): multi-pass shaders (Buffer A–D) — their channel wiring lives
+in Shadertoy's UI rather than in the copied code, so it cannot be inferred from
+a single pasted tab — and cubemap/video/keyboard channels.
+
 ## Development
 
 Requirements: Node.js 22+.

@@ -126,3 +126,68 @@ describe("ShaderPreview", () => {
     expect(errors).toEqual([null]);
   });
 });
+
+describe("ShaderPreview — Shadertoy mode", () => {
+  const SHADERTOY = `void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    vec2 uv = fragCoord / iResolution.xy;
+    fragColor = vec4(uv, 0.5 + 0.5 * sin(iTime), 1.0);
+  }`;
+
+  it("compiles mainImage shaders with the host wrapper", () => {
+    const { preview } = makePreview();
+    preview.setFragmentShader(SHADERTOY);
+    expect(preview.material.fragmentShader).toContain("void mainImage(");
+    expect(preview.material.fragmentShader).toContain(
+      "mainImage(shadertoyColor, gl_FragCoord.xy)"
+    );
+  });
+
+  it("provides the full Shadertoy uniform set", () => {
+    const { preview } = makePreview();
+    preview.setFragmentShader(SHADERTOY);
+    for (const name of [
+      "iResolution",
+      "iTime",
+      "iTimeDelta",
+      "iFrame",
+      "iMouse",
+      "iDate",
+      "iChannel0",
+      "iChannel3",
+    ]) {
+      expect(preview.material.uniforms[name]).toBeDefined();
+    }
+  });
+
+  it("switches back to unwrapped source for regular shaders", () => {
+    const { preview } = makePreview();
+    preview.setFragmentShader(SHADERTOY);
+    preview.setFragmentShader("void main() { gl_FragColor = vec4(1.0); }");
+    expect(preview.material.fragmentShader).not.toContain("mainImage(");
+    expect(preview.material.uniforms.iTime).toBeUndefined();
+  });
+
+  it("mirrors the texture across iChannel0-3 and reports its size", () => {
+    const { preview } = makePreview();
+    preview.setFragmentShader(SHADERTOY);
+    const texture = new THREE.Texture();
+    texture.image = { width: 64, height: 32 };
+    preview.setTexture(texture);
+    for (const name of ["iChannel0", "iChannel1", "iChannel2", "iChannel3"]) {
+      expect(preview.material.uniforms[name].value).toBe(texture);
+    }
+    const sizes = preview.material.uniforms.iChannelResolution.value as THREE.Vector3[];
+    expect(sizes[0].x).toBe(64);
+    expect(sizes[0].y).toBe(32);
+  });
+
+  it("tracks iResolution from setSize", () => {
+    const { preview } = makePreview();
+    preview.setFragmentShader(SHADERTOY);
+    preview.setSize(800, 600);
+    const resolution = preview.material.uniforms.iResolution.value as THREE.Vector3;
+    expect(resolution.x).toBe(800);
+    expect(resolution.y).toBe(600);
+    expect(resolution.z).toBe(1);
+  });
+});
