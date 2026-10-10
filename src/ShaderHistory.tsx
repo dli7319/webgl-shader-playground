@@ -1,6 +1,5 @@
 import React from "react";
 
-import styles from "./styles/ShaderPlayground.module.css";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
 import { createShaderStore } from "./shaderStore";
@@ -26,8 +25,8 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className={styles.historyPanel}>
-      <div className={styles.historySaveRow}>
+    <div className="my-2 flex flex-col gap-2 rounded-lg bg-panel p-2">
+      <div className="flex items-center gap-2">
         <TextField
           label="Save as"
           value={name}
@@ -43,12 +42,14 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
         </Button>
       </div>
       {entries.length === 0 ? (
-        <p className={styles.historyEmpty}>No saved shaders yet.</p>
+        <p className="m-0 text-sm opacity-70">No saved shaders yet.</p>
       ) : (
-        <ul className={styles.historyList}>
+        <ul className="m-0 flex max-h-40 list-none flex-col gap-1.5 overflow-y-auto p-0">
           {entries.map((entry) => (
-            <li key={entry.id} className={styles.historyItem}>
-              <span className={styles.historyName}>{entry.name}</span>
+            <li key={entry.id} className="flex items-center gap-2">
+              <span className="grow overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+                {entry.name}
+              </span>
               <Button variant="outlined" onClick={() => onApply(entry.source)}>
                 Load
               </Button>

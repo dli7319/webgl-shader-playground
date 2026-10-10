@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/*
+ * Theme colors map to CSS variables that flip with [data-theme="dark"] so
+ * utilities like bg-app / text-ink work in both themes.
+ */
+@theme inline {
+  --color-app: var(--bg);
+  --color-panel: var(--panel);
+  --color-ink: var(--text);
+  --color-accent: var(--accent);
+  --color-edge: var(--border);
+}
+
+:root {
+  --bg: #ffffff;
+  --panel: #eeeeee;
+  --text: #1a1a1a;
+  --accent: #1976d2;
+  --border: rgba(0, 0, 0, 0.23);
+}
+
+:root[data-theme="dark"] {
+  --bg: #141414;
+  --panel: #262626;
+  --text: #e8e8e8;
+  --accent: #90caf9;
+  --border: rgba(255, 255, 255, 0.3);
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

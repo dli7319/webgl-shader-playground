@@ -34,6 +34,7 @@ export interface MonacoGlslEditorProps {
   width: string;
   defaultValue: string;
   options: { fontSize: number; wordWrap: "on" | "off" };
+  theme: "light" | "dark";
   onChange: (value: string) => void;
 }
 
@@ -46,6 +47,7 @@ export function MonacoGlslEditor({
   width,
   defaultValue,
   options,
+  theme,
   onChange,
 }: MonacoGlslEditorProps) {
   return (
@@ -55,6 +57,7 @@ export function MonacoGlslEditor({
       language="glsl"
       defaultValue={defaultValue}
       options={options}
+      theme={theme === "dark" ? "vs-dark" : "light"}
       onChange={(value, _event) => {
         onChange(value ?? "");
       }}
