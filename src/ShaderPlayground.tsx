@@ -12,8 +12,8 @@ import Button from "@mui/material/Button";
 import ImageIcon from "@mui/icons-material/Image";
 
 import styles from "./styles/ShaderPlayground.module.css";
-import { mimeTypeForImageFilename } from "./files";
-import { downloadDataUrlFile, downloadTextFile } from "./download";
+import { captureAndDownloadSceneScreenshot } from "./screenshot";
+import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
 import defaultFragmentShader from "./shaders/fragment_shader.frag";
 import { language } from "./glsl";
@@ -69,20 +69,11 @@ function Scene({
   const { scene, camera } = useThree();
 
   if (screenshotFilename) {
-    const mimeType = mimeTypeForImageFilename(screenshotFilename);
-    if (!mimeType) {
-      console.error("Invalid screenshot filename");
-      return null;
-    }
-    const renderer = new THREE.WebGLRenderer({
-      preserveDrawingBuffer: true,
+    captureAndDownloadSceneScreenshot(scene, camera, {
+      filename: screenshotFilename,
+      width: screenshotWidth,
+      height: screenshotHeight,
     });
-    renderer.setSize(screenshotWidth, screenshotHeight);
-    renderer.render(scene, camera);
-    const imageData = renderer.domElement.toDataURL(mimeType);
-    if (imageData) {
-      downloadDataUrlFile(screenshotFilename, imageData);
-    }
     setScreenshotFilename("");
   }
 
