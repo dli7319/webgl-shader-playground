@@ -25,6 +25,8 @@ export interface PlaygroundState {
   textureError: string | null;
   /** Latest screenshot failure message, or null when the capture succeeded. */
   screenshotError: string | null;
+  /** UI theme. */
+  themeMode: "light" | "dark";
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -39,6 +41,7 @@ export const initialPlaygroundState: PlaygroundState = {
   compileError: null,
   textureError: null,
   screenshotError: null,
+  themeMode: "light",
 };
 
 export type PlaygroundAction =
@@ -53,7 +56,8 @@ export type PlaygroundAction =
   | { type: "pickImage"; texturePath: string }
   | { type: "setCompileError"; error: string | null }
   | { type: "setTextureError"; error: string | null }
-  | { type: "setScreenshotError"; error: string | null };
+  | { type: "setScreenshotError"; error: string | null }
+  | { type: "toggleTheme" };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -84,5 +88,10 @@ export function playgroundReducer(
       return { ...state, textureError: action.error };
     case "setScreenshotError":
       return { ...state, screenshotError: action.error };
+    case "toggleTheme":
+      return {
+        ...state,
+        themeMode: state.themeMode === "light" ? "dark" : "light",
+      };
   }
 }

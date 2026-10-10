@@ -1,3 +1,30 @@
+:root {
+  --bg: #ffffff;
+  --panel: #eeeeee;
+  --text: #1a1a1a;
+  --accent: #1976d2;
+}
+
+:root[data-theme="dark"] {
+  --bg: #141414;
+  --panel: #262626;
+  --text: #e8e8e8;
+  --accent: #90caf9;
+}
+
+.app {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin: 0.5rem 0.5rem 0 0.5rem;
+}
+
 .mainDiv {
   display: flex;
   flex-direction: row;
@@ -60,7 +87,7 @@
 }
 .screenshotControls {
   margin: 0.5rem 0rem;
-  background: #eee;
+  background: var(--panel);
   border-radius: 0.5rem;
   padding: 0.5rem;
   display: flex;
@@ -81,7 +108,7 @@
 }
 .downloadShaderOptions {
   margin: 0.5rem 0rem;
-  background: #eee;
+  background: var(--panel);
   border-radius: 0.5rem;
   padding: 0.5rem;
   display: flex;
