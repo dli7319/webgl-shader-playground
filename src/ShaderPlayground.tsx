@@ -10,6 +10,7 @@ import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
 import { applyThemeToDocument, buildTheme } from "./theme";
 import { handleShortcutEvent } from "./shortcuts";
+import { createDebouncer } from "./debounce";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
@@ -30,6 +31,7 @@ export default function ShaderPlayground() {
     setTextureError,
     setScreenshotError,
     toggleTheme,
+    toggleAutoRun,
   } = usePlaygroundState();
 
   const theme = React.useMemo(() => buildTheme(state.themeMode), [state.themeMode]);
@@ -69,6 +71,17 @@ export default function ShaderPlayground() {
   React.useEffect(() => {
     previewRef.current?.setFragmentShader(state.compiledShader);
   }, [state.compiledShader]);
+
+  // Auto-run: apply editor changes after a pause in typing.
+  const debouncer = React.useMemo(() => createDebouncer(600), []);
+  React.useEffect(() => {
+    if (!state.autoRun) {
+      debouncer.cancel();
+      return;
+    }
+    debouncer.schedule(runShader);
+    return () => debouncer.cancel();
+  }, [state.editorSource, state.autoRun]);
 
   // Load the tDiffuse texture (bundled path or picked image data URL),
   // falling back to the default texture when the load fails.
@@ -177,6 +190,8 @@ export default function ShaderPlayground() {
             onDownloadShaderFilenameChange={setDownloadShaderFilename}
             onDownloadShader={downloadShader}
             onPickImage={pickImage}
+            autoRun={state.autoRun}
+            onToggleAutoRun={toggleAutoRun}
           />
         </div>
       </div>

@@ -65,6 +65,21 @@ describe("playgroundReducer", () => {
     expect(next.editorSource).toBe(start.editorSource);
   });
 
+  it("toggleTheme switches between light and dark", () => {
+    const dark = playgroundReducer(start, { type: "toggleTheme" });
+    expect(dark.themeMode).toBe("dark");
+    const light = playgroundReducer(dark, { type: "toggleTheme" });
+    expect(light.themeMode).toBe("light");
+  });
+
+  it("toggleAutoRun flips the auto-run flag", () => {
+    expect(start.autoRun).toBe(false);
+    const on = playgroundReducer(start, { type: "toggleAutoRun" });
+    expect(on.autoRun).toBe(true);
+    const off = playgroundReducer(on, { type: "toggleAutoRun" });
+    expect(off.autoRun).toBe(false);
+  });
+
   it("setCompileError reports and clears GLSL errors", () => {
     const failed = playgroundReducer(start, {
       type: "setCompileError",

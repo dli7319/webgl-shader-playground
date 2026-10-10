@@ -27,6 +27,8 @@ export interface PlaygroundState {
   screenshotError: string | null;
   /** UI theme. */
   themeMode: "light" | "dark";
+  /** When true, shader edits are applied automatically (debounced). */
+  autoRun: boolean;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -42,6 +44,7 @@ export const initialPlaygroundState: PlaygroundState = {
   textureError: null,
   screenshotError: null,
   themeMode: "light",
+  autoRun: false,
 };
 
 export type PlaygroundAction =
@@ -57,7 +60,8 @@ export type PlaygroundAction =
   | { type: "setCompileError"; error: string | null }
   | { type: "setTextureError"; error: string | null }
   | { type: "setScreenshotError"; error: string | null }
-  | { type: "toggleTheme" };
+  | { type: "toggleTheme" }
+  | { type: "toggleAutoRun" };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -93,5 +97,7 @@ export function playgroundReducer(
         ...state,
         themeMode: state.themeMode === "light" ? "dark" : "light",
       };
+    case "toggleAutoRun":
+      return { ...state, autoRun: !state.autoRun };
   }
 }
