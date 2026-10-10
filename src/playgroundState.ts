@@ -29,6 +29,10 @@ export interface PlaygroundState {
   themeMode: "light" | "dark";
   /** When true, shader edits are applied automatically (debounced). */
   autoRun: boolean;
+  /** Whether a shader has been applied at least once. */
+  hasRun: boolean;
+  /** Duration of the last apply, in milliseconds. */
+  runDurationMs: number | null;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -45,6 +49,8 @@ export const initialPlaygroundState: PlaygroundState = {
   screenshotError: null,
   themeMode: "light",
   autoRun: false,
+  hasRun: false,
+  runDurationMs: null,
 };
 
 export type PlaygroundAction =
@@ -61,7 +67,8 @@ export type PlaygroundAction =
   | { type: "setTextureError"; error: string | null }
   | { type: "setScreenshotError"; error: string | null }
   | { type: "toggleTheme" }
-  | { type: "toggleAutoRun" };
+  | { type: "toggleAutoRun" }
+  | { type: "reportRun"; durationMs: number };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -99,5 +106,11 @@ export function playgroundReducer(
       };
     case "toggleAutoRun":
       return { ...state, autoRun: !state.autoRun };
+    case "reportRun":
+      return {
+        ...state,
+        hasRun: true,
+        runDurationMs: action.durationMs,
+      };
   }
 }

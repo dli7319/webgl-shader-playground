@@ -80,6 +80,16 @@ describe("playgroundReducer", () => {
     expect(off.autoRun).toBe(false);
   });
 
+  it("reportRun records duration and marks the first run", () => {
+    expect(start.hasRun).toBe(false);
+    const ran = playgroundReducer(start, {
+      type: "reportRun",
+      durationMs: 4.2,
+    });
+    expect(ran.hasRun).toBe(true);
+    expect(ran.runDurationMs).toBe(4.2);
+  });
+
   it("setCompileError reports and clears GLSL errors", () => {
     const failed = playgroundReducer(start, {
       type: "setCompileError",

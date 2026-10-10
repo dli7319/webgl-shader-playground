@@ -23,6 +23,8 @@ function renderPane(
       compileError={compileError}
       textureError={textureError}
       screenshotError={screenshotError}
+      status={compileError ? "error" : "compiled"}
+      runDurationMs={compileError ? null : 3.2}
     />
   );
 }
@@ -78,5 +80,13 @@ describe("PreviewPane compile error banner", () => {
     expect(screen.getByLabelText("Screenshot height in pixels")).toBeTruthy();
     expect(screen.getByLabelText("Screenshot filename")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Screenshot!" })).toBeTruthy();
+  });
+
+  it("shows the status bar", () => {
+    renderPane();
+    const status = screen.getByRole("status");
+    expect(status.textContent).toContain("Compiled");
+    expect(status.textContent).toContain("3 ms");
+    expect(status.textContent).toContain("Export 1920×1080");
   });
 });

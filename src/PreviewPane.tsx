@@ -3,6 +3,8 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 import styles from "./styles/ShaderPlayground.module.css";
+import { StatusBar } from "./StatusBar";
+import type { CompileStatus } from "./status";
 
 export interface PreviewPaneProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -16,6 +18,8 @@ export interface PreviewPaneProps {
   compileError?: string | null;
   textureError?: string | null;
   screenshotError?: string | null;
+  status: CompileStatus;
+  runDurationMs: number | null;
 }
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
@@ -31,6 +35,8 @@ export function PreviewPane({
   compileError,
   textureError,
   screenshotError,
+  status,
+  runDurationMs,
 }: PreviewPaneProps) {
   return (
     <div className={styles.leftColumn}>
@@ -44,6 +50,12 @@ export function PreviewPane({
           width: "unset",
           height: "unset",
         }}
+      />
+      <StatusBar
+        status={status}
+        runDurationMs={runDurationMs}
+        width={width}
+        height={height}
       />
       {compileError ? (
         <div className={styles.compileError} role="alert">
