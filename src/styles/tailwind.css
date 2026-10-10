@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 /*
+ * Soft Calm — gentle pastel neumorphism-lite.
  * Theme colors map to CSS variables that flip with [data-theme="dark"] so
- * utilities like bg-app / text-ink work in both themes.
+ * utilities like bg-app / text-ink work in both themes. Panels share the page
+ * fill: elevation is expressed purely through the diffused dual shadows.
  */
 @theme inline {
   --color-app: var(--bg);
@@ -10,22 +12,78 @@
   --color-ink: var(--text);
   --color-accent: var(--accent);
   --color-edge: var(--border);
+  --color-danger: var(--danger);
+  --color-on-accent: var(--on-accent);
+  --font-sans: "Nunito", ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 :root {
-  --bg: #ffffff;
-  --panel: #eeeeee;
-  --text: #1a1a1a;
-  --accent: #1976d2;
-  --border: rgba(0, 0, 0, 0.23);
+  /* Soft Calm (light) — raised surfaces are shadow-defined, never fill-defined */
+  --bg: #e9edf3;
+  --panel: #e9edf3;
+  --text: #2e3a4d;
+  --muted: #55627a;
+  --accent: #0f766e;
+  --on-accent: #ffffff;
+  --border: #d3dae4;
+  --danger: #c62828;
+  --success: #1e8e3e;
+  --error: #d32f2f;
+
+  /* Semantic banner tints */
+  --danger-bg: #fdecea;
+  --danger-border: #f5c2c0;
+  --danger-ink: #b3261e;
+  --warn-bg: #fff4e5;
+  --warn-border: #ffd591;
+  --warn-ink: #8c4a00;
+
+  /* Neumorphic material: diffused dual shadows (warm light + cool shade) */
+  --shadow-raised: 6px 6px 12px rgba(163, 177, 198, 0.45),
+    -6px -6px 12px rgba(255, 255, 255, 0.8);
+  --shadow-raised-sm: 3px 3px 7px rgba(163, 177, 198, 0.4),
+    -3px -3px 7px rgba(255, 255, 255, 0.85);
+  --shadow-inset: inset 4px 4px 8px rgba(163, 177, 198, 0.45),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+  --shadow-inset-sm: inset 2px 2px 5px rgba(163, 177, 198, 0.4),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.85);
+  --shadow-glow: 0 10px 22px rgba(20, 184, 166, 0.35),
+    0 2px 6px rgba(20, 184, 166, 0.25);
+  --glow-soft: rgba(20, 184, 166, 0.3);
 }
 
 :root[data-theme="dark"] {
-  --bg: #141414;
-  --panel: #262626;
-  --text: #e8e8e8;
-  --accent: #90caf9;
-  --border: rgba(255, 255, 255, 0.3);
+  /* Soft Calm (dark) — same material, moonlit */
+  --bg: #1e2430;
+  --panel: #1e2430;
+  --text: #d7dee9;
+  --muted: #a5b0c2;
+  --accent: #2dd4bf;
+  --on-accent: #062824;
+  --border: #2c3546;
+  --danger: #f87171;
+  --success: #4ade80;
+  --error: #f87171;
+
+  --danger-bg: #3a2226;
+  --danger-border: #6e3438;
+  --danger-ink: #fecaca;
+  --warn-bg: #3a3020;
+  --warn-border: #6b5a2e;
+  --warn-ink: #fde68a;
+
+  --shadow-raised: 6px 6px 12px rgba(0, 0, 0, 0.45),
+    -6px -6px 12px rgba(255, 255, 255, 0.05);
+  --shadow-raised-sm: 3px 3px 7px rgba(0, 0, 0, 0.4),
+    -3px -3px 7px rgba(255, 255, 255, 0.05);
+  --shadow-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.45),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.05);
+  --shadow-inset-sm: inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+  --shadow-glow: 0 10px 22px rgba(45, 212, 191, 0.22),
+    0 2px 6px rgba(45, 212, 191, 0.16);
+  --glow-soft: rgba(45, 212, 191, 0.22);
 }
 
 html {
@@ -35,6 +93,79 @@ html {
 body {
   display: flex;
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Nunito", ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+::selection {
+  background: var(--glow-soft);
+}
+
+/* Soft rounded scrollbars to match the material */
+* {
+  scrollbar-color: var(--border) transparent;
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  /* Raised panel: same fill as the page, elevation from the shadow pair only */
+  .surface-panel {
+    border-radius: 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-raised);
+  }
+
+  /* Smaller raised card for compact sections */
+  .surface-card {
+    border-radius: 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-raised-sm);
+  }
+
+  /* Inset well for inputs */
+  .surface-well {
+    border-radius: 12px;
+    background: var(--panel);
+    border: none;
+    box-shadow: var(--shadow-inset-sm);
+  }
+
+  /* Floating pill island (zoom controls, status strip, toolbar) */
+  .pill-island {
+    border-radius: 999px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-raised-sm);
+  }
+
+  .text-muted {
+    color: var(--muted);
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

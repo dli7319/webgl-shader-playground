@@ -290,7 +290,7 @@ export default function ShaderPlayground() {
 
   return (
     <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex justify-end gap-2">
+      <div className="pill-island mx-3 mt-3 flex flex-wrap items-center justify-end gap-2 p-1.5">
         <Button variant="outlined" onClick={toggleTheme}>
           {state.themeMode === "light" ? "Dark theme" : "Light theme"}
         </Button>
@@ -309,7 +309,7 @@ export default function ShaderPlayground() {
       </div>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
+          className="surface-panel mx-3 my-3 flex items-center gap-2 p-3 text-sm"
           role="status"
         >
           <span className="grow">Unsaved draft from your last session is available.</span>
@@ -334,7 +334,7 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
+      <div className="m-3 flex flex-row gap-3 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}

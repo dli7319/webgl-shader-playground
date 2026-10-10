@@ -25,7 +25,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="my-2 flex flex-col gap-2 rounded-lg bg-panel p-2">
+    <div className="surface-card my-3 flex flex-col gap-2 p-3">
       <div className="flex items-center gap-2">
         <TextField
           label="Save as"
@@ -42,7 +42,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
         </Button>
       </div>
       {entries.length === 0 ? (
-        <p className="m-0 text-sm opacity-70">No saved shaders yet.</p>
+        <p className="m-0 text-sm text-muted">No saved shaders yet.</p>
       ) : (
         <ul className="m-0 flex max-h-40 list-none flex-col gap-1.5 overflow-y-auto p-0">
           {entries.map((entry) => (

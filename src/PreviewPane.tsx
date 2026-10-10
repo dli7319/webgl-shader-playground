@@ -26,9 +26,9 @@ export interface PreviewPaneProps {
 }
 
 const ERROR_BOX =
-  "my-2 rounded-lg border p-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
-const COMPILE_ERROR = `${ERROR_BOX} border-[#f5c2c0] bg-[#fdecea] text-[#b3261e]`;
-const WARN_ERROR = `${ERROR_BOX} border-[#ffd591] bg-[#fff4e5] text-[#8c4a00]`;
+  "my-2 rounded-[14px] border p-3 text-sm shadow-[var(--shadow-raised-sm)] [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
+const COMPILE_ERROR = `${ERROR_BOX} border-[var(--danger-border)] bg-[var(--danger-bg)] text-[var(--danger-ink)]`;
+const WARN_ERROR = `${ERROR_BOX} border-[var(--warn-border)] bg-[var(--warn-bg)] text-[var(--warn-ink)]`;
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
 export function PreviewPane({
@@ -51,22 +51,23 @@ export function PreviewPane({
   onZoomFit,
 }: PreviewPaneProps) {
   return (
-    <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
+    <div className="flex w-1/2 grow flex-col gap-2 max-[900px]:w-full">
       <canvas
         ref={canvasRef}
         role="img"
         aria-label="Shader preview output"
+        className="rounded-[14px] shadow-[var(--shadow-raised)]"
         style={{
           aspectRatio: width / height,
           width: `${zoomPercent}%`,
           height: "unset",
         }}
       />
-      <div className="mt-1 flex items-center gap-2">
+      <div className="pill-island mt-1 inline-flex items-center gap-2 self-start px-2 py-1">
         <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
           −
         </Button>
-        <span className="min-w-14 text-center text-sm">{zoomPercent}%</span>
+        <span className="min-w-14 text-center text-sm text-muted">{zoomPercent}%</span>
         <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
           +
         </Button>
@@ -98,7 +99,7 @@ export function PreviewPane({
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+      <div className="surface-card my-2 flex flex-row flex-wrap items-center gap-2 p-3">
         <TextField
           label="Width"
           type="number"

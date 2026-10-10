@@ -13,11 +13,11 @@ let nextId = 0;
 
 const FIELD = "relative inline-flex min-w-[120px] grow";
 const INPUT =
-  "peer box-border w-full rounded border border-edge bg-transparent px-3 pt-3 pb-1 text-ink [font:inherit] focus:border-accent focus:shadow-[0_0_0_1px_var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+  "peer box-border w-full rounded-xl border-none bg-panel px-3 pt-3 pb-1 text-ink shadow-[var(--shadow-inset-sm)] [font:inherit] focus:shadow-[var(--shadow-inset)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 const LABEL =
-  "pointer-events-none absolute left-[0.65rem] top-[0.55rem] text-base text-ink opacity-75 transition-all duration-100 peer-focus:top-[0.15rem] peer-focus:text-[0.7rem] peer-[&:not(:placeholder-shown)]:top-[0.15rem] peer-[&:not(:placeholder-shown)]:text-[0.7rem]";
+  "pointer-events-none absolute left-[0.65rem] top-[0.55rem] text-base text-muted transition-all duration-100 peer-focus:top-[0.15rem] peer-focus:text-[0.7rem] peer-[&:not(:placeholder-shown)]:top-[0.15rem] peer-[&:not(:placeholder-shown)]:text-[0.7rem]";
 
-/** Outlined text field with a floating label. */
+/** Inset-well text field with a floating label (soft neumorphic input). */
 export function TextField({
   label,
   value,

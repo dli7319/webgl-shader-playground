@@ -53,51 +53,59 @@ export function EditorPane({
   onRedo,
 }: EditorPaneProps) {
   return (
-    <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
+    <div className="flex w-1/2 grow flex-col gap-2 max-[900px]:w-full">
       <div id="editorParent" role="region" aria-label="Shader editor">
-        <React.Suspense
-          fallback={
-            <div className="min-h-[40vh] box-border p-4 text-sm opacity-70">
-              Loading editor…
-            </div>
-          }
-        >
-          <MonacoGlslEditor
-            height="40vh"
-            width="100%"
-            defaultValue={shaderSource}
-            options={{
-              fontSize: editorFontSize,
-              wordWrap: wordWrap ? "on" : "off",
-            }}
-            theme={themeMode}
-            onChange={onShaderSourceChange}
-          />
-        </React.Suspense>
-        <div>
-          <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
-            Undo
-          </Button>{" "}
-          <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
-            Redo
-          </Button>
+        <div className="surface-panel overflow-hidden">
+          <React.Suspense
+            fallback={
+              <div className="min-h-[40vh] box-border p-4 text-sm text-muted">
+                Loading editor…
+              </div>
+            }
+          >
+            <MonacoGlslEditor
+              height="40vh"
+              width="100%"
+              defaultValue={shaderSource}
+              options={{
+                fontSize: editorFontSize,
+                wordWrap: wordWrap ? "on" : "off",
+                fontFamily:
+                  '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
+              }}
+              theme={themeMode}
+              onChange={onShaderSourceChange}
+            />
+          </React.Suspense>
+        </div>
+        <div className="surface-card mt-3 flex flex-col gap-2 p-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
+              Undo
+            </Button>
+            <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
+              Redo
+            </Button>
+          </div>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={onRunShader}
-            className="mx-auto my-2 block w-full"
+            className="w-full py-[0.55rem] text-base"
           >
             Run Shader (Ctrl+Enter)
           </Button>
-          <Switch
-            checked={autoRun}
-            onChange={onToggleAutoRun}
-            label="Auto-run while typing"
-          />
-          <Button variant="outlined" tone="warning" onClick={onResetShader}>
-            Reset to default shader
-          </Button>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Switch
+              checked={autoRun}
+              onChange={onToggleAutoRun}
+              label="Auto-run while typing"
+            />
+            <Button variant="outlined" tone="warning" onClick={onResetShader}>
+              Reset to default shader
+            </Button>
+          </div>
         </div>
-        <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+        <div className="surface-card mt-3 flex flex-row flex-wrap items-center gap-2 p-3">
           <TextField
             label="Filename"
             type="text"
@@ -111,7 +119,7 @@ export function EditorPane({
           </Button>
         </div>
         <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
-        <label className="min-w-16 cursor-pointer rounded border border-accent bg-accent px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] text-white transition-colors [font:inherit] hover:brightness-110">
+        <label className="mt-3 inline-flex min-w-16 cursor-pointer items-center justify-center gap-1.5 rounded-full border border-edge bg-panel px-4 py-[0.45rem] text-sm font-semibold tracking-[0.01em] text-ink shadow-[var(--shadow-raised-sm)] transition-shadow duration-150 [font:inherit] hover:shadow-[var(--shadow-raised)] active:shadow-[var(--shadow-inset-sm)] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent">
           <ImageIcon /> Pick tDiffuse Image
           <input
             type="file"

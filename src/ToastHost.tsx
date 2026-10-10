@@ -28,12 +28,12 @@ export function ToastHost({ store }: ToastHostProps) {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className="flex items-center gap-3 rounded-lg border border-accent bg-panel px-3 py-2 text-sm text-ink shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+          className="surface-panel flex items-center gap-3 px-4 py-3 text-sm text-ink"
         >
           <span>{toast.message}</span>
           <button
             type="button"
-            className="cursor-pointer border-none bg-transparent text-base leading-none text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="cursor-pointer rounded-full border-none bg-transparent px-1 text-base leading-none text-muted transition-shadow hover:shadow-[var(--shadow-inset-sm)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             aria-label="Dismiss notification"
             onClick={() => store.dismiss(toast.id)}
           >

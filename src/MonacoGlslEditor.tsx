@@ -29,11 +29,44 @@ monaco.languages.register({ id: "glsl" });
 monaco.languages.setMonarchTokensProvider("glsl", language);
 loader.config({ monaco });
 
+// Soft Calm editor themes: the code surface is the same material as the app
+// (background matches --bg so the editor reads as an inset well of the page).
+monaco.editor.defineTheme("soft-calm-light", {
+  base: "vs",
+  inherit: true,
+  rules: [],
+  colors: {
+    "editor.background": "#e9edf3",
+    "editor.foreground": "#2e3a4d",
+    "editor.lineHighlightBackground": "#e1e6ee",
+    "editorLineNumber.foreground": "#8b96a8",
+    "editorLineNumber.activeForeground": "#2e3a4d",
+    "editor.selectionBackground": "#b7e4dc",
+    "editorCursor.foreground": "#0f766e",
+    "editorIndentGuide.background": "#d3dae4",
+  },
+});
+monaco.editor.defineTheme("soft-calm-dark", {
+  base: "vs-dark",
+  inherit: true,
+  rules: [],
+  colors: {
+    "editor.background": "#1e2430",
+    "editor.foreground": "#d7dee9",
+    "editor.lineHighlightBackground": "#262d3b",
+    "editorLineNumber.foreground": "#66748c",
+    "editorLineNumber.activeForeground": "#d7dee9",
+    "editor.selectionBackground": "#125e57",
+    "editorCursor.foreground": "#2dd4bf",
+    "editorIndentGuide.background": "#2c3546",
+  },
+});
+
 export interface MonacoGlslEditorProps {
   height: string;
   width: string;
   defaultValue: string;
-  options: { fontSize: number; wordWrap: "on" | "off" };
+  options: { fontSize: number; wordWrap: "on" | "off"; fontFamily?: string };
   theme: "light" | "dark";
   onChange: (value: string) => void;
 }
@@ -57,7 +90,7 @@ export function MonacoGlslEditor({
       language="glsl"
       defaultValue={defaultValue}
       options={options}
-      theme={theme === "dark" ? "vs-dark" : "light"}
+      theme={theme === "dark" ? "soft-calm-dark" : "soft-calm-light"}
       onChange={(value, _event) => {
         onChange(value ?? "");
       }}
