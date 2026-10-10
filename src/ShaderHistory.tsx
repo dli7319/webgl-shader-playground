@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
 import { createShaderStore } from "./shaderStore";
@@ -25,7 +24,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="my-2 flex flex-col gap-2 rounded-lg bg-panel p-2">
+    <div className="surface-panel flex flex-col gap-2 p-3">
       <div className="flex items-center gap-2">
         <TextField
           label="Save as"

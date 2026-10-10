@@ -5,18 +5,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   tone?: "default" | "warning";
 }
 
-const BASE =
-  "min-w-16 cursor-pointer rounded px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
+const BASE = "btn";
 const VARIANTS: Record<string, string> = {
-  outlined: "border border-edge text-accent hover:bg-[rgba(25,118,210,0.04)]",
-  contained: "border border-accent bg-accent text-white hover:brightness-110",
+  outlined: "",
+  contained: "btn-contained btn-glow",
 };
 const TONES: Record<string, string> = {
   default: "",
-  warning: "border-[#ed6c02] text-[#ed6c02]",
+  warning: "btn-danger",
 };
 
-/** Lightweight button matching the app's control styling. */
+/** Aurora Glass pill button (glowing accent when contained, danger tone for destructive). */
 export function Button({
   variant = "outlined",
   tone = "default",

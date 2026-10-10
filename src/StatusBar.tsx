@@ -14,11 +14,15 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-2 flex items-center gap-2 px-2 py-1 text-sm text-ink opacity-85"
+      className="mt-2 flex items-center gap-2 rounded-full border border-[var(--glass-border)] bg-panel px-3 py-1.5 text-sm text-ink"
       role="status"
     >
       <span
-        className={`size-2.5 rounded-full ${status === "error" ? "bg-[#d32f2f]" : "bg-[#2e9e44]"}`}
+        className={`size-2.5 rounded-full shadow-[0_0_8px_currentColor] ${
+          status === "error"
+            ? "bg-[var(--error)] text-[var(--error)]"
+            : "bg-[var(--success)] text-[var(--success)]"
+        }`}
         aria-hidden="true"
       />
       <span>{STATUS_LABELS[status]}</span>

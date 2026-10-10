@@ -1,5 +1,4 @@
 import React from "react";
-
 import { StatusBar } from "./StatusBar";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
@@ -26,9 +25,9 @@ export interface PreviewPaneProps {
 }
 
 const ERROR_BOX =
-  "my-2 rounded-lg border p-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
-const COMPILE_ERROR = `${ERROR_BOX} border-[#f5c2c0] bg-[#fdecea] text-[#b3261e]`;
-const WARN_ERROR = `${ERROR_BOX} border-[#ffd591] bg-[#fff4e5] text-[#8c4a00]`;
+  "my-2 rounded-2xl border p-3 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
+const COMPILE_ERROR = `${ERROR_BOX} border-[var(--error)] bg-[var(--error-bg)] text-[var(--error-text)]`;
+const WARN_ERROR = `${ERROR_BOX} border-[var(--error)] bg-[var(--error-bg)] text-[var(--error-text)]`;
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
 export function PreviewPane({
@@ -51,18 +50,19 @@ export function PreviewPane({
   onZoomFit,
 }: PreviewPaneProps) {
   return (
-    <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
+    <div className="glass flex w-1/2 grow flex-col p-3 max-[900px]:w-full">
       <canvas
         ref={canvasRef}
         role="img"
         aria-label="Shader preview output"
+        className="rounded-2xl border border-[var(--glass-border)] shadow-[0_18px_50px_-24px_rgba(0,0,0,0.55)]"
         style={{
           aspectRatio: width / height,
           width: `${zoomPercent}%`,
           height: "unset",
         }}
       />
-      <div className="mt-1 flex items-center gap-2">
+      <div className="mt-3 flex items-center gap-2">
         <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
           −
         </Button>
@@ -98,7 +98,7 @@ export function PreviewPane({
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+      <div className="flex flex-row flex-wrap items-end gap-2 rounded-2xl border border-[var(--glass-border)] bg-panel p-3">
         <TextField
           label="Width"
           type="number"

@@ -54,37 +54,45 @@ export function EditorPane({
 }: EditorPaneProps) {
   return (
     <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
-      <div id="editorParent" role="region" aria-label="Shader editor">
-        <React.Suspense
-          fallback={
-            <div className="min-h-[40vh] box-border p-4 text-sm opacity-70">
-              Loading editor…
-            </div>
-          }
-        >
-          <MonacoGlslEditor
-            height="40vh"
-            width="100%"
-            defaultValue={shaderSource}
-            options={{
-              fontSize: editorFontSize,
-              wordWrap: wordWrap ? "on" : "off",
-            }}
-            theme={themeMode}
-            onChange={onShaderSourceChange}
-          />
-        </React.Suspense>
-        <div>
+      <div
+        id="editorParent"
+        role="region"
+        aria-label="Shader editor"
+        className="glass flex flex-col gap-3 p-3"
+      >
+        <div className="overflow-hidden rounded-2xl">
+          <React.Suspense
+            fallback={
+              <div className="min-h-[40vh] box-border p-4 text-sm opacity-70">
+                Loading editor…
+              </div>
+            }
+          >
+            <MonacoGlslEditor
+              height="40vh"
+              width="100%"
+              defaultValue={shaderSource}
+              options={{
+                fontSize: editorFontSize,
+                wordWrap: wordWrap ? "on" : "off",
+                fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
+              }}
+              theme={themeMode}
+              onChange={onShaderSourceChange}
+            />
+          </React.Suspense>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
             Undo
-          </Button>{" "}
+          </Button>
           <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
             Redo
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={onRunShader}
-            className="mx-auto my-2 block w-full"
+            className="my-1 h-11 w-full"
           >
             Run Shader (Ctrl+Enter)
           </Button>
@@ -97,7 +105,7 @@ export function EditorPane({
             Reset to default shader
           </Button>
         </div>
-        <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
+        <div className="flex flex-row flex-wrap items-end gap-2">
           <TextField
             label="Filename"
             type="text"
@@ -111,7 +119,7 @@ export function EditorPane({
           </Button>
         </div>
         <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
-        <label className="min-w-16 cursor-pointer rounded border border-accent bg-accent px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] text-white transition-colors [font:inherit] hover:brightness-110">
+        <label className="btn self-start">
           <ImageIcon /> Pick tDiffuse Image
           <input
             type="file"
