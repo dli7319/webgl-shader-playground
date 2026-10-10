@@ -29,6 +29,7 @@ export function usePlaygroundState() {
       setScreenshotError: (error: string | null) =>
         dispatch({ type: "setScreenshotError", error }),
       toggleTheme: () => dispatch({ type: "toggleTheme" }),
+      toggleAutoRun: () => dispatch({ type: "toggleAutoRun" }),
     }),
     []
   );

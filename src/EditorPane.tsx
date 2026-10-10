@@ -2,6 +2,8 @@ import React from "react";
 import TextField from "@mui/material/TextField";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import ImageIcon from "@mui/icons-material/Image";
 import Editor, { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
@@ -33,6 +35,8 @@ export interface EditorPaneProps {
   onDownloadShaderFilenameChange: (filename: string) => void;
   onDownloadShader: () => void;
   onPickImage: (dataUrl: string) => void;
+  autoRun: boolean;
+  onToggleAutoRun: () => void;
 }
 
 /** GLSL editor plus run/download/texture controls. */
@@ -44,6 +48,8 @@ export function EditorPane({
   onDownloadShaderFilenameChange,
   onDownloadShader,
   onPickImage,
+  autoRun,
+  onToggleAutoRun,
 }: EditorPaneProps) {
   return (
     <div className={styles.rightColumn}>
@@ -65,6 +71,10 @@ export function EditorPane({
           >
             Run Shader (Ctrl+Enter)
           </Button>
+          <FormControlLabel
+            control={<Switch checked={autoRun} onChange={onToggleAutoRun} />}
+            label="Auto-run while typing"
+          />
         </div>
         <div className={styles.downloadShaderOptions}>
           <TextField
