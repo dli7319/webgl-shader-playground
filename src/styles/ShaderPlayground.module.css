@@ -85,6 +85,28 @@
   overflow-x: auto;
   font-family: monospace;
 }
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0rem 0 0;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.85;
+}
+.statusDot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: #2e9e44;
+}
+.statusDotError {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: #d32f2f;
+}
 .screenshotControls {
   margin: 0.5rem 0rem;
   background: var(--panel);

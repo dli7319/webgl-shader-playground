@@ -11,6 +11,7 @@ import { loadTextureWithFallback } from "./textures";
 import { applyThemeToDocument, buildTheme } from "./theme";
 import { handleShortcutEvent } from "./shortcuts";
 import { createDebouncer } from "./debounce";
+import { compileStatusFrom } from "./status";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
@@ -32,6 +33,7 @@ export default function ShaderPlayground() {
     setScreenshotError,
     toggleTheme,
     toggleAutoRun,
+    reportRun,
   } = usePlaygroundState();
 
   const theme = React.useMemo(() => buildTheme(state.themeMode), [state.themeMode]);
@@ -69,7 +71,9 @@ export default function ShaderPlayground() {
 
   // Apply the compiled shader whenever it changes.
   React.useEffect(() => {
+    const start = performance.now();
     previewRef.current?.setFragmentShader(state.compiledShader);
+    reportRun(performance.now() - start);
   }, [state.compiledShader]);
 
   // Auto-run: apply editor changes after a pause in typing.
@@ -181,6 +185,8 @@ export default function ShaderPlayground() {
             compileError={state.compileError}
             textureError={state.textureError}
             screenshotError={state.screenshotError}
+            status={compileStatusFrom(state.hasRun, state.compileError)}
+            runDurationMs={state.runDurationMs}
           />
           <EditorPane
             shaderSource={state.editorSource}
