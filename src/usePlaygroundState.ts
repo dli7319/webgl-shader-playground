@@ -24,6 +24,8 @@ export function usePlaygroundState() {
       pickImage: (texturePath: string) => dispatch({ type: "pickImage", texturePath }),
       setCompileError: (error: string | null) =>
         dispatch({ type: "setCompileError", error }),
+      setTextureError: (error: string | null) =>
+        dispatch({ type: "setTextureError", error }),
     }),
     []
   );

@@ -5,7 +5,7 @@ import { PreviewPane } from "./PreviewPane";
 
 afterEach(cleanup);
 
-function renderPane(compileError?: string | null) {
+function renderPane(compileError?: string | null, textureError?: string | null) {
   return render(
     <PreviewPane
       canvasRef={{ current: null }}
@@ -17,6 +17,7 @@ function renderPane(compileError?: string | null) {
       onScreenshotFilenameChange={() => {}}
       onCaptureScreenshot={() => {}}
       compileError={compileError}
+      textureError={textureError}
     />
   );
 }
@@ -39,5 +40,21 @@ describe("PreviewPane compile error banner", () => {
     expect(screen.getByText("Screenshot!")).toBeTruthy();
     expect(screen.getByLabelText("Width")).toBeTruthy();
     expect(screen.getByLabelText("Height")).toBeTruthy();
+  });
+
+  it("shows the texture load failure notice", () => {
+    renderPane(
+      null,
+      'Could not load texture "bad.png" — using the default texture instead.'
+    );
+    const alerts = screen.getAllByRole("alert");
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].textContent).toContain("Texture error");
+    expect(alerts[0].textContent).toContain("bad.png");
+  });
+
+  it("shows both notices when both are set", () => {
+    renderPane("ERROR: bad shader", 'Could not load texture "bad.png"');
+    expect(screen.getAllByRole("alert")).toHaveLength(2);
   });
 });
