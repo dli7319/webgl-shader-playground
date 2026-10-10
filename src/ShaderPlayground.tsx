@@ -59,8 +59,8 @@ function Scene({
   }
   const texture = useTexture(tDiffuseImagePath, (texture) => {
     if (shaderMaterialRef.current) {
-        console.log("Setting tDiffuse")
-        shaderMaterialRef.current.uniforms.tDiffuse.value = null;
+      console.log("Setting tDiffuse");
+      shaderMaterialRef.current.uniforms.tDiffuse.value = null;
       shaderMaterialRef.current.uniforms.tDiffuse.value = texture;
       shaderMaterialRef.current.needsUpdate = true;
     }
@@ -79,9 +79,7 @@ function Scene({
       return;
     }
     const mimeType =
-      imageExtensionToMime[
-        filenameExtension as keyof typeof imageExtensionToMime
-      ];
+      imageExtensionToMime[filenameExtension as keyof typeof imageExtensionToMime];
     const renderer = new THREE.WebGLRenderer({
       preserveDrawingBuffer: true,
     });
@@ -115,23 +113,17 @@ function Scene({
 }
 
 export default function ShaderPlayground() {
-  const [fragmentShader, setFragmentShader] = React.useState(
-    defaultFragmentShader
-  );
-  const [inputFragmentShader, setInputFragmentShader] = React.useState(
-    defaultFragmentShader
-  );
+  const [fragmentShader, setFragmentShader] = React.useState(defaultFragmentShader);
+  const [inputFragmentShader, setInputFragmentShader] =
+    React.useState(defaultFragmentShader);
   const [width, setWidth] = React.useState(1920);
   const [height, setHeight] = React.useState(1080);
-  const [screenshotFilename, setScreenshotFilename] =
-    React.useState("screenshot.png");
-  const [captureScreenshotFilename, setCaptureScreenshotFilename] =
-    React.useState("");
+  const [screenshotFilename, setScreenshotFilename] = React.useState("screenshot.png");
+  const [captureScreenshotFilename, setCaptureScreenshotFilename] = React.useState("");
   const [downloadShaderFilename, setDownloadShaderFilename] =
     React.useState("fragment.frag");
-  const [tDiffuseImagePath, setTDiffuseImagePath] = React.useState(
-    "cat-7738210_1920.jpg"
-  );
+  const [tDiffuseImagePath, setTDiffuseImagePath] =
+    React.useState("cat-7738210_1920.jpg");
 
   function updateShader() {
     setFragmentShader(inputFragmentShader);
