@@ -1,8 +1,8 @@
 .mainDiv {
-    display: flex;
-    flex-direction: row;
-    gap: 0.5rem;
-    margin: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  margin: 0.5rem;
 }
 
 .leftColumn {
@@ -20,7 +20,7 @@
 
 .screenshotControls {
   margin: 0.5rem 0rem;
-  background: #EEE;
+  background: #eee;
   border-radius: 0.5rem;
   padding: 0.5rem;
   display: flex;
@@ -28,7 +28,7 @@
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-.screenshotOption{
+.screenshotOption {
   flex-grow: 1;
 }
 .screenshotButton {
@@ -42,7 +42,7 @@
 .downloadShaderOptions {
   margin: 0.5rem 0rem;
   display: flex;
-  background: #EEE;
+  background: #eee;
   border-radius: 0.5rem;
   padding: 0.5rem;
   display: flex;
