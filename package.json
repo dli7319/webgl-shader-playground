@@ -2,7 +2,6 @@
   "name": "webgl-shader-playground",
   "version": "1.0.0",
   "description": "Test shaders offline with just a browser",
-  "main": "index.js",
   "scripts": {
     "setup": "npm ci",
     "test": "vitest run",
@@ -34,7 +33,6 @@
   "homepage": "https://github.com/dli7319/webgl-shader-playground#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@testing-library/dom": "^10.4.2",
     "@testing-library/preact": "^3.2.4",
     "@types/node": "^26.6.5",
     "@types/three": "^0.186.0",
@@ -42,20 +40,20 @@
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
     "jsdom": "^30.1.2",
-    "monaco-editor": "^0.57.0",
     "postcss": "^8.5.29",
     "prettier": "^3.9.9",
     "rolldown": "^1.2.13",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-serve": "^3.0.0",
-    "three": "^0.186.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.1",
     "vitest": "^5.0.3"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
-    "preact": "^11.0.1"
+    "monaco-editor": "^0.57.0",
+    "preact": "^11.0.1",
+    "three": "^0.186.1"
   }
 }
