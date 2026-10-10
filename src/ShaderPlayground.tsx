@@ -49,7 +49,7 @@ function Scene({
   fragmentShader: string;
   tDiffuseImagePath: string;
   screenshotFilename: string;
-  setScreenshotFilename: any;
+  setScreenshotFilename: (filename: string) => void;
   screenshotWidth: number;
   screenshotHeight: number;
 }) {
@@ -217,7 +217,7 @@ export default function ShaderPlayground() {
             language="glsl"
             defaultValue={inputFragmentShader}
             onChange={(value, _event) => {
-              setInputFragmentShader(value);
+              setInputFragmentShader(value ?? "");
             }}
           />
           <div>
