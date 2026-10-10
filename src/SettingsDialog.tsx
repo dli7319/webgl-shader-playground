@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Button } from "./ui/Button";
 import { Switch } from "./ui/Switch";
 import type { Settings } from "./settings";
@@ -10,67 +9,78 @@ export interface SettingsDialogProps {
   onClose: () => void;
 }
 
-const FIELD = "flex flex-col gap-1.5 text-sm";
+const FIELD = "flex items-center justify-between gap-3 text-[11px] font-medium uppercase tracking-[0.06em]";
 const FIELD_INPUT =
-  "w-24 rounded border border-edge bg-transparent px-2 py-[0.35rem] text-ink [font:inherit]";
+  "well h-6 w-20 px-2 text-[11px] text-ink [font-family:inherit] focus:outline-2 focus-visible:outline-accent";
 
 /** Modal-less settings panel with the persisted preferences. */
 export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
   return (
     <div
-      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/45"
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/55"
       role="dialog"
       aria-modal="true"
       aria-label="Settings"
     >
-      <div className="flex min-w-[280px] flex-col gap-3 rounded-lg border border-edge bg-app px-5 py-4 text-ink">
-        <h2 className="m-0 text-lg">Settings</h2>
-        <label className={FIELD}>
-          Editor font size
-          <input
-            type="number"
-            min={8}
-            max={32}
-            value={settings.editorFontSize}
-            aria-label="Editor font size"
-            className={FIELD_INPUT}
-            onChange={(e) =>
-              onChange({
-                editorFontSize: Number((e.target as HTMLInputElement).value),
-              })
-            }
-          />
-        </label>
-        <Switch
-          checked={settings.wordWrap}
-          onChange={() => onChange({ wordWrap: !settings.wordWrap })}
-          label="Word wrap"
-        />
-        <Switch
-          checked={settings.autoRun}
-          onChange={() => onChange({ autoRun: !settings.autoRun })}
-          label="Auto-run while typing"
-        />
-        <div className={FIELD}>
-          Theme
-          <div>
-            <Button
-              variant={settings.themeMode === "light" ? "contained" : "outlined"}
-              onClick={() => onChange({ themeMode: "light" })}
-            >
-              Light
-            </Button>{" "}
-            <Button
-              variant={settings.themeMode === "dark" ? "contained" : "outlined"}
-              onClick={() => onChange({ themeMode: "dark" })}
-            >
-              Dark
-            </Button>
+      <div className="surface-panel flex w-[320px] max-w-[90vw] flex-col text-ink shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
+        <h2 className="panel-title m-0">
+          <span>Settings</span>
+          <span className="font-mono text-[10px] tracking-[0.1em] opacity-70">CFG</span>
+        </h2>
+        <div className="flex flex-col gap-2.5 p-3">
+          <label className={FIELD}>
+            Editor font size
+            <input
+              type="number"
+              min={8}
+              max={32}
+              value={settings.editorFontSize}
+              aria-label="Editor font size"
+              className={FIELD_INPUT}
+              onChange={(e) =>
+                onChange({
+                  editorFontSize: Number((e.target as HTMLInputElement).value),
+                })
+              }
+            />
+          </label>
+          <div className="flex items-center justify-between gap-3">
+            <Switch
+              checked={settings.wordWrap}
+              onChange={() => onChange({ wordWrap: !settings.wordWrap })}
+              label="Word wrap"
+            />
+            <Switch
+              checked={settings.autoRun}
+              onChange={() => onChange({ autoRun: !settings.autoRun })}
+              label="Auto-run while typing"
+            />
           </div>
+          <div className={FIELD}>
+            Theme
+            <div className="flex">
+              <button
+                type="button"
+                className="seg"
+                aria-pressed={settings.themeMode === "light"}
+                onClick={() => onChange({ themeMode: "light" })}
+              >
+                Light
+              </button>
+              <button
+                type="button"
+                className="seg"
+                aria-pressed={settings.themeMode === "dark"}
+                onClick={() => onChange({ themeMode: "dark" })}
+              >
+                Dark
+              </button>
+            </div>
+          </div>
+          <Button variant="outlined" onClick={onClose}>
+            Close
+          </Button>
         </div>
-        <Button variant="contained" onClick={onClose}>
-          Close
-        </Button>
       </div>
     </div>
   );
