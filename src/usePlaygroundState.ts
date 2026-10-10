@@ -1,13 +1,21 @@
 import React from "react";
 
-import { initialPlaygroundState, playgroundReducer } from "./playgroundState";
+import {
+  initialStateWith,
+  playgroundReducer,
+  type PlaygroundState,
+} from "./playgroundState";
 
 /**
  * Owns the playground's state and exposes named actions. All state
  * transitions live in the pure {@link playgroundReducer}.
  */
-export function usePlaygroundState() {
-  const [state, dispatch] = React.useReducer(playgroundReducer, initialPlaygroundState);
+export function usePlaygroundState(initialOverrides?: Partial<PlaygroundState>) {
+  const [state, dispatch] = React.useReducer(
+    playgroundReducer,
+    initialOverrides,
+    initialStateWith
+  );
 
   const actions = React.useMemo(
     () => ({
@@ -35,6 +43,9 @@ export function usePlaygroundState() {
       setZoom: (percent: number) => dispatch({ type: "setZoom", percent }),
       zoomIn: () => dispatch({ type: "zoomIn" }),
       zoomOut: () => dispatch({ type: "zoomOut" }),
+      setEditorFontSize: (size: number) => dispatch({ type: "setEditorFontSize", size }),
+      setWordWrap: (enabled: boolean) => dispatch({ type: "setWordWrap", enabled }),
+      setThemeMode: (mode: "light" | "dark") => dispatch({ type: "setThemeMode", mode }),
     }),
     []
   );

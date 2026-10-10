@@ -25,6 +25,8 @@ export interface EditorPaneProps {
   autoRun: boolean;
   onToggleAutoRun: () => void;
   onResetShader: () => void;
+  editorFontSize: number;
+  wordWrap: boolean;
 }
 
 /** GLSL editor plus run/download/texture controls. */
@@ -39,6 +41,8 @@ export function EditorPane({
   autoRun,
   onToggleAutoRun,
   onResetShader,
+  editorFontSize,
+  wordWrap,
 }: EditorPaneProps) {
   return (
     <div className={styles.rightColumn}>
@@ -48,6 +52,10 @@ export function EditorPane({
           width="100%"
           language="glsl"
           defaultValue={shaderSource}
+          options={{
+            fontSize: editorFontSize,
+            wordWrap: wordWrap ? "on" : "off",
+          }}
           onChange={(value, _event) => {
             onShaderSourceChange(value ?? "");
           }}
