@@ -87,6 +87,17 @@
   overflow-x: auto;
   font-family: monospace;
 }
+.zoomControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0rem 0 0;
+}
+.zoomValue {
+  min-width: 3.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+}
 .statusBar {
   display: flex;
   align-items: center;

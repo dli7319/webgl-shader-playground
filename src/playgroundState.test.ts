@@ -101,6 +101,15 @@ describe("playgroundReducer", () => {
     expect(reset.compiledShader).toBe("edited");
   });
 
+  it("zoom actions step and clamp", () => {
+    const zoomed = playgroundReducer(start, { type: "zoomIn" });
+    expect(zoomed.zoomPercent).toBe(125);
+    const back = playgroundReducer(zoomed, { type: "zoomOut" });
+    expect(back.zoomPercent).toBe(100);
+    const set = playgroundReducer(start, { type: "setZoom", percent: 5000 });
+    expect(set.zoomPercent).toBe(400);
+  });
+
   it("setCompileError reports and clears GLSL errors", () => {
     const failed = playgroundReducer(start, {
       type: "setCompileError",

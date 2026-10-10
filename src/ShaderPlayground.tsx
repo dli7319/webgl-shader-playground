@@ -12,6 +12,7 @@ import { handleShortcutEvent } from "./shortcuts";
 import { createDebouncer } from "./debounce";
 import { compileStatusFrom } from "./status";
 import { confirmReset, isDirty } from "./guard";
+import { FIT_ZOOM } from "./zoom";
 import { createToastStore } from "./toast";
 import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
@@ -37,7 +38,12 @@ export default function ShaderPlayground() {
     toggleAutoRun,
     reportRun,
     resetEditorSource,
+    setZoom,
+    zoomIn,
+    zoomOut,
   } = usePlaygroundState();
+
+  const fitZoom = React.useCallback(() => setZoom(FIT_ZOOM), [setZoom]);
 
   const toastStore = React.useMemo(() => createToastStore(), []);
 
@@ -215,6 +221,10 @@ export default function ShaderPlayground() {
           screenshotError={state.screenshotError}
           status={compileStatusFrom(state.hasRun, state.compileError)}
           runDurationMs={state.runDurationMs}
+          zoomPercent={state.zoomPercent}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onZoomFit={fitZoom}
         />
         <EditorPane
           shaderSource={state.editorSource}

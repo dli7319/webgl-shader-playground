@@ -6,6 +6,7 @@ import {
   DEFAULT_SCREENSHOT_WIDTH,
   DEFAULT_TEXTURE_PATH,
 } from "./constants";
+import { clampZoom, FIT_ZOOM, zoomIn, zoomOut } from "./zoom";
 
 export interface PlaygroundState {
   /** Editor contents (may be dirty relative to compiledShader). */
@@ -33,6 +34,8 @@ export interface PlaygroundState {
   hasRun: boolean;
   /** Duration of the last apply, in milliseconds. */
   runDurationMs: number | null;
+  /** Preview zoom percentage (100 = fit to column). */
+  zoomPercent: number;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -51,6 +54,7 @@ export const initialPlaygroundState: PlaygroundState = {
   autoRun: false,
   hasRun: false,
   runDurationMs: null,
+  zoomPercent: FIT_ZOOM,
 };
 
 export type PlaygroundAction =
@@ -69,7 +73,10 @@ export type PlaygroundAction =
   | { type: "toggleTheme" }
   | { type: "toggleAutoRun" }
   | { type: "reportRun"; durationMs: number }
-  | { type: "resetEditor" };
+  | { type: "resetEditor" }
+  | { type: "setZoom"; percent: number }
+  | { type: "zoomIn" }
+  | { type: "zoomOut" };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -115,5 +122,11 @@ export function playgroundReducer(
       };
     case "resetEditor":
       return { ...state, editorSource: defaultFragmentShader };
+    case "setZoom":
+      return { ...state, zoomPercent: clampZoom(action.percent) };
+    case "zoomIn":
+      return { ...state, zoomPercent: zoomIn(state.zoomPercent) };
+    case "zoomOut":
+      return { ...state, zoomPercent: zoomOut(state.zoomPercent) };
   }
 }
