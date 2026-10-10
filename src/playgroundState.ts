@@ -1,8 +1,11 @@
 import defaultFragmentShader from "./shaders/fragment_shader.frag";
-
-export const DEFAULT_TEXTURE_PATH = "cat-7738210_1920.jpg";
-export const DEFAULT_SCREENSHOT_WIDTH = 1920;
-export const DEFAULT_SCREENSHOT_HEIGHT = 1080;
+import {
+  DEFAULT_DOWNLOAD_SHADER_FILENAME,
+  DEFAULT_SCREENSHOT_FILENAME,
+  DEFAULT_SCREENSHOT_HEIGHT,
+  DEFAULT_SCREENSHOT_WIDTH,
+  DEFAULT_TEXTURE_PATH,
+} from "./constants";
 
 export interface PlaygroundState {
   /** Editor contents (may be dirty relative to compiledShader). */
@@ -23,9 +26,9 @@ export const initialPlaygroundState: PlaygroundState = {
   compiledShader: defaultFragmentShader,
   width: DEFAULT_SCREENSHOT_WIDTH,
   height: DEFAULT_SCREENSHOT_HEIGHT,
-  screenshotFilename: "screenshot.png",
+  screenshotFilename: DEFAULT_SCREENSHOT_FILENAME,
   pendingScreenshotFilename: "",
-  downloadShaderFilename: "fragment.frag",
+  downloadShaderFilename: DEFAULT_DOWNLOAD_SHADER_FILENAME,
   texturePath: DEFAULT_TEXTURE_PATH,
 };
 
