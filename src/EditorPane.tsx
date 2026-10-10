@@ -6,6 +6,7 @@ import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
 import { Switch } from "./ui/Switch";
 import { ImageIcon } from "./ui/icons";
+import { ShaderHistory } from "./ShaderHistory";
 
 const MonacoGlslEditor = React.lazy(() =>
   import("./MonacoGlslEditor").then((module) => ({
@@ -104,6 +105,7 @@ export function EditorPane({
             Download Shader (Ctrl+S)
           </Button>
         </div>
+        <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
         <label className={`${controls.button} ${controls.contained}`}>
           <ImageIcon /> Pick tDiffuse Image
           <input
