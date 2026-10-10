@@ -12,6 +12,8 @@ import { applyThemeToDocument, buildTheme } from "./theme";
 import { handleShortcutEvent } from "./shortcuts";
 import { createDebouncer } from "./debounce";
 import { compileStatusFrom } from "./status";
+import { createToastStore } from "./toast";
+import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
@@ -37,6 +39,7 @@ export default function ShaderPlayground() {
   } = usePlaygroundState();
 
   const theme = React.useMemo(() => buildTheme(state.themeMode), [state.themeMode]);
+  const toastStore = React.useMemo(() => createToastStore(), []);
 
   React.useEffect(() => {
     applyThemeToDocument(state.themeMode);
@@ -143,12 +146,16 @@ export default function ShaderPlayground() {
         height: state.height,
       });
       setScreenshotError(result.ok ? null : result.error);
+      if (result.ok) {
+        toastStore.add(`Screenshot saved as ${state.pendingScreenshotFilename}`);
+      }
     }
     screenshotTaken();
   }, [state.pendingScreenshotFilename, state.width, state.height]);
 
   function downloadShader() {
     downloadTextFile(state.downloadShaderFilename, state.editorSource);
+    toastStore.add(`Shader downloaded as ${state.downloadShaderFilename}`);
   }
 
   // Global shortcuts (capture phase so Monaco doesn't swallow them).
@@ -200,6 +207,7 @@ export default function ShaderPlayground() {
             onToggleAutoRun={toggleAutoRun}
           />
         </div>
+        <ToastHost store={toastStore} />
       </div>
     </ThemeProvider>
   );
