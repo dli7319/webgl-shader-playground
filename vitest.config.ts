@@ -1,6 +1,17 @@
-import { defineConfig } from "vitest/config";
+import { defineConfig, type Plugin } from "vitest/config";
+
+/** Mirrors webpack's `asset/source` rule for .vert/.frag shader files. */
+const glslLoader: Plugin = {
+  name: "glsl-loader",
+  transform(code, id) {
+    if (id.endsWith(".frag") || id.endsWith(".vert")) {
+      return `export default ${JSON.stringify(code)};`;
+    }
+  },
+};
 
 export default defineConfig({
+  plugins: [glslLoader],
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.ts"],

@@ -5,23 +5,24 @@ import styles from "./styles/ShaderPlayground.module.css";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { usePlaygroundState } from "./usePlaygroundState";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
-import defaultFragmentShader from "./shaders/fragment_shader.frag";
 
 export default function ShaderPlayground() {
-  const [fragmentShader, setFragmentShader] = React.useState(defaultFragmentShader);
-  const [inputFragmentShader, setInputFragmentShader] =
-    React.useState(defaultFragmentShader);
-  const [width, setWidth] = React.useState(1920);
-  const [height, setHeight] = React.useState(1080);
-  const [screenshotFilename, setScreenshotFilename] = React.useState("screenshot.png");
-  const [captureScreenshotFilename, setCaptureScreenshotFilename] = React.useState("");
-  const [downloadShaderFilename, setDownloadShaderFilename] =
-    React.useState("fragment.frag");
-  const [tDiffuseImagePath, setTDiffuseImagePath] =
-    React.useState("cat-7738210_1920.jpg");
+  const {
+    state,
+    editSource,
+    runShader,
+    setWidth,
+    setHeight,
+    setScreenshotFilename,
+    captureScreenshot,
+    screenshotTaken,
+    setDownloadShaderFilename,
+    pickImage,
+  } = usePlaygroundState();
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const previewRef = React.useRef<ShaderPreview | null>(null);
@@ -35,7 +36,7 @@ export default function ShaderPlayground() {
     const preview = new ShaderPreview({
       canvas,
       vertexShader: defaultVertexShader,
-      fragmentShader,
+      fragmentShader: state.compiledShader,
     });
     previewRef.current = preview;
     if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
@@ -51,14 +52,14 @@ export default function ShaderPlayground() {
 
   // Apply the compiled shader whenever it changes.
   React.useEffect(() => {
-    previewRef.current?.setFragmentShader(fragmentShader);
-  }, [fragmentShader]);
+    previewRef.current?.setFragmentShader(state.compiledShader);
+  }, [state.compiledShader]);
 
   // Load the tDiffuse texture (bundled path or picked image data URL).
   React.useEffect(() => {
     let cancelled = false;
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(tDiffuseImagePath, (texture) => {
+    textureLoader.load(state.texturePath, (texture) => {
       if (cancelled) {
         texture.dispose();
         return;
@@ -68,7 +69,7 @@ export default function ShaderPlayground() {
     return () => {
       cancelled = true;
     };
-  }, [tDiffuseImagePath]);
+  }, [state.texturePath]);
 
   // Keep the drawing buffer in sync with the canvas' CSS size.
   React.useEffect(() => {
@@ -90,52 +91,44 @@ export default function ShaderPlayground() {
 
   // Screenshot flow (a side effect, so it lives in an effect).
   React.useEffect(() => {
-    if (!captureScreenshotFilename) {
+    if (!state.pendingScreenshotFilename) {
       return;
     }
     const preview = previewRef.current;
     if (preview) {
       captureAndDownloadSceneScreenshot(preview.scene, preview.camera, {
-        filename: captureScreenshotFilename,
-        width,
-        height,
+        filename: state.pendingScreenshotFilename,
+        width: state.width,
+        height: state.height,
       });
     }
-    setCaptureScreenshotFilename("");
-  }, [captureScreenshotFilename, width, height]);
-
-  function updateShader() {
-    setFragmentShader(inputFragmentShader);
-  }
+    screenshotTaken();
+  }, [state.pendingScreenshotFilename, state.width, state.height]);
 
   function downloadShader() {
-    downloadTextFile(downloadShaderFilename, inputFragmentShader);
-  }
-
-  function captureScreenshot() {
-    setCaptureScreenshotFilename(screenshotFilename);
+    downloadTextFile(state.downloadShaderFilename, state.editorSource);
   }
 
   return (
     <div className={styles.mainDiv}>
       <PreviewPane
         canvasRef={canvasRef}
-        width={width}
-        height={height}
+        width={state.width}
+        height={state.height}
         onWidthChange={setWidth}
         onHeightChange={setHeight}
-        screenshotFilename={screenshotFilename}
+        screenshotFilename={state.screenshotFilename}
         onScreenshotFilenameChange={setScreenshotFilename}
         onCaptureScreenshot={captureScreenshot}
       />
       <EditorPane
-        shaderSource={inputFragmentShader}
-        onShaderSourceChange={setInputFragmentShader}
-        onRunShader={updateShader}
-        downloadShaderFilename={downloadShaderFilename}
+        shaderSource={state.editorSource}
+        onShaderSourceChange={editSource}
+        onRunShader={runShader}
+        downloadShaderFilename={state.downloadShaderFilename}
         onDownloadShaderFilenameChange={setDownloadShaderFilename}
         onDownloadShader={downloadShader}
-        onPickImage={setTDiffuseImagePath}
+        onPickImage={pickImage}
       />
     </div>
   );
