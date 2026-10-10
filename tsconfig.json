@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
     "strict": true,
     "module": "esnext",
-    "target": "es2020",
-    "jsx": "react",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
     "allowJs": true,
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true
-  }
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src", "vitest.config.ts"]
 }
