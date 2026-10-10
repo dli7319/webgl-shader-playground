@@ -1,17 +1,14 @@
 import React from "react";
-import { Suspense } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { useTexture } from "@react-three/drei";
 import * as monaco from "monaco-editor";
-import { loader } from "@monaco-editor/react";
-import Editor from "@monaco-editor/react";
+import Editor, { loader } from "@monaco-editor/react";
 import TextField from "@mui/material/TextField";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import ImageIcon from "@mui/icons-material/Image";
 
 import styles from "./styles/ShaderPlayground.module.css";
+import { ShaderPreview } from "./preview";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
@@ -34,66 +31,6 @@ monaco.languages.register({ id: "glsl" });
 monaco.languages.setMonarchTokensProvider("glsl", language);
 loader.config({ monaco });
 
-function Scene({
-  fragmentShader,
-  tDiffuseImagePath,
-  screenshotFilename,
-  setScreenshotFilename,
-  screenshotWidth,
-  screenshotHeight,
-}: {
-  fragmentShader: string;
-  tDiffuseImagePath: string;
-  screenshotFilename: string;
-  setScreenshotFilename: (filename: string) => void;
-  screenshotWidth: number;
-  screenshotHeight: number;
-}) {
-  const shaderMaterialRef = React.useRef<THREE.ShaderMaterial>(null);
-  if (shaderMaterialRef.current) {
-    shaderMaterialRef.current.needsUpdate = true;
-  }
-  const texture = useTexture(tDiffuseImagePath, (texture) => {
-    if (shaderMaterialRef.current) {
-      console.log("Setting tDiffuse");
-      shaderMaterialRef.current.uniforms.tDiffuse.value = null;
-      shaderMaterialRef.current.uniforms.tDiffuse.value = texture;
-      shaderMaterialRef.current.needsUpdate = true;
-    }
-  });
-  const uniforms = {
-    tDiffuse: { value: texture },
-    opacity: { value: 1.0 },
-  };
-
-  const { scene, camera } = useThree();
-
-  if (screenshotFilename) {
-    captureAndDownloadSceneScreenshot(scene, camera, {
-      filename: screenshotFilename,
-      width: screenshotWidth,
-      height: screenshotHeight,
-    });
-    setScreenshotFilename("");
-  }
-
-  return (
-    <>
-      <mesh position={[0, 0, -1]}>
-        <planeGeometry args={[10, 10]} />
-        <shaderMaterial
-          vertexShader={defaultVertexShader}
-          fragmentShader={fragmentShader}
-          uniforms={uniforms}
-          side={THREE.DoubleSide}
-          ref={shaderMaterialRef}
-          needsUpdate={true}
-        />
-      </mesh>
-    </>
-  );
-}
-
 export default function ShaderPlayground() {
   const [fragmentShader, setFragmentShader] = React.useState(defaultFragmentShader);
   const [inputFragmentShader, setInputFragmentShader] =
@@ -106,6 +43,87 @@ export default function ShaderPlayground() {
     React.useState("fragment.frag");
   const [tDiffuseImagePath, setTDiffuseImagePath] =
     React.useState("cat-7738210_1920.jpg");
+
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const previewRef = React.useRef<ShaderPreview | null>(null);
+
+  // Create the renderer once and tear it down on unmount.
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    const preview = new ShaderPreview({
+      canvas,
+      vertexShader: defaultVertexShader,
+      fragmentShader,
+    });
+    previewRef.current = preview;
+    if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
+      preview.setSize(canvas.clientWidth, canvas.clientHeight);
+    }
+    preview.render();
+    return () => {
+      preview.dispose();
+      previewRef.current = null;
+    };
+    // Mount-only: updates flow through the effects below.
+  }, []);
+
+  // Apply the compiled shader whenever it changes.
+  React.useEffect(() => {
+    previewRef.current?.setFragmentShader(fragmentShader);
+  }, [fragmentShader]);
+
+  // Load the tDiffuse texture (bundled path or picked image data URL).
+  React.useEffect(() => {
+    let cancelled = false;
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(tDiffuseImagePath, (texture) => {
+      if (cancelled) {
+        texture.dispose();
+        return;
+      }
+      previewRef.current?.setTexture(texture);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [tDiffuseImagePath]);
+
+  // Keep the drawing buffer in sync with the canvas' CSS size.
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    const observer = new ResizeObserver(() => {
+      const preview = previewRef.current;
+      if (!preview) {
+        return;
+      }
+      preview.setSize(canvas.clientWidth, canvas.clientHeight);
+      preview.render();
+    });
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, []);
+
+  // Screenshot flow (a side effect, so it lives in an effect).
+  React.useEffect(() => {
+    if (!captureScreenshotFilename) {
+      return;
+    }
+    const preview = previewRef.current;
+    if (preview) {
+      captureAndDownloadSceneScreenshot(preview.scene, preview.camera, {
+        filename: captureScreenshotFilename,
+        width,
+        height,
+      });
+    }
+    setCaptureScreenshotFilename("");
+  }, [captureScreenshotFilename, width, height]);
 
   function updateShader() {
     setFragmentShader(inputFragmentShader);
@@ -122,38 +140,15 @@ export default function ShaderPlayground() {
   return (
     <div className={styles.mainDiv}>
       <div className={styles.leftColumn}>
-        <Canvas
+        <canvas
+          ref={canvasRef}
           className={styles.canvas}
-          orthographic={true}
-          camera={
-            {
-              left: -5,
-              right: 5,
-              top: 5,
-              bottom: -5,
-              near: 0.1,
-              far: 1000,
-              position: [0, 0, 1],
-              rotation: [0, 0, 0],
-            } as any
-          }
           style={{
             aspectRatio: width / height,
             width: "unset",
             height: "unset",
           }}
-        >
-          <Suspense fallback={null}>
-            <Scene
-              fragmentShader={fragmentShader}
-              tDiffuseImagePath={tDiffuseImagePath}
-              screenshotFilename={captureScreenshotFilename}
-              setScreenshotFilename={setCaptureScreenshotFilename}
-              screenshotWidth={width}
-              screenshotHeight={height}
-            />
-          </Suspense>
-        </Canvas>
+        />
         <div className={styles.screenshotControls}>
           <TextField
             label="Width"
