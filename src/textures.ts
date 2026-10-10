@@ -1,6 +1,9 @@
 import * as THREE from "three";
 
 import { DEFAULT_TEXTURE_PATH } from "./constants";
+import { createLogger } from "./logger";
+
+const logger = createLogger("texture");
 
 export type TextureLoaded = (texture: THREE.Texture) => void;
 export type TextureFailed = (message: string) => void;
@@ -16,14 +19,25 @@ export function loadTextureWithFallback(
   onFailure: TextureFailed,
   loader: THREE.TextureLoader = new THREE.TextureLoader()
 ): void {
-  loader.load(path, onTexture, undefined, () => {
-    if (path !== DEFAULT_TEXTURE_PATH) {
-      onFailure(`Could not load texture "${path}" — using the default texture instead.`);
-      loader.load(DEFAULT_TEXTURE_PATH, onTexture, undefined, () =>
-        onFailure(`Could not load the default texture "${DEFAULT_TEXTURE_PATH}".`)
-      );
-    } else {
-      onFailure(`Could not load the default texture "${DEFAULT_TEXTURE_PATH}".`);
+  loader.load(
+    path,
+    (texture) => {
+      logger.debug(`Loaded texture "${path}"`);
+      onTexture(texture);
+    },
+    undefined,
+    () => {
+      logger.warn(`Failed to load texture "${path}"`);
+      if (path !== DEFAULT_TEXTURE_PATH) {
+        onFailure(
+          `Could not load texture "${path}" — using the default texture instead.`
+        );
+        loader.load(DEFAULT_TEXTURE_PATH, onTexture, undefined, () =>
+          onFailure(`Could not load the default texture "${DEFAULT_TEXTURE_PATH}".`)
+        );
+      } else {
+        onFailure(`Could not load the default texture "${DEFAULT_TEXTURE_PATH}".`);
+      }
     }
-  });
+  );
 }
