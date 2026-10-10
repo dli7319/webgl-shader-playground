@@ -1,16 +1,16 @@
 import React from "react";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
-import { createShaderStore } from "./shaderStore";
+import type { ShaderStore } from "./shaderStore";
 
 export interface ShaderHistoryProps {
+  store: ShaderStore;
   currentSource: string;
   onApply: (source: string) => void;
 }
 
-/** Named shader saves backed by localStorage. */
-export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
-  const store = React.useMemo(() => createShaderStore(window.localStorage), []);
+/** Named shader saves backed by localStorage — the ARCHIVE drawer group. */
+export function ShaderHistory({ store, currentSource, onApply }: ShaderHistoryProps) {
   const entries = React.useSyncExternalStore(store.subscribe, store.getSnapshot);
   const [name, setName] = React.useState("");
 
@@ -24,12 +24,19 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="surface-panel my-2 flex flex-col gap-2 p-2">
-      <div className="flex items-baseline gap-2" aria-hidden="true">
+    <div
+      id="archive-drawer"
+      className="drawer"
+      role="region"
+      aria-label="Archive"
+    >
+      <div className="flex min-w-0 flex-wrap items-baseline gap-2" aria-hidden="true">
         <span className="section-label">Archive</span>
-        <span className="micro-label grow opacity-60">saved shaders</span>
+        <span className="micro-label grow opacity-60">
+          saved shaders · {entries.length}
+        </span>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-row flex-wrap items-center gap-2">
         <TextField
           label="Save as"
           value={name}

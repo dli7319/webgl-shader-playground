@@ -6,14 +6,25 @@ export interface StatusBarProps {
   runDurationMs: number | null;
   width: number;
   height: number;
+  /** Read-only config state line (filenames, auto-run, texture). */
+  configDetail?: string;
+  /** Live recording flag — recolors in place, never moves. */
+  recording?: boolean;
 }
 
-/** Small read-only strip under the preview summarizing playground state. */
-export function StatusBar({ status, runDurationMs, width, height }: StatusBarProps) {
+/** Read-only status line at the foot of the output console. */
+export function StatusBar({
+  status,
+  runDurationMs,
+  width,
+  height,
+  configDetail,
+  recording = false,
+}: StatusBarProps) {
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-2 flex items-center gap-2 px-2 py-1 text-sm text-ink opacity-85"
+      className="flex flex-wrap items-center gap-2 border-t border-edge px-2 py-1.5 text-sm text-ink opacity-85"
       role="status"
     >
       <span
@@ -30,6 +41,18 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
       <span aria-hidden="true">·</span>
       <span>
         Export {width}×{height}
+      </span>
+      {configDetail ? (
+        <>
+          <span aria-hidden="true">·</span>
+          <span className="micro-label normal-case tracking-[0.08em] opacity-80">
+            {configDetail}
+          </span>
+        </>
+      ) : null}
+      <span aria-hidden="true">·</span>
+      <span className="micro-label rec-flag" data-live={recording ? "true" : "false"}>
+        {recording ? "● rec" : "○ rec"}
       </span>
     </div>
   );

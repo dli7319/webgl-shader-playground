@@ -3,6 +3,9 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { CommandRow } from "./CommandRow";
+import { ConfigPanel } from "./ConfigPanel";
+import { ConsoleStrip } from "./ConsoleStrip";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
@@ -20,6 +23,8 @@ import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { clearDraft, loadDraft, saveDraft } from "./draftStore";
 import { downloadTextFile, triggerDownload } from "./download";
+import { createShaderStore } from "./shaderStore";
+import { ShaderHistory } from "./ShaderHistory";
 import {
   createRecordingSession,
   pickRecordingMimeType,
@@ -58,8 +63,17 @@ export default function ShaderPlayground() {
   } = usePlaygroundState(React.useMemo(() => loadSettings(window.localStorage), []));
 
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [configOpen, setConfigOpen] = React.useState(false);
+  const [archiveOpen, setArchiveOpen] = React.useState(false);
   const [pendingDraft] = React.useState(() => loadDraft(window.localStorage));
   const [draftDismissed, setDraftDismissed] = React.useState(false);
+
+  // Archive store lives here so the ARCHIVE command can print its count.
+  const shaderStore = React.useMemo(() => createShaderStore(window.localStorage), []);
+  const savedShaders = React.useSyncExternalStore(
+    shaderStore.subscribe,
+    shaderStore.getSnapshot
+  );
 
   // Auto-save the editor as a draft (skipped while the restore prompt is
   // still up, so mounting the app can't clobber the previous session's draft).
@@ -288,10 +302,25 @@ export default function ShaderPlayground() {
     }
   }
 
+  // State read-outs: hidden groups report their state beside their toggles
+  // and in the console status line.
+  const textureLabel = state.texturePath.startsWith("data:")
+    ? "custom image"
+    : "default texture";
+  const configSummary = `${state.width}×${state.height} · ${state.screenshotFilename} · ${state.downloadShaderFilename}`;
+  const configDetail = [
+    `shot: ${state.screenshotFilename}`,
+    `file: ${state.downloadShaderFilename}`,
+    `auto: ${state.autoRun ? "on" : "off"}`,
+    `tDiffuse: ${textureLabel}`,
+  ].join(" · ");
+  const archiveSummary =
+    savedShaders.length === 0 ? "no saves" : `${savedShaders.length} saved`;
+
   return (
-    <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex items-center gap-2">
-        <div className="flex grow items-baseline gap-2" aria-hidden="true">
+    <div className="flex min-h-screen flex-col bg-app text-ink">
+      <header className="flex flex-wrap items-center gap-2 border-b border-edge px-2 py-1.5">
+        <div className="flex min-w-0 flex-wrap items-baseline gap-2" aria-hidden="true">
           <span className="section-label">Phosphor Terminal</span>
           <span className="micro-label opacity-60">webgl shader playground</span>
         </div>
@@ -307,13 +336,10 @@ export default function ShaderPlayground() {
             {isRecording ? "Stop recording" : "Record (WebM)"}
           </Button>
         ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-          Settings
-        </Button>
-      </div>
+      </header>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="surface-panel my-2 flex items-center gap-2 p-2 text-sm"
+          className="surface-panel mx-2 my-2 flex items-center gap-2 p-2 text-sm"
           role="status"
         >
           <span className="grow">Unsaved draft from your last session is available.</span>
@@ -338,44 +364,75 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
+      <div className="m-2 flex flex-1 flex-row gap-2 max-[900px]:flex-col">
+        <EditorPane
+          shaderSource={state.editorSource}
+          onShaderSourceChange={editSource}
+          editorFontSize={state.editorFontSize}
+          wordWrap={state.wordWrap}
+          themeMode={state.themeMode}
+        />
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
           height={state.height}
-          onWidthChange={setWidth}
-          onHeightChange={setHeight}
-          screenshotFilename={state.screenshotFilename}
-          onScreenshotFilenameChange={setScreenshotFilename}
-          onCaptureScreenshot={captureScreenshot}
-          compileError={state.compileError}
-          textureError={state.textureError}
-          screenshotError={state.screenshotError}
-          status={compileStatusFrom(state.hasRun, state.compileError)}
-          runDurationMs={state.runDurationMs}
           zoomPercent={state.zoomPercent}
           onZoomIn={zoomIn}
           onZoomOut={zoomOut}
           onZoomFit={fitZoom}
         />
-        <EditorPane
-          shaderSource={state.editorSource}
-          onShaderSourceChange={editSource}
+      </div>
+      <div className="mx-2 mb-2 flex flex-col gap-2">
+        {configOpen ? (
+          <ConfigPanel
+            width={state.width}
+            height={state.height}
+            onWidthChange={setWidth}
+            onHeightChange={setHeight}
+            screenshotFilename={state.screenshotFilename}
+            onScreenshotFilenameChange={setScreenshotFilename}
+            onCaptureScreenshot={captureScreenshot}
+            downloadShaderFilename={state.downloadShaderFilename}
+            onDownloadShaderFilenameChange={setDownloadShaderFilename}
+            onDownloadShader={downloadShader}
+            onPickImage={pickImage}
+            textureLabel={textureLabel}
+            autoRun={state.autoRun}
+            onToggleAutoRun={toggleAutoRun}
+            onResetShader={resetShader}
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+        ) : null}
+        {archiveOpen ? (
+          <ShaderHistory
+            store={shaderStore}
+            currentSource={state.editorSource}
+            onApply={editSource}
+          />
+        ) : null}
+        <ConsoleStrip
+          compileError={state.compileError}
+          textureError={state.textureError}
+          screenshotError={state.screenshotError}
+          status={compileStatusFrom(state.hasRun, state.compileError)}
+          runDurationMs={state.runDurationMs}
+          width={state.width}
+          height={state.height}
+          configDetail={configDetail}
+          recording={isRecording}
+        />
+        <CommandRow
           onRunShader={runShader}
-          downloadShaderFilename={state.downloadShaderFilename}
-          onDownloadShaderFilenameChange={setDownloadShaderFilename}
-          onDownloadShader={downloadShader}
-          onPickImage={pickImage}
-          autoRun={state.autoRun}
-          onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
-          editorFontSize={state.editorFontSize}
-          wordWrap={state.wordWrap}
-          themeMode={state.themeMode}
-          canUndo={canUndo(state.history)}
-          canRedo={canRedo(state.history)}
           onUndo={undoEditor}
           onRedo={redoEditor}
+          canUndo={canUndo(state.history)}
+          canRedo={canRedo(state.history)}
+          configOpen={configOpen}
+          onToggleConfig={() => setConfigOpen((open) => !open)}
+          configSummary={configSummary}
+          archiveOpen={archiveOpen}
+          onToggleArchive={() => setArchiveOpen((open) => !open)}
+          archiveSummary={archiveSummary}
         />
       </div>
       <ToastHost store={toastStore} />
