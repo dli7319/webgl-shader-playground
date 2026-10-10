@@ -1,6 +1,6 @@
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen } from "@testing-library/preact";
+import { cleanup, fireEvent, render, screen } from "@testing-library/preact";
 import { PreviewPane } from "./PreviewPane";
 
 afterEach(cleanup);
@@ -15,11 +15,6 @@ function renderPane(
       canvasRef={{ current: null }}
       width={1920}
       height={1080}
-      onWidthChange={() => {}}
-      onHeightChange={() => {}}
-      screenshotFilename="screenshot.png"
-      onScreenshotFilenameChange={() => {}}
-      onCaptureScreenshot={() => {}}
       compileError={compileError}
       textureError={textureError}
       screenshotError={screenshotError}
@@ -46,13 +41,6 @@ describe("PreviewPane compile error banner", () => {
     expect(screen.queryByRole("alert", { hidden: false })).toBeNull();
   });
 
-  it("renders the screenshot controls regardless of errors", () => {
-    renderPane("ERROR: bad shader");
-    expect(screen.getByText("Screenshot!")).toBeTruthy();
-    expect(screen.getByLabelText("Width")).toBeTruthy();
-    expect(screen.getByLabelText("Height")).toBeTruthy();
-  });
-
   it("shows the texture load failure notice", () => {
     renderPane(
       null,
@@ -76,14 +64,23 @@ describe("PreviewPane compile error banner", () => {
     expect(alerts[0].textContent).toContain("Screenshot error");
     expect(alerts[0].textContent).toContain("shot.gif");
   });
+});
 
-  it("exposes accessible names for the preview and its controls", () => {
+describe("PreviewPane specimen block", () => {
+  it("exposes the preview image and the zoom summary bracket", () => {
     renderPane();
     expect(screen.getByRole("img", { name: "Shader preview output" })).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot width in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot height in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot filename")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Screenshot!" })).toBeTruthy();
+    const bracket = screen.getByRole("button", { name: "[ Zoom · 100% ]" });
+    expect(bracket.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("keeps the zoom cluster hidden until its summary opens it", () => {
+    renderPane();
+    expect(screen.queryByRole("button", { name: "Zoom out" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "[ Zoom · 100% ]" }));
+    expect(screen.getByRole("button", { name: "Zoom out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Fit" })).toBeTruthy();
   });
 
   it("shows the status bar", () => {

@@ -13,7 +13,7 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-3 flex items-center gap-2 border-2 border-edge bg-panel px-3 py-1.5 font-mono text-[0.68rem] font-bold uppercase tracking-[0.14em] text-ink shadow-[3px_3px_0_var(--border)]"
+      className="m-3 flex items-center gap-2 border-2 border-edge bg-panel px-3 py-1.5 font-mono text-[0.68rem] font-bold uppercase tracking-[0.14em] text-ink shadow-[3px_3px_0_var(--border)]"
       role="status"
     >
       <span

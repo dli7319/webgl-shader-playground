@@ -3,6 +3,8 @@ import { openApp } from "./support";
 
 test("download shader exports the editor source", async ({ page }) => {
   await openApp(page);
+  // Download lives in the SOURCE FILE slab — open it from its rail bracket.
+  await page.getByRole("button", { name: /source file ·/i }).click();
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /download shader/i }).click();
@@ -22,6 +24,8 @@ test("picking a texture image updates the preview without errors", async ({ page
     "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR4nGP8z8Dwn4GBgYEJAAAWAQMDNTXnWAAAAABJRU5ErkJggg==",
     "base64"
   );
+  // The texture pick lives in the TEXTURE slab — open it from its rail bracket.
+  await page.getByRole("button", { name: /texture ·/i }).click();
   await page.getByLabel("Choose a texture image").setInputFiles({
     name: "texture.png",
     mimeType: "image/png",
@@ -39,6 +43,8 @@ test("zoom controls resize the preview canvas", async ({ page }) => {
   const canvas = page.locator("canvas").first();
   const initial = (await canvas.boundingBox())!.width;
 
+  // The zoom cluster is disclosed from the SPECIMEN caption summary.
+  await page.getByRole("button", { name: /zoom ·/i }).click();
   await page.getByRole("button", { name: "Zoom in" }).click();
   await expect
     .poll(async () => (await canvas.boundingBox())!.width)

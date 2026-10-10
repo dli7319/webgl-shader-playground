@@ -3,6 +3,8 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { ToolSlabs, type SlabId, type SlabStateInfo } from "./ToolSlabs";
+import { ControlRail } from "./ControlRail";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
@@ -26,7 +28,15 @@ import {
   recordingFilename,
   type RecordingSession,
 } from "./recorder";
+import { createShaderStore, type SavedShader } from "./shaderStore";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
+
+const ALL_CLOSED: Record<SlabId, boolean> = {
+  capture: false,
+  file: false,
+  history: false,
+  texture: false,
+};
 
 export default function ShaderPlayground() {
   const {
@@ -58,8 +68,23 @@ export default function ShaderPlayground() {
   } = usePlaygroundState(React.useMemo(() => loadSettings(window.localStorage), []));
 
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [prefsOpen, setPrefsOpen] = React.useState(false);
+  const [openSlabs, setOpenSlabs] = React.useState<Record<SlabId, boolean>>(
+    () => ({ ...ALL_CLOSED })
+  );
   const [pendingDraft] = React.useState(() => loadDraft(window.localStorage));
   const [draftDismissed, setDraftDismissed] = React.useState(false);
+
+  function toggleSlab(id: SlabId) {
+    setOpenSlabs((slabs) => ({ ...slabs, [id]: !slabs[id] }));
+  }
+
+  // Saved-shader history store (shared by the slab stack and the rail summary).
+  const shaderStore = React.useMemo(() => createShaderStore(window.localStorage), []);
+  const savedShaders = React.useSyncExternalStore<SavedShader[]>(
+    shaderStore.subscribe,
+    shaderStore.getSnapshot
+  );
 
   // Auto-save the editor as a draft (skipped while the restore prompt is
   // still up, so mounting the app can't clobber the previous session's draft).
@@ -288,9 +313,21 @@ export default function ShaderPlayground() {
     }
   }
 
+  const slabInfo: SlabStateInfo = {
+    width: state.width,
+    height: state.height,
+    screenshotFilename: state.screenshotFilename,
+    isRecording,
+    downloadShaderFilename: state.downloadShaderFilename,
+    savedCount: savedShaders.length,
+    textureLabel: state.texturePath.startsWith("data:")
+      ? "Custom image"
+      : state.texturePath,
+  };
+
   return (
     <div className="min-h-screen bg-app text-ink">
-      <div className="mx-3 mt-3 flex items-stretch justify-between gap-3">
+      <header className="masthead mx-3 mt-3">
         <div aria-hidden="true" className="flex items-center gap-3">
           <span className="section-label px-3 py-1 text-[0.85rem] tracking-[0.28em]">
             WebGL Shader Playground
@@ -299,24 +336,31 @@ export default function ShaderPlayground() {
             GLSL · WebGL · Offline
           </span>
         </div>
-        <div className="flex flex-wrap items-center justify-end gap-3">
-          <Button variant="outlined" onClick={toggleTheme}>
-            {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-          </Button>
-          {recordingSupported ? (
-            <Button
-              variant="outlined"
-              tone={isRecording ? "warning" : undefined}
-              onClick={toggleRecording}
-            >
-              {isRecording ? "Stop recording" : "Record (WebM)"}
+        <div className="relative flex items-center gap-3">
+          <button
+            type="button"
+            className="bracket-btn"
+            aria-expanded={prefsOpen}
+            aria-controls="prefs-pop"
+            onClick={() => setPrefsOpen((open) => !open)}
+          >
+            {`[ Prefs · ${state.themeMode} ]`}
+          </button>
+          <div
+            id="prefs-pop"
+            className="surface-panel absolute right-0 top-full z-40 flex w-max flex-col items-stretch gap-3 p-3"
+            hidden={!prefsOpen}
+          >
+            <span className="section-label">Preferences</span>
+            <Button variant="outlined" onClick={toggleTheme}>
+              {state.themeMode === "light" ? "Dark theme" : "Light theme"}
             </Button>
-          ) : null}
-          <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-            Settings
-          </Button>
+            <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+              Settings
+            </Button>
+          </div>
         </div>
-      </div>
+      </header>
       {pendingDraft && !draftDismissed ? (
         <div
           className="surface-panel mx-3 my-3 flex items-center gap-3 px-4 py-3 text-sm"
@@ -344,37 +388,10 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-3 flex flex-row gap-5 max-[900px]:flex-col">
-        <PreviewPane
-          canvasRef={canvasRef}
-          width={state.width}
-          height={state.height}
-          onWidthChange={setWidth}
-          onHeightChange={setHeight}
-          screenshotFilename={state.screenshotFilename}
-          onScreenshotFilenameChange={setScreenshotFilename}
-          onCaptureScreenshot={captureScreenshot}
-          compileError={state.compileError}
-          textureError={state.textureError}
-          screenshotError={state.screenshotError}
-          status={compileStatusFrom(state.hasRun, state.compileError)}
-          runDurationMs={state.runDurationMs}
-          zoomPercent={state.zoomPercent}
-          onZoomIn={zoomIn}
-          onZoomOut={zoomOut}
-          onZoomFit={fitZoom}
-        />
+      <main className="mx-3 mb-3 flex flex-row items-start gap-5 max-[900px]:flex-col">
         <EditorPane
           shaderSource={state.editorSource}
           onShaderSourceChange={editSource}
-          onRunShader={runShader}
-          downloadShaderFilename={state.downloadShaderFilename}
-          onDownloadShaderFilenameChange={setDownloadShaderFilename}
-          onDownloadShader={downloadShader}
-          onPickImage={pickImage}
-          autoRun={state.autoRun}
-          onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
           editorFontSize={state.editorFontSize}
           wordWrap={state.wordWrap}
           themeMode={state.themeMode}
@@ -383,7 +400,54 @@ export default function ShaderPlayground() {
           onUndo={undoEditor}
           onRedo={redoEditor}
         />
-      </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-4 max-[900px]:w-full">
+          <PreviewPane
+            canvasRef={canvasRef}
+            width={state.width}
+            height={state.height}
+            compileError={state.compileError}
+            textureError={state.textureError}
+            screenshotError={state.screenshotError}
+            status={compileStatusFrom(state.hasRun, state.compileError)}
+            runDurationMs={state.runDurationMs}
+            zoomPercent={state.zoomPercent}
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            onZoomFit={fitZoom}
+          />
+          <ToolSlabs
+            openSlabs={openSlabs}
+            info={slabInfo}
+            width={state.width}
+            height={state.height}
+            onWidthChange={setWidth}
+            onHeightChange={setHeight}
+            screenshotFilename={state.screenshotFilename}
+            onScreenshotFilenameChange={setScreenshotFilename}
+            onCaptureScreenshot={captureScreenshot}
+            recordingSupported={recordingSupported}
+            isRecording={isRecording}
+            onToggleRecording={toggleRecording}
+            downloadShaderFilename={state.downloadShaderFilename}
+            onDownloadShaderFilenameChange={setDownloadShaderFilename}
+            onDownloadShader={downloadShader}
+            onResetShader={resetShader}
+            entries={savedShaders}
+            onSaveShader={(name) => shaderStore.save(name, state.editorSource)}
+            onRemoveShader={shaderStore.remove}
+            onApplyShader={editSource}
+            onPickImage={pickImage}
+          />
+        </div>
+      </main>
+      <ControlRail
+        autoRun={state.autoRun}
+        onToggleAutoRun={toggleAutoRun}
+        onRunShader={runShader}
+        openSlabs={openSlabs}
+        onToggleSlab={toggleSlab}
+        info={slabInfo}
+      />
       <ToastHost store={toastStore} />
       {settingsOpen ? (
         <SettingsDialog

@@ -4,6 +4,8 @@ import { openApp } from "./support";
 test("settings persist across a full reload", async ({ page }) => {
   await openApp(page);
 
+  // The Settings button lives behind the PREFS bracket summary.
+  await page.getByRole("button", { name: /prefs ·/i }).click();
   await page.getByRole("button", { name: "Settings" }).click();
   const dialog = page.getByRole("dialog", { name: "Settings" });
   await expect(dialog).toBeVisible();
@@ -18,6 +20,7 @@ test("settings persist across a full reload", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
   // Font size persisted too: change it, reload, read it back from the dialog.
+  await page.getByRole("button", { name: /prefs ·/i }).click();
   await page.getByRole("button", { name: "Settings" }).click();
   const fontSize = page.getByLabel("Editor font size");
   await fontSize.fill("20");
@@ -27,6 +30,7 @@ test("settings persist across a full reload", async ({ page }) => {
     .click();
 
   await page.reload();
+  await page.getByRole("button", { name: /prefs ·/i }).click();
   await page.getByRole("button", { name: "Settings" }).click();
   await expect(page.getByLabel("Editor font size")).toHaveValue("20");
 });

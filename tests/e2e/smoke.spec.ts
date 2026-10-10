@@ -6,6 +6,8 @@ test("app boots with preview, editor, and controls", async ({ page }) => {
   await openApp(page);
 
   await expect(page.getByRole("button", { name: /run shader/i })).toBeVisible();
+  // Screenshot! lives in the CAPTURE slab now — open it from its rail bracket.
+  await page.getByRole("button", { name: /capture ·/i }).click();
   await expect(page.getByRole("button", { name: /screenshot!/i })).toBeVisible();
   await expect(page.getByRole("region", { name: "Shader editor" })).toBeVisible();
   await expect(
@@ -28,6 +30,8 @@ test("app boots with preview, editor, and controls", async ({ page }) => {
 
 test("theme toggle switches the document theme", async ({ page }) => {
   await openApp(page);
+  // The theme toggle lives behind the PREFS bracket summary.
+  await page.getByRole("button", { name: /prefs ·/i }).click();
   await page.getByRole("button", { name: /dark theme/i }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.getByRole("button", { name: /light theme/i }).click();
