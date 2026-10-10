@@ -43,6 +43,10 @@ and export screenshots or the shader source when you're happy with it.
 
 Requirements: Node.js 22+.
 
+Browser support: modern evergreen browsers (Chrome/Edge 100+, Firefox 100+,
+Safari 15.4+) — the app ships as native ESM with ES2022 syntax (see
+`.browserslistrc`). Older browsers get a friendly in-page message.
+
 ```sh
 npm ci          # install dependencies
 npm run dev     # start the dev server with hot reload

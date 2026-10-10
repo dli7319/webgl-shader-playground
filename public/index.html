@@ -16,6 +16,15 @@
       }
     </style>
     <script type="module" src="main.js"></script>
+    <script nomodule>
+      document.addEventListener("DOMContentLoaded", function () {
+        var note = document.createElement("p");
+        note.style.padding = "1rem";
+        note.textContent =
+          "This app needs a modern browser (Chrome/Edge 100+, Firefox 100+, Safari 15.4+).";
+        document.body.appendChild(note);
+      });
+    </script>
   </head>
 
   <body>
