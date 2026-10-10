@@ -19,6 +19,8 @@ export interface PlaygroundState {
   pendingScreenshotFilename: string;
   downloadShaderFilename: string;
   texturePath: string;
+  /** Latest GLSL compile error, or null when the shader compiles. */
+  compileError: string | null;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -30,6 +32,7 @@ export const initialPlaygroundState: PlaygroundState = {
   pendingScreenshotFilename: "",
   downloadShaderFilename: DEFAULT_DOWNLOAD_SHADER_FILENAME,
   texturePath: DEFAULT_TEXTURE_PATH,
+  compileError: null,
 };
 
 export type PlaygroundAction =
@@ -41,7 +44,8 @@ export type PlaygroundAction =
   | { type: "captureScreenshot" }
   | { type: "screenshotTaken" }
   | { type: "setDownloadShaderFilename"; filename: string }
-  | { type: "pickImage"; texturePath: string };
+  | { type: "pickImage"; texturePath: string }
+  | { type: "setCompileError"; error: string | null };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -66,5 +70,7 @@ export function playgroundReducer(
       return { ...state, downloadShaderFilename: action.filename };
     case "pickImage":
       return { ...state, texturePath: action.texturePath };
+    case "setCompileError":
+      return { ...state, compileError: action.error };
   }
 }

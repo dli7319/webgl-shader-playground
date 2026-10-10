@@ -65,6 +65,19 @@ describe("playgroundReducer", () => {
     expect(next.editorSource).toBe(start.editorSource);
   });
 
+  it("setCompileError reports and clears GLSL errors", () => {
+    const failed = playgroundReducer(start, {
+      type: "setCompileError",
+      error: "ERROR: 0:1: unexpected token",
+    });
+    expect(failed.compileError).toBe("ERROR: 0:1: unexpected token");
+    const fixed = playgroundReducer(failed, {
+      type: "setCompileError",
+      error: null,
+    });
+    expect(fixed.compileError).toBeNull();
+  });
+
   it("actions never mutate the previous state", () => {
     const frozen = Object.freeze({ ...start });
     playgroundReducer(frozen, { type: "editSource", source: "x" });
