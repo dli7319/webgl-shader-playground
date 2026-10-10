@@ -1,18 +1,17 @@
 import React from "react";
-import Editor, { loader } from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
 
 import styles from "./styles/ShaderPlayground.module.css";
 import controls from "./styles/controls.module.css";
-import { language } from "./glsl";
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
 import { Switch } from "./ui/Switch";
 import { ImageIcon } from "./ui/icons";
 
-monaco.languages.register({ id: "glsl" });
-monaco.languages.setMonarchTokensProvider("glsl", language);
-loader.config({ monaco });
+const MonacoGlslEditor = React.lazy(() =>
+  import("./MonacoGlslEditor").then((module) => ({
+    default: module.MonacoGlslEditor,
+  }))
+);
 
 export interface EditorPaneProps {
   shaderSource: string;
@@ -47,19 +46,20 @@ export function EditorPane({
   return (
     <div className={styles.rightColumn}>
       <div id="editorParent" role="region" aria-label="Shader editor">
-        <Editor
-          height="40vh"
-          width="100%"
-          language="glsl"
-          defaultValue={shaderSource}
-          options={{
-            fontSize: editorFontSize,
-            wordWrap: wordWrap ? "on" : "off",
-          }}
-          onChange={(value, _event) => {
-            onShaderSourceChange(value ?? "");
-          }}
-        />
+        <React.Suspense
+          fallback={<div className={styles.editorFallback}>Loading editor…</div>}
+        >
+          <MonacoGlslEditor
+            height="40vh"
+            width="100%"
+            defaultValue={shaderSource}
+            options={{
+              fontSize: editorFontSize,
+              wordWrap: wordWrap ? "on" : "off",
+            }}
+            onChange={onShaderSourceChange}
+          />
+        </React.Suspense>
         <div>
           <Button
             variant="outlined"
