@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+import { PREVIEW_CAMERA, PREVIEW_PLANE_SIZE } from "./constants";
+
 export interface ShaderPreviewOptions {
   canvas: HTMLCanvasElement;
   vertexShader: string;
@@ -27,8 +29,15 @@ export class ShaderPreview {
 
   constructor(options: ShaderPreviewOptions) {
     this.renderer = (options.createRenderer ?? createPreviewRenderer)(options.canvas);
-    this.camera = new THREE.OrthographicCamera(-5, 5, 5, -5, 0.1, 1000);
-    this.camera.position.set(0, 0, 1);
+    this.camera = new THREE.OrthographicCamera(
+      PREVIEW_CAMERA.left,
+      PREVIEW_CAMERA.right,
+      PREVIEW_CAMERA.top,
+      PREVIEW_CAMERA.bottom,
+      PREVIEW_CAMERA.near,
+      PREVIEW_CAMERA.far
+    );
+    this.camera.position.set(0, 0, PREVIEW_CAMERA.positionZ);
     this.camera.rotation.set(0, 0, 0);
 
     this.material = new THREE.ShaderMaterial({
@@ -41,9 +50,9 @@ export class ShaderPreview {
       side: THREE.DoubleSide,
     });
 
-    this.geometry = new THREE.PlaneGeometry(10, 10);
+    this.geometry = new THREE.PlaneGeometry(PREVIEW_PLANE_SIZE, PREVIEW_PLANE_SIZE);
     this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.mesh.position.set(0, 0, -1);
+    this.mesh.position.set(0, 0, PREVIEW_CAMERA.meshZ);
     this.scene.add(this.mesh);
   }
 
