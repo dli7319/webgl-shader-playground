@@ -1,7 +1,7 @@
 // Offline app shell: cache-first with runtime caching. The first online
 // visit populates the cache (hashed chunks included); later visits — and
 // offline reloads — are served from it.
-const CACHE_NAME = "shader-playground-v1";
+const CACHE_NAME = "shader-playground-v2";
 
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest"];
 
