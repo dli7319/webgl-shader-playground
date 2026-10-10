@@ -90,6 +90,17 @@ describe("playgroundReducer", () => {
     expect(ran.runDurationMs).toBe(4.2);
   });
 
+  it("resetEditor restores the default editor source only", () => {
+    const edited = playgroundReducer(start, {
+      type: "editSource",
+      source: "edited",
+    });
+    const ran = playgroundReducer(edited, { type: "runShader" });
+    const reset = playgroundReducer(ran, { type: "resetEditor" });
+    expect(reset.editorSource).toBe(start.editorSource);
+    expect(reset.compiledShader).toBe("edited");
+  });
+
   it("setCompileError reports and clears GLSL errors", () => {
     const failed = playgroundReducer(start, {
       type: "setCompileError",

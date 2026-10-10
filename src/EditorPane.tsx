@@ -37,6 +37,7 @@ export interface EditorPaneProps {
   onPickImage: (dataUrl: string) => void;
   autoRun: boolean;
   onToggleAutoRun: () => void;
+  onResetShader: () => void;
 }
 
 /** GLSL editor plus run/download/texture controls. */
@@ -50,6 +51,7 @@ export function EditorPane({
   onPickImage,
   autoRun,
   onToggleAutoRun,
+  onResetShader,
 }: EditorPaneProps) {
   return (
     <div className={styles.rightColumn}>
@@ -75,6 +77,9 @@ export function EditorPane({
             control={<Switch checked={autoRun} onChange={onToggleAutoRun} />}
             label="Auto-run while typing"
           />
+          <Button variant="outlined" color="warning" onClick={onResetShader}>
+            Reset to default shader
+          </Button>
         </div>
         <div className={styles.downloadShaderOptions}>
           <TextField

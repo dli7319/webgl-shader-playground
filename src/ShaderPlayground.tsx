@@ -12,6 +12,7 @@ import { applyThemeToDocument, buildTheme } from "./theme";
 import { handleShortcutEvent } from "./shortcuts";
 import { createDebouncer } from "./debounce";
 import { compileStatusFrom } from "./status";
+import { confirmReset, isDirty } from "./guard";
 import { createToastStore } from "./toast";
 import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
@@ -36,6 +37,7 @@ export default function ShaderPlayground() {
     toggleTheme,
     toggleAutoRun,
     reportRun,
+    resetEditorSource,
   } = usePlaygroundState();
 
   const theme = React.useMemo(() => buildTheme(state.themeMode), [state.themeMode]);
@@ -158,6 +160,28 @@ export default function ShaderPlayground() {
     toastStore.add(`Shader downloaded as ${state.downloadShaderFilename}`);
   }
 
+  function resetShader() {
+    if (
+      confirmReset(state.editorSource, state.compiledShader, (message) =>
+        window.confirm(message)
+      )
+    ) {
+      resetEditorSource();
+    }
+  }
+
+  // Warn before leaving the page with uncompiled edits.
+  React.useEffect(() => {
+    function onBeforeUnload(event: BeforeUnloadEvent) {
+      if (isDirty(state.editorSource, state.compiledShader)) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [state.editorSource, state.compiledShader]);
+
   // Global shortcuts (capture phase so Monaco doesn't swallow them).
   React.useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -205,6 +229,7 @@ export default function ShaderPlayground() {
             onPickImage={pickImage}
             autoRun={state.autoRun}
             onToggleAutoRun={toggleAutoRun}
+            onResetShader={resetShader}
           />
         </div>
         <ToastHost store={toastStore} />
