@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import { mimeTypeForImageFilename } from "./files";
 import { downloadDataUrlFile } from "./download";
+import { createLogger } from "./logger";
+
+const logger = createLogger("screenshot");
 
 export type ScreenshotResult =
   { ok: true; dataUrl: string } | { ok: false; error: string };
@@ -61,9 +64,10 @@ export function captureAndDownloadSceneScreenshot(
 ): boolean {
   const result = captureSceneToDataUrl(scene, camera, options, createRenderer);
   if (!result.ok) {
-    console.error(result.error);
+    logger.error(result.error);
     return false;
   }
+  logger.debug(`Captured ${options.filename} at ${options.width}x${options.height}`);
   downloadDataUrlFile(options.filename, result.dataUrl);
   return true;
 }
