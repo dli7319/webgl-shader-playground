@@ -68,7 +68,8 @@ export type PlaygroundAction =
   | { type: "setScreenshotError"; error: string | null }
   | { type: "toggleTheme" }
   | { type: "toggleAutoRun" }
-  | { type: "reportRun"; durationMs: number };
+  | { type: "reportRun"; durationMs: number }
+  | { type: "resetEditor" };
 
 export function playgroundReducer(
   state: PlaygroundState,
@@ -112,5 +113,7 @@ export function playgroundReducer(
         hasRun: true,
         runDurationMs: action.durationMs,
       };
+    case "resetEditor":
+      return { ...state, editorSource: defaultFragmentShader };
   }
 }
