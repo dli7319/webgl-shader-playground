@@ -13,7 +13,10 @@ const FIELD = "flex flex-col gap-1.5 text-sm";
 const FIELD_INPUT =
   "w-24 rounded border border-edge bg-app px-2 py-[0.35rem] text-ink [font:inherit] focus:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
-/** Modal-less settings panel with the persisted preferences. */
+/**
+ * Settings panel with the persisted preferences. The theme toggle lives here
+ * (one object, one control); auto-run lives in the editor inspector section.
+ */
 export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
   return (
     <div
@@ -45,27 +48,16 @@ export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogPr
           onChange={() => onChange({ wordWrap: !settings.wordWrap })}
           label="Word wrap"
         />
-        <Switch
-          checked={settings.autoRun}
-          onChange={() => onChange({ autoRun: !settings.autoRun })}
-          label="Auto-run while typing"
-        />
         <div className={FIELD}>
           Theme
-          <div className="flex gap-2">
-            <Button
-              variant={settings.themeMode === "light" ? "contained" : "outlined"}
-              onClick={() => onChange({ themeMode: "light" })}
-            >
-              Light
-            </Button>
-            <Button
-              variant={settings.themeMode === "dark" ? "contained" : "outlined"}
-              onClick={() => onChange({ themeMode: "dark" })}
-            >
-              Dark
-            </Button>
-          </div>
+          <Button
+            variant="outlined"
+            onClick={() =>
+              onChange({ themeMode: settings.themeMode === "light" ? "dark" : "light" })
+            }
+          >
+            {settings.themeMode === "light" ? "Dark theme" : "Light theme"}
+          </Button>
         </div>
         <Button variant="outlined" className="w-full" onClick={onClose}>
           Close

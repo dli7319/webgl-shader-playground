@@ -17,6 +17,9 @@ test("picking a texture image updates the preview without errors", async ({ page
   const canvas = page.locator("canvas").first();
   const before = await canvas.screenshot();
 
+  // Texture controls live in the rail's Preview inspector section.
+  await page.getByRole("button", { name: /^Preview/ }).click();
+
   // A tiny 2x2 red PNG — the preview should retexture with it.
   const redPng = Buffer.from(
     "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAEUlEQVR4nGP8z8Dwn4GBgYEJAAAWAQMDNTXnWAAAAABJRU5ErkJggg==",
@@ -38,6 +41,9 @@ test("zoom controls resize the preview canvas", async ({ page }) => {
   await openApp(page);
   const canvas = page.locator("canvas").first();
   const initial = (await canvas.boundingBox())!.width;
+
+  // The zoom cluster lives in the rail's Preview inspector section.
+  await page.getByRole("button", { name: /^Preview/ }).click();
 
   await page.getByRole("button", { name: "Zoom in" }).click();
   await expect

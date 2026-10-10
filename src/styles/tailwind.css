@@ -111,6 +111,277 @@ body {
     border-radius: 4px;
     overflow: hidden;
   }
+
+  /* ---- Workstation shell: title bar / rail / desk / monitor column ---- */
+
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .title-bar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .wordmark {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+    color: var(--text-strong);
+  }
+
+  .title-note {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted-text);
+  }
+
+  .workstation {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+    flex: 1;
+    min-width: 0;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .rail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 14.5rem;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .rail-foot {
+    margin-top: auto;
+    padding-top: 0.75rem;
+  }
+
+  .editor-column {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* One restrained action row above the dominant code surface. */
+  .action-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.8rem;
+  }
+
+  .action-hint {
+    font-family: var(--font-display);
+    font-variant-caps: small-caps;
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    color: var(--muted-text);
+  }
+
+  .editor-frame {
+    position: relative;
+    flex: 1;
+    min-height: 58vh;
+  }
+
+  .editor-surface {
+    position: absolute;
+    inset: 0;
+  }
+
+  .editor-loading {
+    padding: 1rem;
+  }
+
+  .monitor-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 21.5rem;
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  /* ---- Inspector sections: small-caps title, state summary, disclosure ---- */
+
+  .inspector-section {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .inspector-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  .inspector-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex: 1;
+    min-width: 0;
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .inspector-trigger:hover {
+    border-color: var(--accent);
+    color: var(--text-strong);
+  }
+
+  .inspector-trigger:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .inspector-title {
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-variant-caps: small-caps;
+    letter-spacing: 0.14em;
+    color: var(--text-strong);
+    white-space: nowrap;
+  }
+
+  .inspector-summary {
+    margin-left: auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.72rem;
+    color: var(--muted-text);
+  }
+
+  .inspector-chevron {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    color: var(--muted-text);
+    transition: transform 0.15s;
+  }
+
+  .inspector-chevron.is-open {
+    transform: rotate(180deg);
+  }
+
+  .inspector-action {
+    flex-shrink: 0;
+  }
+
+  .inspector-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.7rem 0 0.35rem;
+  }
+
+  .inspector-body[hidden] {
+    display: none;
+  }
+
+  /* Output strip: one grouped row per output object. */
+  .output-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem 0.95rem;
+  }
+
+  .output-record {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .output-record-note {
+    font-size: 0.72rem;
+    color: var(--muted-text);
+  }
+
+  /* File-pick control matching the button language (one box height). */
+  .texture-pick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    min-width: 4rem;
+    padding: 0 1rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .texture-pick:hover {
+    border-color: var(--accent);
+    color: var(--text-strong);
+  }
+
+  /* Responsive stacking: the rail becomes a jump strip above the columns. */
+  @media (max-width: 900px) {
+    .workstation {
+      flex-direction: column;
+    }
+
+    .rail {
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .rail .inspector-section {
+      flex: 1 1 12rem;
+    }
+
+    .rail-foot {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .monitor-column {
+      width: 100%;
+    }
+
+    .editor-frame {
+      min-height: 45vh;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

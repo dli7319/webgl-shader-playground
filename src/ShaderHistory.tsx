@@ -1,18 +1,22 @@
 import React from "react";
-
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
-import { createShaderStore } from "./shaderStore";
+import type { ShaderStore, SavedShader } from "./shaderStore";
 
 export interface ShaderHistoryProps {
+  store: ShaderStore;
+  entries: readonly SavedShader[];
   currentSource: string;
   onApply: (source: string) => void;
 }
 
 /** Named shader saves backed by localStorage. */
-export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
-  const store = React.useMemo(() => createShaderStore(window.localStorage), []);
-  const entries = React.useSyncExternalStore(store.subscribe, store.getSnapshot);
+export function ShaderHistory({
+  store,
+  entries,
+  currentSource,
+  onApply,
+}: ShaderHistoryProps) {
   const [name, setName] = React.useState("");
 
   function handleSave() {
@@ -25,7 +29,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="surface-panel flex flex-col gap-2 p-3">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         <TextField
           label="Save as"
@@ -42,7 +46,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
         </Button>
       </div>
       {entries.length === 0 ? (
-        <p className="m-0 text-sm">No saved shaders yet.</p>
+        <p className="m-0 text-sm text-muted">No saved shaders yet.</p>
       ) : (
         <ul className="m-0 flex max-h-40 list-none flex-col gap-1.5 overflow-y-auto p-0">
           {entries.map((entry) => (

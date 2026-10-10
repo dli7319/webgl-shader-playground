@@ -8,8 +8,8 @@ test("settings persist across a full reload", async ({ page }) => {
   const dialog = page.getByRole("dialog", { name: "Settings" });
   await expect(dialog).toBeVisible();
 
-  // Dark theme via the settings dialog.
-  await dialog.getByRole("button", { name: "Dark" }).click();
+  // Dark theme via the settings dialog (toggle button: "Dark theme").
+  await dialog.getByRole("button", { name: "Dark theme" }).click();
   await dialog.getByRole("button", { name: "Close" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 

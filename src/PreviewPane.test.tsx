@@ -1,6 +1,6 @@
 import React from "react";
 import { afterEach, describe, expect, it } from "vitest";
-import { cleanup, render, screen } from "@testing-library/preact";
+import { cleanup, fireEvent, render, screen } from "@testing-library/preact";
 import { PreviewPane } from "./PreviewPane";
 
 afterEach(cleanup);
@@ -26,9 +26,12 @@ function renderPane(
       status={compileError ? "error" : "compiled"}
       runDurationMs={compileError ? null : 3.2}
       zoomPercent={100}
-      onZoomIn={() => {}}
-      onZoomOut={() => {}}
-      onZoomFit={() => {}}
+      downloadShaderFilename="fragment.frag"
+      onDownloadShaderFilenameChange={() => {}}
+      onDownloadShader={() => {}}
+      isRecording={false}
+      recordingSupported={true}
+      onToggleRecording={() => {}}
     />
   );
 }
@@ -84,6 +87,9 @@ describe("PreviewPane compile error banner", () => {
     expect(screen.getByLabelText("Screenshot height in pixels")).toBeTruthy();
     expect(screen.getByLabelText("Screenshot filename")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Screenshot!" })).toBeTruthy();
+    expect(
+      screen.getByRole("button", { name: "Download Shader (Ctrl+S)" })
+    ).toBeTruthy();
   });
 
   it("shows the status bar", () => {
@@ -92,5 +98,29 @@ describe("PreviewPane compile error banner", () => {
     expect(status.textContent).toContain("Compiled");
     expect(status.textContent).toContain("3 ms");
     expect(status.textContent).toContain("Export 1920×1080");
+  });
+});
+
+describe("PreviewPane output groups", () => {
+  it("reports the export state in the summary that opens its settings", () => {
+    renderPane();
+    const trigger = screen.getByRole("button", {
+      name: /Export 1920×1080 · screenshot\.png/,
+    });
+    expect(trigger.getAttribute("aria-expanded")).toBe("false");
+    const body = document.getElementById("output-export-body");
+    expect(body).toBeTruthy();
+    expect(body!.hasAttribute("hidden")).toBe(true);
+
+    fireEvent.click(trigger);
+    expect(trigger.getAttribute("aria-expanded")).toBe("true");
+    expect(body!.hasAttribute("hidden")).toBe(false);
+  });
+
+  it("reports the shader filename beside the download group", () => {
+    renderPane();
+    expect(
+      screen.getByRole("button", { name: /Shader file fragment\.frag/ })
+    ).toBeTruthy();
   });
 });

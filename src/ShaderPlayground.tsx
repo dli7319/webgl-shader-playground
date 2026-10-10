@@ -4,6 +4,11 @@ import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
 import { Button } from "./ui/Button";
+import { Switch } from "./ui/Switch";
+import { InspectorSection } from "./ui/InspectorSection";
+import { ImageIcon } from "./ui/icons";
+import { ShaderHistory } from "./ShaderHistory";
+import { createShaderStore } from "./shaderStore";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
 import { applyThemeToDocument } from "./theme";
@@ -20,6 +25,7 @@ import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { clearDraft, loadDraft, saveDraft } from "./draftStore";
 import { downloadTextFile, triggerDownload } from "./download";
+import { DEFAULT_TEXTURE_PATH } from "./constants";
 import {
   createRecordingSession,
   pickRecordingMimeType,
@@ -43,7 +49,6 @@ export default function ShaderPlayground() {
     setCompileError,
     setTextureError,
     setScreenshotError,
-    toggleTheme,
     toggleAutoRun,
     reportRun,
     resetEditorSource,
@@ -60,6 +65,19 @@ export default function ShaderPlayground() {
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [pendingDraft] = React.useState(() => loadDraft(window.localStorage));
   const [draftDismissed, setDraftDismissed] = React.useState(false);
+
+  // Left-rail inspector sections (all disclosed by default — the surface
+  // stays quiet and each opener reports its group's state).
+  const [editorRailOpen, setEditorRailOpen] = React.useState(false);
+  const [previewRailOpen, setPreviewRailOpen] = React.useState(false);
+  const [historyRailOpen, setHistoryRailOpen] = React.useState(false);
+
+  // Saved-shader store is lifted so the History opener can report its state.
+  const shaderStore = React.useMemo(() => createShaderStore(window.localStorage), []);
+  const savedShaders = React.useSyncExternalStore(
+    shaderStore.subscribe,
+    shaderStore.getSnapshot
+  );
 
   // Auto-save the editor as a draft (skipped while the restore prompt is
   // still up, so mounting the app can't clobber the previous session's draft).
@@ -288,29 +306,14 @@ export default function ShaderPlayground() {
     }
   }
 
+  const textureSummary =
+    state.texturePath === DEFAULT_TEXTURE_PATH ? "default texture" : "picked image";
+
   return (
-    <div className="min-h-screen bg-app text-ink">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-edge px-5 py-4">
-        <h1 className="m-0 font-display text-[1.45rem] font-semibold leading-none tracking-[0.01em] text-strong">
-          WebGL Shader Playground
-        </h1>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outlined" onClick={toggleTheme}>
-            {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-          </Button>
-          {recordingSupported ? (
-            <Button
-              variant="outlined"
-              tone={isRecording ? "warning" : undefined}
-              onClick={toggleRecording}
-            >
-              {isRecording ? "Stop recording" : "Record (WebM)"}
-            </Button>
-          ) : null}
-          <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-            Settings
-          </Button>
-        </div>
+    <div className="app-shell bg-app text-ink">
+      <header className="title-bar">
+        <h1 className="wordmark">WebGL Shader Playground</h1>
+        <span className="title-note">GLSL · WebGL · {state.themeMode === "light" ? "light" : "dark"}</span>
       </header>
       {pendingDraft && !draftDismissed ? (
         <div
@@ -339,7 +342,126 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-5 flex flex-row gap-5 max-[900px]:flex-col">
+      <div className="workstation">
+        <nav className="rail" aria-label="Workbench panels">
+          <InspectorSection
+            id="rail-editor"
+            title="Editor"
+            summary={state.autoRun ? "Auto-run on" : "Auto-run off"}
+            open={editorRailOpen}
+            onToggle={() => setEditorRailOpen((open) => !open)}
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outlined"
+                onClick={undoEditor}
+                disabled={!canUndo(state.history)}
+              >
+                Undo
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={redoEditor}
+                disabled={!canRedo(state.history)}
+              >
+                Redo
+              </Button>
+            </div>
+            <Switch
+              checked={state.autoRun}
+              onChange={toggleAutoRun}
+              label="Auto-run while typing"
+            />
+            <Button variant="outlined" tone="warning" onClick={resetShader}>
+              Reset to default shader
+            </Button>
+          </InspectorSection>
+          <InspectorSection
+            id="rail-preview"
+            title="Preview"
+            summary={
+              <span className="tabular-nums">
+                {state.zoomPercent}% · {textureSummary}
+              </span>
+            }
+            open={previewRailOpen}
+            onToggle={() => setPreviewRailOpen((open) => !open)}
+          >
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outlined"
+                className="min-w-9 px-3 text-sm"
+                onClick={zoomOut}
+                aria-label="Zoom out"
+              >
+                −
+              </Button>
+              <span className="min-w-14 text-center text-sm tabular-nums text-strong">
+                {state.zoomPercent}%
+              </span>
+              <Button
+                variant="outlined"
+                className="min-w-9 px-3 text-sm"
+                onClick={zoomIn}
+                aria-label="Zoom in"
+              >
+                +
+              </Button>
+              <Button variant="outlined" onClick={fitZoom}>
+                Fit
+              </Button>
+            </div>
+            <label className="texture-pick">
+              <ImageIcon /> Pick tDiffuse Image
+              <input
+                type="file"
+                className="sr-only"
+                aria-label="Choose a texture image"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                      const dataUrl = e.target?.result;
+                      if (typeof dataUrl === "string") {
+                        pickImage(dataUrl);
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+            </label>
+          </InspectorSection>
+          <InspectorSection
+            id="rail-history"
+            title="History"
+            summary={`${savedShaders.length} saved`}
+            open={historyRailOpen}
+            onToggle={() => setHistoryRailOpen((open) => !open)}
+          >
+            <ShaderHistory
+              store={shaderStore}
+              entries={savedShaders}
+              currentSource={state.editorSource}
+              onApply={editSource}
+            />
+          </InspectorSection>
+          <div className="rail-foot">
+            <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+              Settings
+            </Button>
+          </div>
+        </nav>
+        <EditorPane
+          shaderSource={state.editorSource}
+          onShaderSourceChange={editSource}
+          onRunShader={runShader}
+          editorFontSize={state.editorFontSize}
+          wordWrap={state.wordWrap}
+          themeMode={state.themeMode}
+        />
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
@@ -355,28 +477,12 @@ export default function ShaderPlayground() {
           status={compileStatusFrom(state.hasRun, state.compileError)}
           runDurationMs={state.runDurationMs}
           zoomPercent={state.zoomPercent}
-          onZoomIn={zoomIn}
-          onZoomOut={zoomOut}
-          onZoomFit={fitZoom}
-        />
-        <EditorPane
-          shaderSource={state.editorSource}
-          onShaderSourceChange={editSource}
-          onRunShader={runShader}
           downloadShaderFilename={state.downloadShaderFilename}
           onDownloadShaderFilenameChange={setDownloadShaderFilename}
           onDownloadShader={downloadShader}
-          onPickImage={pickImage}
-          autoRun={state.autoRun}
-          onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
-          editorFontSize={state.editorFontSize}
-          wordWrap={state.wordWrap}
-          themeMode={state.themeMode}
-          canUndo={canUndo(state.history)}
-          canRedo={canRedo(state.history)}
-          onUndo={undoEditor}
-          onRedo={redoEditor}
+          isRecording={isRecording}
+          recordingSupported={recordingSupported}
+          onToggleRecording={toggleRecording}
         />
       </div>
       <ToastHost store={toastStore} />

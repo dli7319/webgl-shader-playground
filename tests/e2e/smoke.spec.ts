@@ -28,8 +28,12 @@ test("app boots with preview, editor, and controls", async ({ page }) => {
 
 test("theme toggle switches the document theme", async ({ page }) => {
   await openApp(page);
-  await page.getByRole("button", { name: /dark theme/i }).click();
+  // The theme toggle lives in the Settings dialog (one object, one control).
+  await page.getByRole("button", { name: "Settings" }).click();
+  const dialog = page.getByRole("dialog", { name: "Settings" });
+  await dialog.getByRole("button", { name: /dark theme/i }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("button", { name: /light theme/i }).click();
+  await dialog.getByRole("button", { name: /light theme/i }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await dialog.getByRole("button", { name: "Close" }).click();
 });

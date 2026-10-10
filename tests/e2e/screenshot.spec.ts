@@ -4,6 +4,8 @@ import { openApp } from "./support";
 test("invalid screenshot filename shows an error notice", async ({ page }) => {
   await openApp(page);
 
+  // Export settings are disclosed behind the Export group's state summary.
+  await page.getByRole("button", { name: /^Export/ }).click();
   await page.getByLabel("Screenshot filename").fill("shot.gif");
   await page.getByRole("button", { name: /screenshot!/i }).click();
 
@@ -15,6 +17,8 @@ test("invalid screenshot filename shows an error notice", async ({ page }) => {
 test("screenshot downloads a PNG and clears the notice", async ({ page }) => {
   await openApp(page);
 
+  // Export settings are disclosed behind the Export group's state summary.
+  await page.getByRole("button", { name: /^Export/ }).click();
   await page.getByLabel("Screenshot filename").fill("shot.png");
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /screenshot!/i }).click();
