@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "setup": "npm ci",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"No tests yet — test infrastructure lands soon\"",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
