@@ -12,15 +12,16 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
-    
+        node-version: [20.x]
+
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
+        cache: npm
 
     - name: Install all dependencies
       run: npm ci
@@ -29,6 +30,7 @@ jobs:
       run: npm run build
 
     - name: Push
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: s0/git-publish-subdir-action@develop
       env:
         REPO: self
