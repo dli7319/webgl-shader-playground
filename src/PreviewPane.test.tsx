@@ -15,20 +15,13 @@ function renderPane(
       canvasRef={{ current: null }}
       width={1920}
       height={1080}
-      onWidthChange={() => {}}
-      onHeightChange={() => {}}
-      screenshotFilename="screenshot.png"
-      onScreenshotFilenameChange={() => {}}
-      onCaptureScreenshot={() => {}}
-      compileError={compileError}
-      textureError={textureError}
-      screenshotError={screenshotError}
-      status={compileError ? "error" : "compiled"}
-      runDurationMs={compileError ? null : 3.2}
       zoomPercent={100}
       onZoomIn={() => {}}
       onZoomOut={() => {}}
       onZoomFit={() => {}}
+      compileError={compileError}
+      textureError={textureError}
+      screenshotError={screenshotError}
     />
   );
 }
@@ -44,13 +37,6 @@ describe("PreviewPane compile error banner", () => {
   it("renders no banner when the shader compiles", () => {
     renderPane(null);
     expect(screen.queryByRole("alert", { hidden: false })).toBeNull();
-  });
-
-  it("renders the screenshot controls regardless of errors", () => {
-    renderPane("ERROR: bad shader");
-    expect(screen.getByText("Screenshot!")).toBeTruthy();
-    expect(screen.getByLabelText("Width")).toBeTruthy();
-    expect(screen.getByLabelText("Height")).toBeTruthy();
   });
 
   it("shows the texture load failure notice", () => {
@@ -77,20 +63,19 @@ describe("PreviewPane compile error banner", () => {
     expect(alerts[0].textContent).toContain("shot.gif");
   });
 
-  it("exposes accessible names for the preview and its controls", () => {
+  it("exposes the preview canvas and its zoom cluster", () => {
     renderPane();
     expect(screen.getByRole("img", { name: "Shader preview output" })).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot width in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot height in pixels")).toBeTruthy();
-    expect(screen.getByLabelText("Screenshot filename")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Screenshot!" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Fit" })).toBeTruthy();
+    expect(screen.getByText("100%")).toBeTruthy();
   });
 
-  it("shows the status bar", () => {
-    renderPane();
-    const status = screen.getByRole("status");
-    expect(status.textContent).toContain("Compiled");
-    expect(status.textContent).toContain("3 ms");
-    expect(status.textContent).toContain("Export 1920×1080");
+  it("renders the zoom cluster regardless of errors", () => {
+    renderPane("ERROR: bad shader");
+    expect(screen.getByRole("button", { name: "Zoom in" })).toBeTruthy();
+    // Export controls moved to the config sheet (SettingsDialog.test.tsx).
+    expect(screen.queryByRole("button", { name: "Screenshot!" })).toBeNull();
   });
 });

@@ -5,18 +5,17 @@ import { formatDuration, STATUS_LABELS, type CompileStatus } from "./status";
 export interface StatusBarProps {
   status: CompileStatus;
   runDurationMs: number | null;
-  width: number;
-  height: number;
 }
 
-/** Small read-only strip under the preview summarizing playground state. */
-export function StatusBar({ status, runDurationMs, width, height }: StatusBarProps) {
+/**
+ * Read-only compile status merged into the top command strip: the semantic
+ * dot, the status label, and the last run duration. Export state lives in the
+ * config chip beside the sheet opener instead.
+ */
+export function StatusBar({ status, runDurationMs }: StatusBarProps) {
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
-    <div
-      className="mt-2 flex items-center gap-2 border-t border-edge px-1 py-2 text-sm"
-      role="status"
-    >
+    <div className="flex items-center gap-2 text-sm" role="status">
       <span
         className={`size-2 rounded-full ${status === "error" ? "bg-error" : "bg-success"}`}
         aria-hidden="true"
@@ -26,12 +25,6 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
         ·
       </span>
       <span className="font-mono text-xs text-muted">{duration}</span>
-      <span className="text-muted" aria-hidden="true">
-        ·
-      </span>
-      <span className="font-mono text-xs text-muted">
-        Export {width}×{height}
-      </span>
     </div>
   );
 }

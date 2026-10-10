@@ -1,56 +1,42 @@
 import React from "react";
 
-import { StatusBar } from "./StatusBar";
 import { Button } from "./ui/Button";
-import { TextField } from "./ui/TextField";
-import type { CompileStatus } from "./status";
 
 export interface PreviewPaneProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   width: number;
   height: number;
-  onWidthChange: (width: number) => void;
-  onHeightChange: (height: number) => void;
-  screenshotFilename: string;
-  onScreenshotFilenameChange: (filename: string) => void;
-  onCaptureScreenshot: () => void;
-  compileError?: string | null;
-  textureError?: string | null;
-  screenshotError?: string | null;
-  status: CompileStatus;
-  runDurationMs: number | null;
   zoomPercent: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomFit: () => void;
+  compileError?: string | null;
+  textureError?: string | null;
+  screenshotError?: string | null;
 }
 
 const ERROR_BOX = "banner";
 const COMPILE_ERROR = `${ERROR_BOX} banner-error`;
 const WARN_ERROR = `${ERROR_BOX} banner-warn`;
 
-/** Preview canvas plus the screenshot/export controls beneath it. */
+/**
+ * Preview stage: the canvas viewport with its zoom cluster as one group, and
+ * the in-place error flags below it. Export controls live in the config sheet.
+ */
 export function PreviewPane({
   canvasRef,
   width,
   height,
-  onWidthChange,
-  onHeightChange,
-  screenshotFilename,
-  onScreenshotFilenameChange,
-  onCaptureScreenshot,
-  compileError,
-  textureError,
-  screenshotError,
-  status,
-  runDurationMs,
   zoomPercent,
   onZoomIn,
   onZoomOut,
   onZoomFit,
+  compileError,
+  textureError,
+  screenshotError,
 }: PreviewPaneProps) {
   return (
-    <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
+    <div className="flex w-2/5 shrink-0 flex-col max-[900px]:w-full">
       <div className="overflow-hidden rounded-[6px] border border-edge p-2">
         <canvas
           ref={canvasRef}
@@ -77,12 +63,6 @@ export function PreviewPane({
           Fit
         </Button>
       </div>
-      <StatusBar
-        status={status}
-        runDurationMs={runDurationMs}
-        width={width}
-        height={height}
-      />
       {compileError ? (
         <div className={COMPILE_ERROR} role="alert">
           <strong>Shader error</strong>
@@ -101,35 +81,6 @@ export function PreviewPane({
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className="mt-2 flex flex-row flex-wrap items-center gap-2 rounded-[6px] border border-edge p-2.5">
-        <TextField
-          label="Width"
-          type="number"
-          className="grow"
-          value={width}
-          aria-label="Screenshot width in pixels"
-          onChange={(v) => onWidthChange(Number(v))}
-        />
-        <TextField
-          label="Height"
-          type="number"
-          className="grow"
-          value={height}
-          aria-label="Screenshot height in pixels"
-          onChange={(v) => onHeightChange(Number(v))}
-        />
-        <TextField
-          label="Filename"
-          type="text"
-          className="grow"
-          value={screenshotFilename}
-          aria-label="Screenshot filename"
-          onChange={onScreenshotFilenameChange}
-        />
-        <Button className="grow" variant="outlined" onClick={onCaptureScreenshot}>
-          Screenshot!
-        </Button>
-      </div>
     </div>
   );
 }

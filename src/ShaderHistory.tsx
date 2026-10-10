@@ -1,17 +1,17 @@
 import React from "react";
-
 import { Button } from "./ui/Button";
 import { TextField } from "./ui/TextField";
-import { createShaderStore } from "./shaderStore";
+import type { ShaderStore } from "./shaderStore";
 
 export interface ShaderHistoryProps {
+  /** Shared store instance so the command-strip chip can report its count. */
+  store: ShaderStore;
   currentSource: string;
   onApply: (source: string) => void;
 }
 
-/** Named shader saves backed by localStorage. */
-export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
-  const store = React.useMemo(() => createShaderStore(window.localStorage), []);
+/** Named shader saves backed by localStorage (one group: name + save + list). */
+export function ShaderHistory({ store, currentSource, onApply }: ShaderHistoryProps) {
   const entries = React.useSyncExternalStore(store.subscribe, store.getSnapshot);
   const [name, setName] = React.useState("");
 
@@ -25,7 +25,7 @@ export function ShaderHistory({ currentSource, onApply }: ShaderHistoryProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 p-2.5">
+    <div className="flex flex-col gap-2">
       <span className="section-label">Saved shaders</span>
       <div className="flex items-center gap-2">
         <TextField

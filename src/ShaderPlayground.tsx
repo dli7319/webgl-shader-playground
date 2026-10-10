@@ -3,12 +3,16 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { StatusBar } from "./StatusBar";
+import { ConfigChip } from "./ConfigChip";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
 import { applyThemeToDocument } from "./theme";
+import { DEFAULT_TEXTURE_PATH } from "./constants";
 import { loadSettings, saveSettings, type Settings } from "./settings";
 import { SettingsDialog } from "./SettingsDialog";
+import { createShaderStore } from "./shaderStore";
 import { handleShortcutEvent } from "./shortcuts";
 import { createDebouncer } from "./debounce";
 import { compileStatusFrom } from "./status";
@@ -61,6 +65,13 @@ export default function ShaderPlayground() {
   const [pendingDraft] = React.useState(() => loadDraft(window.localStorage));
   const [draftDismissed, setDraftDismissed] = React.useState(false);
 
+  // One store instance shared by the config sheet and the summary chip.
+  const shaderStore = React.useMemo(() => createShaderStore(window.localStorage), []);
+  const savedShaders = React.useSyncExternalStore(
+    shaderStore.subscribe,
+    shaderStore.getSnapshot
+  );
+
   // Auto-save the editor as a draft (skipped while the restore prompt is
   // still up, so mounting the app can't clobber the previous session's draft).
   React.useEffect(() => {
@@ -99,7 +110,6 @@ export default function ShaderPlayground() {
   const fitZoom = React.useCallback(() => setZoom(FIT_ZOOM), [setZoom]);
 
   const toastStore = React.useMemo(() => createToastStore(), []);
-
   React.useEffect(() => {
     applyThemeToDocument(state.themeMode);
   }, [state.themeMode]);
@@ -289,14 +299,30 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className="min-h-screen bg-app text-ink">
-      <header className="flex items-center gap-2 border-b border-edge px-3 py-2">
+    <div className="flex min-h-screen min-w-0 flex-col bg-app text-ink">
+      {/* One slim command strip: identity, merged status, state chip, and the
+          primary action — hairline is the only divider. */}
+      <header className="flex flex-wrap items-center gap-2 border-b border-edge px-3 py-2">
         <span className="text-[0.8125rem] font-semibold tracking-[-0.01em]">
           WebGL Shader Playground
         </span>
+        <StatusBar
+          status={compileStatusFrom(state.hasRun, state.compileError)}
+          runDurationMs={state.runDurationMs}
+        />
         <span className="grow" />
-        <Button variant="outlined" onClick={toggleTheme}>
-          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
+        <ConfigChip
+          width={state.width}
+          height={state.height}
+          screenshotFilename={state.screenshotFilename}
+          downloadShaderFilename={state.downloadShaderFilename}
+          autoRun={state.autoRun}
+          customTexture={state.texturePath !== DEFAULT_TEXTURE_PATH}
+          savedCount={savedShaders.length}
+          onClick={() => setSettingsOpen(true)}
+        />
+        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+          Settings
         </Button>
         {recordingSupported ? (
           <Button
@@ -307,8 +333,11 @@ export default function ShaderPlayground() {
             {isRecording ? "Stop recording" : "Record (WebM)"}
           </Button>
         ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-          Settings
+        <Button variant="outlined" onClick={toggleTheme}>
+          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
+        </Button>
+        <Button variant="contained" onClick={runShader}>
+          Run Shader (Ctrl+Enter)
         </Button>
       </header>
       {pendingDraft && !draftDismissed ? (
@@ -340,37 +369,23 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-3 flex flex-row gap-3 max-[900px]:flex-col">
+      {/* Editor-dominant workspace: preview stage ~40%, editor ~60%. */}
+      <div className="m-3 flex flex-row items-start gap-3 max-[900px]:flex-col max-[900px]:items-stretch">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
           height={state.height}
-          onWidthChange={setWidth}
-          onHeightChange={setHeight}
-          screenshotFilename={state.screenshotFilename}
-          onScreenshotFilenameChange={setScreenshotFilename}
-          onCaptureScreenshot={captureScreenshot}
-          compileError={state.compileError}
-          textureError={state.textureError}
-          screenshotError={state.screenshotError}
-          status={compileStatusFrom(state.hasRun, state.compileError)}
-          runDurationMs={state.runDurationMs}
           zoomPercent={state.zoomPercent}
           onZoomIn={zoomIn}
           onZoomOut={zoomOut}
           onZoomFit={fitZoom}
+          compileError={state.compileError}
+          textureError={state.textureError}
+          screenshotError={state.screenshotError}
         />
         <EditorPane
           shaderSource={state.editorSource}
           onShaderSourceChange={editSource}
-          onRunShader={runShader}
-          downloadShaderFilename={state.downloadShaderFilename}
-          onDownloadShaderFilenameChange={setDownloadShaderFilename}
-          onDownloadShader={downloadShader}
-          onPickImage={pickImage}
-          autoRun={state.autoRun}
-          onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
           editorFontSize={state.editorFontSize}
           wordWrap={state.wordWrap}
           themeMode={state.themeMode}
@@ -391,6 +406,21 @@ export default function ShaderPlayground() {
           }}
           onChange={applySettings}
           onClose={() => setSettingsOpen(false)}
+          width={state.width}
+          height={state.height}
+          onWidthChange={setWidth}
+          onHeightChange={setHeight}
+          screenshotFilename={state.screenshotFilename}
+          onScreenshotFilenameChange={setScreenshotFilename}
+          onCaptureScreenshot={captureScreenshot}
+          downloadShaderFilename={state.downloadShaderFilename}
+          onDownloadShaderFilenameChange={setDownloadShaderFilename}
+          onDownloadShader={downloadShader}
+          onPickImage={pickImage}
+          shaderStore={shaderStore}
+          currentSource={state.editorSource}
+          onApplySource={editSource}
+          onResetShader={resetShader}
         />
       ) : null}
     </div>

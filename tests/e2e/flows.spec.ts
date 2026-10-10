@@ -3,6 +3,7 @@ import { openApp } from "./support";
 
 test("download shader exports the editor source", async ({ page }) => {
   await openApp(page);
+  await page.getByRole("button", { name: "Settings" }).click();
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /download shader/i }).click();
@@ -14,6 +15,7 @@ test("download shader exports the editor source", async ({ page }) => {
 
 test("picking a texture image updates the preview without errors", async ({ page }) => {
   await openApp(page);
+  await page.getByRole("button", { name: "Settings" }).click();
   const canvas = page.locator("canvas").first();
   const before = await canvas.screenshot();
 
@@ -43,7 +45,6 @@ test("zoom controls resize the preview canvas", async ({ page }) => {
   await expect
     .poll(async () => (await canvas.boundingBox())!.width)
     .toBeGreaterThan(initial);
-
   await page.getByRole("button", { name: "Fit" }).click();
   await expect
     .poll(async () => (await canvas.boundingBox())!.width)
