@@ -29,6 +29,8 @@ export const conf: languages.LanguageConfiguration = {
 export const keywords = [
   "const",
   "uniform",
+  "attribute",
+  "varying",
   "break",
   "continue",
   "do",
@@ -118,6 +120,11 @@ export const keywords = [
   "dFdx",
   "dFdy",
   "fwidth",
+  "texture2D",
+  "texture2DProj",
+  "texture2DLod",
+  "textureCube",
+  "textureCubeLod",
   "textureSize",
   "texture",
   "textureProj",
@@ -165,6 +172,12 @@ export const keywords = [
   "uint",
   "void",
   "bool",
+  "gl_FragColor",
+  "gl_FragCoord",
+  "gl_FragDepth",
+  "gl_PointCoord",
+  "gl_PointSize",
+  "gl_Position",
 ];
 
 export const language = <languages.IMonarchLanguage>{
