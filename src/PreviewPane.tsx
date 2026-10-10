@@ -13,6 +13,7 @@ export interface PreviewPaneProps {
   screenshotFilename: string;
   onScreenshotFilenameChange: (filename: string) => void;
   onCaptureScreenshot: () => void;
+  compileError?: string | null;
 }
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
@@ -25,6 +26,7 @@ export function PreviewPane({
   screenshotFilename,
   onScreenshotFilenameChange,
   onCaptureScreenshot,
+  compileError,
 }: PreviewPaneProps) {
   return (
     <div className={styles.leftColumn}>
@@ -37,6 +39,12 @@ export function PreviewPane({
           height: "unset",
         }}
       />
+      {compileError ? (
+        <div className={styles.compileError} role="alert">
+          <strong>Shader error</strong>
+          <pre>{compileError}</pre>
+        </div>
+      ) : null}
       <div className={styles.screenshotControls}>
         <TextField
           label="Width"

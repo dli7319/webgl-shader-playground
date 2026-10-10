@@ -14,7 +14,7 @@ export default defineConfig({
   plugins: [glslLoader],
   test: {
     environment: "jsdom",
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.{ts,tsx}"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov"],

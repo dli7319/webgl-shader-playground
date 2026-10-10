@@ -18,6 +18,21 @@
   width: 50%;
 }
 
+.compileError {
+  margin: 0.5rem 0rem;
+  background: #fdecea;
+  border: 1px solid #f5c2c0;
+  color: #b3261e;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+.compileError pre {
+  margin: 0.25rem 0 0 0;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  font-family: monospace;
+}
 .screenshotControls {
   margin: 0.5rem 0rem;
   background: #eee;

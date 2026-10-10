@@ -7,6 +7,7 @@ function fakeRenderer() {
     setSize: vi.fn(),
     render: vi.fn(),
     dispose: vi.fn(),
+    debug: {} as { onShaderError?: unknown },
     domElement: { toDataURL: vi.fn(() => "data:image/png;base64,") },
   } as unknown as THREE.WebGLRenderer;
 }
@@ -81,5 +82,47 @@ describe("ShaderPreview", () => {
     const { preview, renderer } = makePreview();
     preview.dispose();
     expect(renderer.dispose).toHaveBeenCalled();
+  });
+
+  it("reports GLSL compile errors through the debug hook", () => {
+    const renderer = fakeRenderer();
+    const errors: (string | null)[] = [];
+    new ShaderPreview({
+      canvas,
+      vertexShader,
+      fragmentShader: "void main() {}",
+      createRenderer: () => renderer,
+      onCompileError: (message) => errors.push(message),
+    });
+
+    const onShaderError = renderer.debug.onShaderError as (
+      gl: {
+        getShaderInfoLog: (s: unknown) => string | null;
+        getProgramInfoLog: (p: unknown) => string | null;
+      },
+      program: unknown,
+      vs: unknown,
+      fs: unknown
+    ) => void;
+    const gl = {
+      getShaderInfoLog: () => "ERROR: 0:3: 'foo' : undeclared identifier",
+      getProgramInfoLog: () => "",
+    };
+    onShaderError(gl, {}, {}, {});
+
+    expect(errors).toEqual(["ERROR: 0:3: 'foo' : undeclared identifier"]);
+  });
+
+  it("clears the compile error on setFragmentShader", () => {
+    const renderer = fakeRenderer();
+    const errors: (string | null)[] = [];
+    const preview = new ShaderPreview({
+      canvas,
+      vertexShader,
+      createRenderer: () => renderer,
+      onCompileError: (message) => errors.push(message),
+    });
+    preview.setFragmentShader("void main() {}");
+    expect(errors).toEqual([null]);
   });
 });

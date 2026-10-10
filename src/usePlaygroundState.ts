@@ -22,6 +22,8 @@ export function usePlaygroundState() {
       setDownloadShaderFilename: (filename: string) =>
         dispatch({ type: "setDownloadShaderFilename", filename }),
       pickImage: (texturePath: string) => dispatch({ type: "pickImage", texturePath }),
+      setCompileError: (error: string | null) =>
+        dispatch({ type: "setCompileError", error }),
     }),
     []
   );
