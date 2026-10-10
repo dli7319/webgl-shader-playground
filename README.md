@@ -50,6 +50,9 @@ switches to Shadertoy mode automatically:
   `iChannelResolution`, and `iChannel0..3`.
 - Classic (`texture2D`, `gl_FragColor`) and modern (`texture`, `textureLod`,
   `texelFetch`) GLSL idioms both compile unchanged.
+- Both Shadertoy eras are recognized: modern `mainImage(out vec4, in vec2)`
+  sources, and legacy pre-2014 sources with their own `main()` writing
+  `gl_FragColor` (e.g. iq's original "Raymarching primitives").
 - Time-driven shaders animate automatically; `iMouse` follows your pointer on
   the preview (xy = position while down, zw = click position, negated on
   release — the Shadertoy convention).

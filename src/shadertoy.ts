@@ -52,9 +52,24 @@ const SHADERTOY_WRAPPER = `void main() {
   gl_FragColor = shadertoyColor;
 }`;
 
-/** True when the source defines mainImage() and not its own main(). */
+/**
+ * True for Shadertoy sources in either dialect:
+ *  - modern: defines `mainImage(out vec4, in vec2)` and no main();
+ *  - legacy (pre-2014): defines `main()` but relies on Shadertoy host
+ *    uniforms (iResolution, iGlobalTime, iMouse, ...) being pre-declared.
+ */
 export function isShadertoyShader(source: string): boolean {
-  return /void\s+mainImage\s*\(/.test(source) && !/void\s+main\s*\(/.test(source);
+  const hasMainImage = /void\s+mainImage\s*\(/.test(source);
+  const hasMain = /void\s+main\s*\(/.test(source);
+  if (hasMainImage && !hasMain) {
+    return true;
+  }
+  return hasMain && referencesHostUniforms(source);
+}
+
+/** True when the source uses Shadertoy host uniforms. */
+export function referencesHostUniforms(source: string): boolean {
+  return new RegExp(`\\b(${SHADERTOY_UNIFORM_NAMES.join("|")})\\b`).test(source);
 }
 
 /** Strips directives that must lead a shader or conflict with the host prolog. */
@@ -78,16 +93,20 @@ function stripUniformDeclarations(source: string): string {
 /**
  * Wraps Shadertoy source into a standalone fragment shader. Order matters:
  * host uniforms first, then the user's code, then main() calling mainImage().
+ * Legacy sources (own main() writing gl_FragColor) are prefixed with the
+ * uniforms and compiled as-is — no wrapper is added.
  */
 export function buildShadertoyFragment(source: string): string {
   const cleaned = stripUniformDeclarations(stripDirectives(source));
-  return [
+  const header = [
     SHADERTOY_UNIFORM_DECLARATIONS,
     // Legacy Shadertoy name kept working before it was renamed.
     "#define iGlobalTime iTime",
-    cleaned,
-    SHADERTOY_WRAPPER,
   ].join("\n");
+  if (!/void\s+mainImage\s*\(/.test(cleaned)) {
+    return [header, cleaned].join("\n");
+  }
+  return [header, cleaned, SHADERTOY_WRAPPER].join("\n");
 }
 
 /**
