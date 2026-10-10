@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import ImageIcon from "@mui/icons-material/Image";
+import { ImageIcon } from "./ui/icons";
 import Editor, { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
