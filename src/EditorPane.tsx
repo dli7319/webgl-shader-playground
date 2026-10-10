@@ -1,31 +1,18 @@
 import React from "react";
-import TextField from "@mui/material/TextField";
-import { styled } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { ImageIcon } from "./ui/icons";
 import Editor, { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
 import styles from "./styles/ShaderPlayground.module.css";
+import controls from "./styles/controls.module.css";
 import { language } from "./glsl";
+import { Button } from "./ui/Button";
+import { TextField } from "./ui/TextField";
+import { Switch } from "./ui/Switch";
+import { ImageIcon } from "./ui/icons";
 
 monaco.languages.register({ id: "glsl" });
 monaco.languages.setMonarchTokensProvider("glsl", language);
 loader.config({ monaco });
-
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
 
 export interface EditorPaneProps {
   shaderSource: string;
@@ -73,11 +60,12 @@ export function EditorPane({
           >
             Run Shader (Ctrl+Enter)
           </Button>
-          <FormControlLabel
-            control={<Switch checked={autoRun} onChange={onToggleAutoRun} />}
+          <Switch
+            checked={autoRun}
+            onChange={onToggleAutoRun}
             label="Auto-run while typing"
           />
-          <Button variant="outlined" color="warning" onClick={onResetShader}>
+          <Button variant="outlined" tone="warning" onClick={onResetShader}>
             Reset to default shader
           </Button>
         </div>
@@ -87,26 +75,18 @@ export function EditorPane({
             type="text"
             className={styles.screenshotOption}
             value={downloadShaderFilename}
-            variant="outlined"
-            slotProps={{
-              htmlInput: { "aria-label": "Shader download filename" },
-            }}
-            onChange={(e) => onDownloadShaderFilenameChange(e.target.value)}
+            aria-label="Shader download filename"
+            onChange={onDownloadShaderFilenameChange}
           />
           <Button variant="outlined" onClick={onDownloadShader}>
             Download Shader (Ctrl+S)
           </Button>
         </div>
-        <Button
-          component="label"
-          role={undefined}
-          variant="contained"
-          tabIndex={-1}
-          startIcon={<ImageIcon />}
-        >
-          Pick tDiffuse Image
-          <VisuallyHiddenInput
+        <label className={`${controls.button} ${controls.contained}`}>
+          <ImageIcon /> Pick tDiffuse Image
+          <input
             type="file"
+            className={controls.visuallyHidden}
             aria-label="Choose a texture image"
             accept="image/*"
             onChange={(e) => {
@@ -123,7 +103,7 @@ export function EditorPane({
               }
             }}
           />
-        </Button>
+        </label>
       </div>
     </div>
   );

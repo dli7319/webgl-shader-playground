@@ -1,14 +1,13 @@
 import React from "react";
-import Button from "@mui/material/Button";
-import { ThemeProvider } from "@mui/material/styles";
 
 import styles from "./styles/ShaderPlayground.module.css";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
-import { applyThemeToDocument, buildTheme } from "./theme";
+import { applyThemeToDocument } from "./theme";
 import { handleShortcutEvent } from "./shortcuts";
 import { createDebouncer } from "./debounce";
 import { compileStatusFrom } from "./status";
@@ -40,7 +39,6 @@ export default function ShaderPlayground() {
     resetEditorSource,
   } = usePlaygroundState();
 
-  const theme = React.useMemo(() => buildTheme(state.themeMode), [state.themeMode]);
   const toastStore = React.useMemo(() => createToastStore(), []);
 
   React.useEffect(() => {
@@ -196,44 +194,42 @@ export default function ShaderPlayground() {
   }, [state.editorSource, state.downloadShaderFilename]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className={styles.app}>
-        <div className={styles.toolbar}>
-          <Button variant="outlined" size="small" onClick={toggleTheme}>
-            {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-          </Button>
-        </div>
-        <div className={styles.mainDiv}>
-          <PreviewPane
-            canvasRef={canvasRef}
-            width={state.width}
-            height={state.height}
-            onWidthChange={setWidth}
-            onHeightChange={setHeight}
-            screenshotFilename={state.screenshotFilename}
-            onScreenshotFilenameChange={setScreenshotFilename}
-            onCaptureScreenshot={captureScreenshot}
-            compileError={state.compileError}
-            textureError={state.textureError}
-            screenshotError={state.screenshotError}
-            status={compileStatusFrom(state.hasRun, state.compileError)}
-            runDurationMs={state.runDurationMs}
-          />
-          <EditorPane
-            shaderSource={state.editorSource}
-            onShaderSourceChange={editSource}
-            onRunShader={runShader}
-            downloadShaderFilename={state.downloadShaderFilename}
-            onDownloadShaderFilenameChange={setDownloadShaderFilename}
-            onDownloadShader={downloadShader}
-            onPickImage={pickImage}
-            autoRun={state.autoRun}
-            onToggleAutoRun={toggleAutoRun}
-            onResetShader={resetShader}
-          />
-        </div>
-        <ToastHost store={toastStore} />
+    <div className={styles.app}>
+      <div className={styles.toolbar}>
+        <Button variant="outlined" onClick={toggleTheme}>
+          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
+        </Button>
       </div>
-    </ThemeProvider>
+      <div className={styles.mainDiv}>
+        <PreviewPane
+          canvasRef={canvasRef}
+          width={state.width}
+          height={state.height}
+          onWidthChange={setWidth}
+          onHeightChange={setHeight}
+          screenshotFilename={state.screenshotFilename}
+          onScreenshotFilenameChange={setScreenshotFilename}
+          onCaptureScreenshot={captureScreenshot}
+          compileError={state.compileError}
+          textureError={state.textureError}
+          screenshotError={state.screenshotError}
+          status={compileStatusFrom(state.hasRun, state.compileError)}
+          runDurationMs={state.runDurationMs}
+        />
+        <EditorPane
+          shaderSource={state.editorSource}
+          onShaderSourceChange={editSource}
+          onRunShader={runShader}
+          downloadShaderFilename={state.downloadShaderFilename}
+          onDownloadShaderFilenameChange={setDownloadShaderFilename}
+          onDownloadShader={downloadShader}
+          onPickImage={pickImage}
+          autoRun={state.autoRun}
+          onToggleAutoRun={toggleAutoRun}
+          onResetShader={resetShader}
+        />
+      </div>
+      <ToastHost store={toastStore} />
+    </div>
   );
 }

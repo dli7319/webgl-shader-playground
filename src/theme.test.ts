@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyThemeToDocument, buildTheme, THEME_BACKGROUNDS } from "./theme";
-
-describe("buildTheme", () => {
-  it("maps the mode onto the MUI palette", () => {
-    expect(buildTheme("light").palette.mode).toBe("light");
-    expect(buildTheme("dark").palette.mode).toBe("dark");
-    expect(buildTheme("dark").palette.background?.default).toBe(THEME_BACKGROUNDS.dark);
-  });
-});
+import { applyThemeToDocument, THEME_BACKGROUNDS } from "./theme";
 
 describe("applyThemeToDocument", () => {
   // jsdom normalizes inline colors to `rgb(r, g, b)`.
