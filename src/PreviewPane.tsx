@@ -37,6 +37,8 @@ export function PreviewPane({
       <canvas
         ref={canvasRef}
         className={styles.canvas}
+        role="img"
+        aria-label="Shader preview output"
         style={{
           aspectRatio: width / height,
           width: "unset",
@@ -68,6 +70,7 @@ export function PreviewPane({
           className={styles.screenshotOption}
           value={width}
           variant="outlined"
+          slotProps={{ htmlInput: { "aria-label": "Screenshot width in pixels" } }}
           onChange={(e) => onWidthChange(Number(e.target.value))}
         />
         <TextField
@@ -76,6 +79,7 @@ export function PreviewPane({
           className={styles.screenshotOption}
           value={height}
           variant="outlined"
+          slotProps={{ htmlInput: { "aria-label": "Screenshot height in pixels" } }}
           onChange={(e) => onHeightChange(Number(e.target.value))}
         />
         <TextField
@@ -84,6 +88,7 @@ export function PreviewPane({
           className={styles.screenshotOption}
           value={screenshotFilename}
           variant="outlined"
+          slotProps={{ htmlInput: { "aria-label": "Screenshot filename" } }}
           onChange={(e) => onScreenshotFilenameChange(e.target.value)}
         />
         <Button

@@ -70,4 +70,13 @@ describe("PreviewPane compile error banner", () => {
     expect(alerts[0].textContent).toContain("Screenshot error");
     expect(alerts[0].textContent).toContain("shot.gif");
   });
+
+  it("exposes accessible names for the preview and its controls", () => {
+    renderPane();
+    expect(screen.getByRole("img", { name: "Shader preview output" })).toBeTruthy();
+    expect(screen.getByLabelText("Screenshot width in pixels")).toBeTruthy();
+    expect(screen.getByLabelText("Screenshot height in pixels")).toBeTruthy();
+    expect(screen.getByLabelText("Screenshot filename")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Screenshot!" })).toBeTruthy();
+  });
 });
