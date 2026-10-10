@@ -50,7 +50,7 @@ export function EditorPane({
       <div id="editorParent" role="region" aria-label="Shader editor">
         <Editor
           height="40vh"
-          width="80vh"
+          width="100%"
           language="glsl"
           defaultValue={shaderSource}
           onChange={(value, _event) => {
