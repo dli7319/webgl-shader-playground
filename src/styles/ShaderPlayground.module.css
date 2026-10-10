@@ -57,6 +57,19 @@
   width: 50%;
 }
 
+.draftBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--panel);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin: 0.5rem 0rem;
+  font-size: 0.9rem;
+}
+.draftBanner span {
+  flex-grow: 1;
+}
 .compileError {
   margin: 0.5rem 0rem;
   background: #fdecea;

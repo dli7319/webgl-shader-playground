@@ -19,6 +19,7 @@ import { canRedo, canUndo } from "./history";
 import { createToastStore } from "./toast";
 import { ToastHost } from "./ToastHost";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
+import { clearDraft, loadDraft, saveDraft } from "./draftStore";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
 
@@ -52,6 +53,17 @@ export default function ShaderPlayground() {
   } = usePlaygroundState(React.useMemo(() => loadSettings(window.localStorage), []));
 
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [pendingDraft] = React.useState(() => loadDraft(window.localStorage));
+  const [draftDismissed, setDraftDismissed] = React.useState(false);
+
+  // Auto-save the editor as a draft (skipped while the restore prompt is
+  // still up, so mounting the app can't clobber the previous session's draft).
+  React.useEffect(() => {
+    if (pendingDraft && !draftDismissed) {
+      return;
+    }
+    saveDraft(window.localStorage, state.editorSource);
+  }, [state.editorSource, pendingDraft, draftDismissed]);
 
   // Persist the settings subset whenever it changes.
   React.useEffect(() => {
@@ -245,6 +257,30 @@ export default function ShaderPlayground() {
           Settings
         </Button>
       </div>
+      {pendingDraft && !draftDismissed ? (
+        <div className={styles.draftBanner} role="status">
+          <span>Unsaved draft from your last session is available.</span>
+          <Button
+            variant="outlined"
+            onClick={() => {
+              editSource(pendingDraft);
+              setDraftDismissed(true);
+            }}
+          >
+            Restore
+          </Button>
+          <Button
+            variant="outlined"
+            tone="warning"
+            onClick={() => {
+              clearDraft(window.localStorage);
+              setDraftDismissed(true);
+            }}
+          >
+            Discard
+          </Button>
+        </div>
+      ) : null}
       <div className={styles.mainDiv}>
         <PreviewPane
           canvasRef={canvasRef}
