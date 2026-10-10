@@ -3,6 +3,7 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { Inspector } from "./Inspector";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
@@ -289,8 +290,9 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className="min-h-screen bg-app text-ink">
-      <header className="mx-auto flex max-w-[1560px] flex-wrap items-center justify-between gap-3 px-6 pt-6">
+    <div className="min-h-screen w-full bg-app text-ink">
+      {/* Slim title bar + floating command pill (the one filled action lives here). */}
+      <header className="mx-auto flex max-w-[1560px] flex-wrap items-center gap-3 px-6 pt-6">
         <div className="flex items-baseline gap-3">
           <h1 className="m-0 text-[20px] font-semibold tracking-[-0.01em]">
             WebGL Shader Playground
@@ -299,22 +301,15 @@ export default function ShaderPlayground() {
             GLSL · live preview
           </span>
         </div>
-        {/* Floating pill toolbar */}
-        <div className="pill-bar flex items-center gap-1.5 p-1.5">
+        <div className="pill-bar mx-auto flex items-center gap-1.5 p-1.5 max-[900px]:mx-0">
+          <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+            Settings
+          </Button>
           <Button variant="outlined" onClick={toggleTheme}>
             {state.themeMode === "light" ? "Dark theme" : "Light theme"}
           </Button>
-          {recordingSupported ? (
-            <Button
-              variant="outlined"
-              tone={isRecording ? "live" : undefined}
-              onClick={toggleRecording}
-            >
-              {isRecording ? "Stop recording" : "Record (WebM)"}
-            </Button>
-          ) : null}
-          <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-            Settings
+          <Button variant="contained" onClick={runShader}>
+            Run Shader (Ctrl+Enter)
           </Button>
         </div>
       </header>
@@ -349,9 +344,34 @@ export default function ShaderPlayground() {
           </div>
         </div>
       ) : null}
-      <div className="mx-auto flex max-w-[1560px] flex-row items-start gap-6 p-6 max-[900px]:flex-col">
-        <PreviewPane
-          canvasRef={canvasRef}
+      {/* Stage (preview + paired editor surface) with the inspector rail beside it. */}
+      <div className="mx-auto flex max-w-[1560px] flex-row items-start gap-6 p-6 max-[900px]:flex-col max-[900px]:items-stretch">
+        <div className="flex min-w-0 grow flex-col gap-6">
+          <PreviewPane
+            canvasRef={canvasRef}
+            width={state.width}
+            height={state.height}
+            compileError={state.compileError}
+            textureError={state.textureError}
+            screenshotError={state.screenshotError}
+            status={compileStatusFrom(state.hasRun, state.compileError)}
+            runDurationMs={state.runDurationMs}
+            zoomPercent={state.zoomPercent}
+            onZoomIn={zoomIn}
+            onZoomOut={zoomOut}
+            onZoomFit={fitZoom}
+          />
+          <EditorPane
+            shaderSource={state.editorSource}
+            onShaderSourceChange={editSource}
+            editorFontSize={state.editorFontSize}
+            wordWrap={state.wordWrap}
+            themeMode={state.themeMode}
+          />
+        </div>
+        <Inspector
+          shaderSource={state.editorSource}
+          onApplyShader={editSource}
           width={state.width}
           height={state.height}
           onWidthChange={setWidth}
@@ -359,34 +379,21 @@ export default function ShaderPlayground() {
           screenshotFilename={state.screenshotFilename}
           onScreenshotFilenameChange={setScreenshotFilename}
           onCaptureScreenshot={captureScreenshot}
-          compileError={state.compileError}
-          textureError={state.textureError}
-          screenshotError={state.screenshotError}
-          status={compileStatusFrom(state.hasRun, state.compileError)}
-          runDurationMs={state.runDurationMs}
-          zoomPercent={state.zoomPercent}
-          onZoomIn={zoomIn}
-          onZoomOut={zoomOut}
-          onZoomFit={fitZoom}
-        />
-        <EditorPane
-          shaderSource={state.editorSource}
-          onShaderSourceChange={editSource}
-          onRunShader={runShader}
           downloadShaderFilename={state.downloadShaderFilename}
           onDownloadShaderFilenameChange={setDownloadShaderFilename}
           onDownloadShader={downloadShader}
+          texturePath={state.texturePath}
           onPickImage={pickImage}
           autoRun={state.autoRun}
           onToggleAutoRun={toggleAutoRun}
-          onResetShader={resetShader}
-          editorFontSize={state.editorFontSize}
-          wordWrap={state.wordWrap}
-          themeMode={state.themeMode}
           canUndo={canUndo(state.history)}
           canRedo={canRedo(state.history)}
           onUndo={undoEditor}
           onRedo={redoEditor}
+          onResetShader={resetShader}
+          isRecording={isRecording}
+          recordingSupported={recordingSupported}
+          onToggleRecording={toggleRecording}
         />
       </div>
       <ToastHost store={toastStore} />

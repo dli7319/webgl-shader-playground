@@ -6,6 +6,8 @@ test("app boots with preview, editor, and controls", async ({ page }) => {
   await openApp(page);
 
   await expect(page.getByRole("button", { name: /run shader/i })).toBeVisible();
+  // Export settings live behind the inspector's Export disclosure.
+  await page.getByRole("button", { name: /^export/i }).click();
   await expect(page.getByRole("button", { name: /screenshot!/i })).toBeVisible();
   await expect(page.getByRole("region", { name: "Shader editor" })).toBeVisible();
   await expect(

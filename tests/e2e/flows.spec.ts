@@ -3,6 +3,7 @@ import { openApp } from "./support";
 
 test("download shader exports the editor source", async ({ page }) => {
   await openApp(page);
+  await page.getByRole("button", { name: /^export/i }).click();
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /download shader/i }).click();
@@ -14,6 +15,7 @@ test("download shader exports the editor source", async ({ page }) => {
 
 test("picking a texture image updates the preview without errors", async ({ page }) => {
   await openApp(page);
+  await page.getByRole("button", { name: /^texture/i }).click();
   const canvas = page.locator("canvas").first();
   const before = await canvas.screenshot();
 

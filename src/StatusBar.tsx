@@ -1,20 +1,16 @@
 import React from "react";
-
 import { formatDuration, STATUS_LABELS, type CompileStatus } from "./status";
-
 export interface StatusBarProps {
   status: CompileStatus;
   runDurationMs: number | null;
-  width: number;
-  height: number;
 }
 
-/** Small read-only strip under the preview summarizing playground state. */
-export function StatusBar({ status, runDurationMs, width, height }: StatusBarProps) {
+/** Floating status chip resting on the canvas (state flags swap in place). */
+export function StatusBar({ status, runDurationMs }: StatusBarProps) {
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-3 flex items-center gap-2 rounded-full border border-edge bg-sunken px-3.5 py-1.5 text-[13px] text-quiet"
+      className="float-chip flex items-center gap-2 px-3.5 py-1.5 text-[13px] text-quiet"
       role="status"
     >
       <span
@@ -24,10 +20,6 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
       <span className="font-medium text-ink">{STATUS_LABELS[status]}</span>
       <span aria-hidden="true">·</span>
       <span>{duration}</span>
-      <span aria-hidden="true">·</span>
-      <span>
-        Export {width}×{height}
-      </span>
     </div>
   );
 }
