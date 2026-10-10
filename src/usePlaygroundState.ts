@@ -28,6 +28,7 @@ export function usePlaygroundState() {
         dispatch({ type: "setTextureError", error }),
       setScreenshotError: (error: string | null) =>
         dispatch({ type: "setScreenshotError", error }),
+      toggleTheme: () => dispatch({ type: "toggleTheme" }),
     }),
     []
   );

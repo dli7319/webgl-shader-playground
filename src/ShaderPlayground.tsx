@@ -1,4 +1,6 @@
 import React from "react";
+import Button from "@mui/material/Button";
+import { ThemeProvider } from "@mui/material/styles";
 
 import styles from "./styles/ShaderPlayground.module.css";
 import { ShaderPreview } from "./preview";
@@ -6,6 +8,7 @@ import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
+import { applyThemeToDocument, buildTheme } from "./theme";
 import { captureAndDownloadSceneScreenshot } from "./screenshot";
 import { downloadTextFile } from "./download";
 import defaultVertexShader from "./shaders/vertex_shader.vert";
@@ -25,7 +28,14 @@ export default function ShaderPlayground() {
     setCompileError,
     setTextureError,
     setScreenshotError,
+    toggleTheme,
   } = usePlaygroundState();
+
+  const theme = React.useMemo(() => buildTheme(state.themeMode), [state.themeMode]);
+
+  React.useEffect(() => {
+    applyThemeToDocument(state.themeMode);
+  }, [state.themeMode]);
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const previewRef = React.useRef<ShaderPreview | null>(null);
@@ -124,29 +134,38 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className={styles.mainDiv}>
-      <PreviewPane
-        canvasRef={canvasRef}
-        width={state.width}
-        height={state.height}
-        onWidthChange={setWidth}
-        onHeightChange={setHeight}
-        screenshotFilename={state.screenshotFilename}
-        onScreenshotFilenameChange={setScreenshotFilename}
-        onCaptureScreenshot={captureScreenshot}
-        compileError={state.compileError}
-        textureError={state.textureError}
-        screenshotError={state.screenshotError}
-      />
-      <EditorPane
-        shaderSource={state.editorSource}
-        onShaderSourceChange={editSource}
-        onRunShader={runShader}
-        downloadShaderFilename={state.downloadShaderFilename}
-        onDownloadShaderFilenameChange={setDownloadShaderFilename}
-        onDownloadShader={downloadShader}
-        onPickImage={pickImage}
-      />
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className={styles.app}>
+        <div className={styles.toolbar}>
+          <Button variant="outlined" size="small" onClick={toggleTheme}>
+            {state.themeMode === "light" ? "Dark theme" : "Light theme"}
+          </Button>
+        </div>
+        <div className={styles.mainDiv}>
+          <PreviewPane
+            canvasRef={canvasRef}
+            width={state.width}
+            height={state.height}
+            onWidthChange={setWidth}
+            onHeightChange={setHeight}
+            screenshotFilename={state.screenshotFilename}
+            onScreenshotFilenameChange={setScreenshotFilename}
+            onCaptureScreenshot={captureScreenshot}
+            compileError={state.compileError}
+            textureError={state.textureError}
+            screenshotError={state.screenshotError}
+          />
+          <EditorPane
+            shaderSource={state.editorSource}
+            onShaderSourceChange={editSource}
+            onRunShader={runShader}
+            downloadShaderFilename={state.downloadShaderFilename}
+            onDownloadShaderFilenameChange={setDownloadShaderFilename}
+            onDownloadShader={downloadShader}
+            onPickImage={pickImage}
+          />
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }
