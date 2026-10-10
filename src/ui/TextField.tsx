@@ -13,11 +13,11 @@ let nextId = 0;
 
 const FIELD = "relative inline-flex min-w-[120px] grow";
 const INPUT =
-  "peer box-border w-full rounded border border-edge bg-transparent px-3 pt-3 pb-1 text-ink [font:inherit] focus:border-accent focus:shadow-[0_0_0_1px_var(--accent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+  "peer box-border w-full rounded-[2px] border-2 border-edge bg-panel px-3 pt-3 pb-1 text-ink [font:inherit] shadow-[2px_2px_0_var(--border)]";
 const LABEL =
-  "pointer-events-none absolute left-[0.65rem] top-[0.55rem] text-base text-ink opacity-75 transition-all duration-100 peer-focus:top-[0.15rem] peer-focus:text-[0.7rem] peer-[&:not(:placeholder-shown)]:top-[0.15rem] peer-[&:not(:placeholder-shown)]:text-[0.7rem]";
+  "pointer-events-none absolute left-[0.7rem] top-[0.6rem] text-sm font-bold uppercase tracking-[0.12em] text-ink transition-all duration-100 peer-focus:top-[0.22rem] peer-focus:text-[0.62rem] peer-[&:not(:placeholder-shown)]:top-[0.22rem] peer-[&:not(:placeholder-shown)]:text-[0.62rem]";
 
-/** Outlined text field with a floating label. */
+/** Boxed text field with a floating uppercase label. */
 export function TextField({
   label,
   value,

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /*
- * Theme colors map to CSS variables that flip with [data-theme="dark"] so
- * utilities like bg-app / text-ink work in both themes.
+ * Brutalist Block — token mapping. Colors flip with [data-theme="dark"] so
+ * utilities like bg-app / text-ink work in both schemes.
  */
 @theme inline {
   --color-app: var(--bg);
@@ -10,31 +10,152 @@
   --color-ink: var(--text);
   --color-accent: var(--accent);
   --color-edge: var(--border);
+  --color-danger: var(--danger);
+  --color-on-accent: var(--on-accent);
 }
 
 :root {
-  --bg: #ffffff;
-  --panel: #eeeeee;
-  --text: #1a1a1a;
-  --accent: #1976d2;
-  --border: rgba(0, 0, 0, 0.23);
+  --bg: #f5f2e9;
+  --panel: #ffffff;
+  --text: #101010;
+  --accent: #ffd400;
+  --border: #101010;
+  --danger: #e03131;
+  --on-accent: #101010;
+  --on-danger: #ffffff;
+  --success: #2e7d32;
+  --error: #d32f2f;
 }
 
 :root[data-theme="dark"] {
-  --bg: #141414;
-  --panel: #262626;
-  --text: #e8e8e8;
-  --accent: #90caf9;
-  --border: rgba(255, 255, 255, 0.3);
+  --bg: #101010;
+  --panel: #1b1b1b;
+  --text: #f5f2e9;
+  --accent: #ffd400;
+  --border: #f5f2e9;
+  --danger: #ff6b6b;
+  --on-accent: #101010;
+  --on-danger: #101010;
+  --success: #4caf50;
+  --error: #ff6b6b;
 }
 
 html {
   height: 100%;
+  background: var(--bg);
 }
 
 body {
   display: flex;
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Thick dotted offset focus ring — visible on every surface. */
+:focus-visible {
+  outline: 3px dotted var(--text);
+  outline-offset: 3px;
+}
+
+/*
+ * Signature controls: zero radius, 3px frames, hard offset shadows that
+ * collapse as the control "presses" on hover/active.
+ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 4rem;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+  padding: 0.5rem 1rem;
+  border: 3px solid var(--border);
+  border-radius: 0;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--border);
+  transition:
+    transform 90ms ease,
+    box-shadow 90ms ease,
+    background-color 90ms ease,
+    color 90ms ease;
+}
+
+.btn:not(:disabled):hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--border);
+}
+
+.btn:not(:disabled):active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: 2px 2px 0 var(--border);
+}
+
+/* The one filled action: the yellow Run block. */
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Destructive only: paper fill, red frame + text; fills red on hover. */
+.btn-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn-danger:not(:disabled):hover {
+  background: var(--danger);
+  color: var(--on-danger);
+}
+
+/* Section headers: filled block behind shouty uppercase text. */
+.section-label {
+  display: inline-block;
+  padding: 0.22rem 0.6rem;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+}
+
+/* Structural surface: thick frame + hard offset shadow, never rounded. */
+.surface-panel {
+  background: var(--panel);
+  border: 3px solid var(--border);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--border);
 }
 
 @media (prefers-reduced-motion: reduce) {

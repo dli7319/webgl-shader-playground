@@ -3,7 +3,6 @@ import React from "react";
 import type { ToastStore } from "./toast";
 
 const TOAST_TIMEOUT_MS = 4000;
-
 export interface ToastHostProps {
   store: ToastStore;
 }
@@ -21,14 +20,14 @@ export function ToastHost({ store }: ToastHostProps) {
 
   return (
     <div
-      className="fixed bottom-4 left-1/2 z-[1000] flex -translate-x-1/2 flex-col gap-2"
+      className="fixed bottom-4 left-1/2 z-[1000] flex -translate-x-1/2 flex-col gap-3"
       role="status"
       aria-live="polite"
     >
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className="flex items-center gap-3 rounded-lg border border-accent bg-panel px-3 py-2 text-sm text-ink shadow-[0_2px_8px_rgba(0,0,0,0.25)]"
+          className="flex items-center gap-3 border-[3px] border-edge bg-panel px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-ink shadow-[5px_5px_0_var(--border)]"
         >
           <span>{toast.message}</span>
           <button

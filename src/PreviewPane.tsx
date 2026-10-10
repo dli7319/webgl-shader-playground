@@ -26,9 +26,9 @@ export interface PreviewPaneProps {
 }
 
 const ERROR_BOX =
-  "my-2 rounded-lg border p-2 text-sm [&_pre]:mt-1 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono";
-const COMPILE_ERROR = `${ERROR_BOX} border-[#f5c2c0] bg-[#fdecea] text-[#b3261e]`;
-const WARN_ERROR = `${ERROR_BOX} border-[#ffd591] bg-[#fff4e5] text-[#8c4a00]`;
+  "my-3 border-[3px] border-solid bg-panel p-3 text-sm text-ink shadow-[4px_4px_0_var(--border)] [&_pre]:mt-2 [&_pre]:overflow-x-auto [&_pre]:whitespace-pre-wrap [&_pre]:font-mono [&_strong]:mb-1 [&_strong]:block [&_strong]:text-xs [&_strong]:uppercase [&_strong]:tracking-[0.22em]";
+const COMPILE_ERROR = `${ERROR_BOX} border-[var(--error)] [&_strong]:text-[var(--error)]`;
+const WARN_ERROR = `${ERROR_BOX} border-accent`;
 
 /** Preview canvas plus the screenshot/export controls beneath it. */
 export function PreviewPane({
@@ -52,21 +52,27 @@ export function PreviewPane({
 }: PreviewPaneProps) {
   return (
     <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
+      <div aria-hidden="true" className="mb-2">
+        <span className="section-label">Output · Preview</span>
+      </div>
       <canvas
         ref={canvasRef}
         role="img"
         aria-label="Shader preview output"
+        className="block border-[3px] border-solid border-edge bg-black shadow-[6px_6px_0_var(--border)]"
         style={{
           aspectRatio: width / height,
           width: `${zoomPercent}%`,
           height: "unset",
         }}
       />
-      <div className="mt-1 flex items-center gap-2">
+      <div className="mt-4 flex items-center gap-3">
         <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
           −
         </Button>
-        <span className="min-w-14 text-center text-sm">{zoomPercent}%</span>
+        <span className="min-w-16 text-center font-mono text-xs font-bold tracking-[0.12em]">
+          {zoomPercent}%
+        </span>
         <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
           +
         </Button>
@@ -98,34 +104,39 @@ export function PreviewPane({
           <pre>{screenshotError}</pre>
         </div>
       ) : null}
-      <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
-        <TextField
-          label="Width"
-          type="number"
-          className="grow"
-          value={width}
-          aria-label="Screenshot width in pixels"
-          onChange={(v) => onWidthChange(Number(v))}
-        />
-        <TextField
-          label="Height"
-          type="number"
-          className="grow"
-          value={height}
-          aria-label="Screenshot height in pixels"
-          onChange={(v) => onHeightChange(Number(v))}
-        />
-        <TextField
-          label="Filename"
-          type="text"
-          className="grow"
-          value={screenshotFilename}
-          aria-label="Screenshot filename"
-          onChange={onScreenshotFilenameChange}
-        />
-        <Button className="grow" variant="outlined" onClick={onCaptureScreenshot}>
-          Screenshot!
-        </Button>
+      <div className="mt-2">
+        <div aria-hidden="true" className="mb-2">
+          <span className="section-label">Screenshot</span>
+        </div>
+        <div className="surface-panel flex flex-row flex-wrap items-stretch gap-3 p-3">
+          <TextField
+            label="Width"
+            type="number"
+            className="grow"
+            value={width}
+            aria-label="Screenshot width in pixels"
+            onChange={(v) => onWidthChange(Number(v))}
+          />
+          <TextField
+            label="Height"
+            type="number"
+            className="grow"
+            value={height}
+            aria-label="Screenshot height in pixels"
+            onChange={(v) => onHeightChange(Number(v))}
+          />
+          <TextField
+            label="Filename"
+            type="text"
+            className="grow"
+            value={screenshotFilename}
+            aria-label="Screenshot filename"
+            onChange={onScreenshotFilenameChange}
+          />
+          <Button className="grow" variant="outlined" onClick={onCaptureScreenshot}>
+            Screenshot!
+          </Button>
+        </div>
       </div>
     </div>
   );

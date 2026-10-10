@@ -290,26 +290,36 @@ export default function ShaderPlayground() {
 
   return (
     <div className="min-h-screen bg-app text-ink">
-      <div className="mx-2 mt-2 flex justify-end gap-2">
-        <Button variant="outlined" onClick={toggleTheme}>
-          {state.themeMode === "light" ? "Dark theme" : "Light theme"}
-        </Button>
-        {recordingSupported ? (
-          <Button
-            variant="outlined"
-            tone={isRecording ? "warning" : undefined}
-            onClick={toggleRecording}
-          >
-            {isRecording ? "Stop recording" : "Record (WebM)"}
+      <div className="mx-3 mt-3 flex items-stretch justify-between gap-3">
+        <div aria-hidden="true" className="flex items-center gap-3">
+          <span className="section-label px-3 py-1 text-[0.85rem] tracking-[0.28em]">
+            WebGL Shader Playground
+          </span>
+          <span className="font-mono text-[0.65rem] font-bold uppercase tracking-[0.3em] max-[700px]:hidden">
+            GLSL · WebGL · Offline
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <Button variant="outlined" onClick={toggleTheme}>
+            {state.themeMode === "light" ? "Dark theme" : "Light theme"}
           </Button>
-        ) : null}
-        <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
-          Settings
-        </Button>
+          {recordingSupported ? (
+            <Button
+              variant="outlined"
+              tone={isRecording ? "warning" : undefined}
+              onClick={toggleRecording}
+            >
+              {isRecording ? "Stop recording" : "Record (WebM)"}
+            </Button>
+          ) : null}
+          <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+            Settings
+          </Button>
+        </div>
       </div>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="my-2 flex items-center gap-2 rounded-lg bg-panel p-2 text-sm"
+          className="surface-panel mx-3 my-3 flex items-center gap-3 px-4 py-3 text-sm"
           role="status"
         >
           <span className="grow">Unsaved draft from your last session is available.</span>
@@ -334,7 +344,7 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row gap-2 max-[900px]:flex-col">
+      <div className="m-3 flex flex-row gap-5 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}

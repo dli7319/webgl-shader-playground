@@ -12,6 +12,9 @@ const MonacoGlslEditor = React.lazy(() =>
   }))
 );
 
+const MONO_STACK =
+  "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+
 export interface EditorPaneProps {
   shaderSource: string;
   onShaderSourceChange: (source: string) => void;
@@ -55,36 +58,45 @@ export function EditorPane({
   return (
     <div className="flex w-1/2 grow flex-col max-[900px]:w-full">
       <div id="editorParent" role="region" aria-label="Shader editor">
-        <React.Suspense
-          fallback={
-            <div className="min-h-[40vh] box-border p-4 text-sm opacity-70">
-              Loading editor…
-            </div>
-          }
-        >
-          <MonacoGlslEditor
-            height="40vh"
-            width="100%"
-            defaultValue={shaderSource}
-            options={{
-              fontSize: editorFontSize,
-              wordWrap: wordWrap ? "on" : "off",
-            }}
-            theme={themeMode}
-            onChange={onShaderSourceChange}
-          />
-        </React.Suspense>
-        <div>
-          <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
-            Undo
-          </Button>{" "}
-          <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
-            Redo
-          </Button>
+        <div aria-hidden="true" className="mb-2">
+          <span className="section-label">Source · Fragment Shader</span>
+        </div>
+        <div className="border-[3px] border-solid border-edge bg-panel shadow-[6px_6px_0_var(--border)]">
+          <React.Suspense
+            fallback={
+              <div className="min-h-[40vh] box-border p-4 text-sm">Loading editor…</div>
+            }
+          >
+            <MonacoGlslEditor
+              height="40vh"
+              width="100%"
+              defaultValue={shaderSource}
+              options={{
+                fontSize: editorFontSize,
+                wordWrap: wordWrap ? "on" : "off",
+                fontFamily: MONO_STACK,
+              }}
+              theme={themeMode}
+              onChange={onShaderSourceChange}
+            />
+          </React.Suspense>
+        </div>
+        <div className="mt-5 flex flex-col items-start gap-3">
+          <div aria-hidden="true">
+            <span className="section-label">Controls</span>
+          </div>
+          <div className="flex flex-row flex-wrap items-stretch gap-3">
+            <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
+              Undo
+            </Button>
+            <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
+              Redo
+            </Button>
+          </div>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={onRunShader}
-            className="mx-auto my-2 block w-full"
+            className="w-full py-3 text-base tracking-[0.14em]"
           >
             Run Shader (Ctrl+Enter)
           </Button>
@@ -97,21 +109,26 @@ export function EditorPane({
             Reset to default shader
           </Button>
         </div>
-        <div className="my-2 flex flex-row flex-wrap gap-2 rounded-lg bg-panel p-2">
-          <TextField
-            label="Filename"
-            type="text"
-            className="grow"
-            value={downloadShaderFilename}
-            aria-label="Shader download filename"
-            onChange={onDownloadShaderFilenameChange}
-          />
-          <Button variant="outlined" onClick={onDownloadShader}>
-            Download Shader (Ctrl+S)
-          </Button>
+        <div className="mt-5">
+          <div aria-hidden="true" className="mb-2">
+            <span className="section-label">Export</span>
+          </div>
+          <div className="surface-panel flex flex-row flex-wrap items-stretch gap-3 p-3">
+            <TextField
+              label="Filename"
+              type="text"
+              className="grow"
+              value={downloadShaderFilename}
+              aria-label="Shader download filename"
+              onChange={onDownloadShaderFilenameChange}
+            />
+            <Button variant="outlined" onClick={onDownloadShader}>
+              Download Shader (Ctrl+S)
+            </Button>
+          </div>
         </div>
         <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
-        <label className="min-w-16 cursor-pointer rounded border border-accent bg-accent px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] text-white transition-colors [font:inherit] hover:brightness-110">
+        <label className="btn mt-4">
           <ImageIcon /> Pick tDiffuse Image
           <input
             type="file"

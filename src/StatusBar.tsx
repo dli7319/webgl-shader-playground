@@ -1,7 +1,6 @@
 import React from "react";
 
 import { formatDuration, STATUS_LABELS, type CompileStatus } from "./status";
-
 export interface StatusBarProps {
   status: CompileStatus;
   runDurationMs: number | null;
@@ -14,11 +13,13 @@ export function StatusBar({ status, runDurationMs, width, height }: StatusBarPro
   const duration = runDurationMs === null ? "—" : formatDuration(runDurationMs);
   return (
     <div
-      className="mt-2 flex items-center gap-2 px-2 py-1 text-sm text-ink opacity-85"
+      className="mt-3 flex items-center gap-2 border-2 border-edge bg-panel px-3 py-1.5 font-mono text-[0.68rem] font-bold uppercase tracking-[0.14em] text-ink shadow-[3px_3px_0_var(--border)]"
       role="status"
     >
       <span
-        className={`size-2.5 rounded-full ${status === "error" ? "bg-[#d32f2f]" : "bg-[#2e9e44]"}`}
+        className={`size-2.5 border border-edge ${
+          status === "error" ? "bg-[var(--error)]" : "bg-[var(--success)]"
+        }`}
         aria-hidden="true"
       />
       <span>{STATUS_LABELS[status]}</span>

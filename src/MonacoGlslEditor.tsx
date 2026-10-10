@@ -33,7 +33,7 @@ export interface MonacoGlslEditorProps {
   height: string;
   width: string;
   defaultValue: string;
-  options: { fontSize: number; wordWrap: "on" | "off" };
+  options: { fontSize: number; wordWrap: "on" | "off"; fontFamily: string };
   theme: "light" | "dark";
   onChange: (value: string) => void;
 }

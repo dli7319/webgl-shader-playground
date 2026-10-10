@@ -5,15 +5,16 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   tone?: "default" | "warning";
 }
 
-const BASE =
-  "min-w-16 cursor-pointer rounded px-4 py-[0.4rem] text-sm font-medium uppercase tracking-[0.02857em] transition-colors [font:inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
+// Heavy frames + hard offset shadows live in styles/tailwind.css (.btn);
+// these strings only pick the variant/tone chrome and caller layout.
+const BASE = "btn [font:inherit]";
 const VARIANTS: Record<string, string> = {
-  outlined: "border border-edge text-accent hover:bg-[rgba(25,118,210,0.04)]",
-  contained: "border border-accent bg-accent text-white hover:brightness-110",
+  outlined: "",
+  contained: "btn-primary",
 };
 const TONES: Record<string, string> = {
   default: "",
-  warning: "border-[#ed6c02] text-[#ed6c02]",
+  warning: "btn-danger",
 };
 
 /** Lightweight button matching the app's control styling. */
