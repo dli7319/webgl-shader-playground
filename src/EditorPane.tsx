@@ -1,9 +1,7 @@
 import React from "react";
 
-import { Button, BUTTON_OUTLINED } from "./ui/Button";
-import { TextField } from "./ui/TextField";
+import { Button } from "./ui/Button";
 import { Switch } from "./ui/Switch";
-import { ImageIcon } from "./ui/icons";
 import { ShaderHistory } from "./ShaderHistory";
 
 const MonacoGlslEditor = React.lazy(() =>
@@ -16,10 +14,6 @@ export interface EditorPaneProps {
   shaderSource: string;
   onShaderSourceChange: (source: string) => void;
   onRunShader: () => void;
-  downloadShaderFilename: string;
-  onDownloadShaderFilenameChange: (filename: string) => void;
-  onDownloadShader: () => void;
-  onPickImage: (dataUrl: string) => void;
   autoRun: boolean;
   onToggleAutoRun: () => void;
   onResetShader: () => void;
@@ -32,15 +26,15 @@ export interface EditorPaneProps {
   onRedo: () => void;
 }
 
-/** GLSL editor plus run/download/texture controls. */
+/**
+ * Right page of the spread — the manuscript. The GLSL source fills the page;
+ * the run control anchors its foot, and a margin index rail down the page's
+ * outer margin holds the text's other lives (saved versions, default).
+ */
 export function EditorPane({
   shaderSource,
   onShaderSourceChange,
   onRunShader,
-  downloadShaderFilename,
-  onDownloadShaderFilenameChange,
-  onDownloadShader,
-  onPickImage,
   autoRun,
   onToggleAutoRun,
   onResetShader,
@@ -53,93 +47,69 @@ export function EditorPane({
   onRedo,
 }: EditorPaneProps) {
   return (
-    <div className="surface-panel flex w-1/2 grow flex-col gap-1 p-4 max-[900px]:w-full">
-      <h2 className="section-title mb-2 text-lg">Editor</h2>
-      <div id="editorParent" role="region" aria-label="Shader editor" className="flex flex-col gap-2">
-        <div className="surface-inset overflow-hidden p-1.5">
-          <React.Suspense
-            fallback={
-              <div className="min-h-[40vh] box-border p-4 text-sm text-muted">
-                Loading editor…
-              </div>
-            }
-          >
-            <MonacoGlslEditor
-              height="40vh"
-              width="100%"
-              defaultValue={shaderSource}
-              options={{
-                fontSize: editorFontSize,
-                wordWrap: wordWrap ? "on" : "off",
-                fontFamily: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
-              }}
-              theme={themeMode}
-              onChange={onShaderSourceChange}
-            />
-          </React.Suspense>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
-            Undo
-          </Button>
-          <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
-            Redo
-          </Button>
-        </div>
-        <Button
-          variant="contained"
-          onClick={onRunShader}
-          className="my-1 w-full"
+    <section className="spread-page page-source flex w-[54%] grow gap-4 p-5 max-[900px]:w-full max-[900px]:flex-col">
+      <div className="flex min-w-0 grow flex-col gap-2">
+        <h2 className="section-title text-lg">Editor</h2>
+        <div
+          id="editorParent"
+          role="region"
+          aria-label="Shader editor"
+          className="flex min-h-0 grow flex-col gap-2"
         >
-          Run Shader (Ctrl+Enter)
-        </Button>
-        <Switch
-          checked={autoRun}
-          onChange={onToggleAutoRun}
-          label="Auto-run while typing"
-        />
-        <div className="flex flex-wrap items-center gap-2">
-          <Button tone="danger" onClick={onResetShader}>
-            Reset to default shader
-          </Button>
-          <label className={`${BUTTON_OUTLINED} cursor-pointer`}>
-            <ImageIcon /> Pick tDiffuse Image
-            <input
-              type="file"
-              className="sr-only"
-              aria-label="Choose a texture image"
-              accept="image/*"
-              onChange={(e) => {
-                const file = (e.target as HTMLInputElement).files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onload = (e) => {
-                    const dataUrl = e.target?.result;
-                    if (typeof dataUrl === "string") {
-                      onPickImage(dataUrl);
-                    }
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-            />
-          </label>
+          <div className="surface-inset flex min-h-[42vh] grow flex-col overflow-hidden p-1.5">
+            <React.Suspense
+              fallback={
+                <div className="box-border p-4 text-sm text-muted">Loading editor…</div>
+              }
+            >
+              <MonacoGlslEditor
+                height="100%"
+                width="100%"
+                defaultValue={shaderSource}
+                options={{
+                  fontSize: editorFontSize,
+                  wordWrap: wordWrap ? "on" : "off",
+                  fontFamily: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+                }}
+                theme={themeMode}
+                onChange={onShaderSourceChange}
+              />
+            </React.Suspense>
+          </div>
+          <footer className="page-anchor flex flex-col gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Button variant="outlined" onClick={onUndo} disabled={!canUndo}>
+                  Undo
+                </Button>
+                <Button variant="outlined" onClick={onRedo} disabled={!canRedo}>
+                  Redo
+                </Button>
+              </div>
+              <Switch
+                checked={autoRun}
+                onChange={onToggleAutoRun}
+                label="Auto-run while typing"
+              />
+            </div>
+            <Button
+              variant="contained"
+              onClick={onRunShader}
+              className="w-full text-base"
+            >
+              Run Shader (Ctrl+Enter)
+            </Button>
+          </footer>
         </div>
-        <div className="surface-inset my-2 flex flex-row flex-wrap items-end gap-2 p-3">
-          <TextField
-            label="Filename"
-            type="text"
-            className="grow"
-            value={downloadShaderFilename}
-            aria-label="Shader download filename"
-            onChange={onDownloadShaderFilenameChange}
-          />
-          <Button variant="outlined" onClick={onDownloadShader}>
-            Download Shader (Ctrl+S)
-          </Button>
-        </div>
-        <ShaderHistory currentSource={shaderSource} onApply={onShaderSourceChange} />
       </div>
-    </div>
+      <aside className="index-rail flex w-48 shrink-0 flex-col gap-2 self-start p-3 max-[900px]:w-full">
+        <p className="note-label">Index</p>
+        <ShaderHistory
+          currentSource={shaderSource}
+          onApply={onShaderSourceChange}
+          onResetShader={onResetShader}
+        />
+      </aside>
+    </section>
   );
 }

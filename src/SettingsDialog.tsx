@@ -13,16 +13,16 @@ export interface SettingsDialogProps {
 const FIELD = "flex flex-col gap-1.5 text-sm";
 const FIELD_INPUT = "paper-inset w-24 px-2.5 py-[0.4rem] text-ink [font:inherit]";
 
-/** Modal-less settings panel with the persisted preferences. */
+/** Letter-card overlay with the persisted preferences. */
 export function SettingsDialog({ settings, onChange, onClose }: SettingsDialogProps) {
   return (
     <div
-      className="fixed inset-0 z-[1100] flex items-center justify-center bg-[var(--overlay)]"
+      className="fixed inset-0 z-[1100] flex items-center justify-center bg-[var(--overlay)] p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Settings"
     >
-      <div className="surface-panel flex min-w-[300px] flex-col gap-3.5 px-6 py-5 text-ink">
+      <div className="letter-card flex min-w-[300px] flex-col gap-3.5 px-7 py-6 text-ink">
         <h2 className="section-title text-xl">Settings</h2>
         <label className={FIELD}>
           Editor font size

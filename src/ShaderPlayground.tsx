@@ -3,6 +3,7 @@ import React from "react";
 import { ShaderPreview } from "./preview";
 import { PreviewPane } from "./PreviewPane";
 import { EditorPane } from "./EditorPane";
+import { ToolTray } from "./ToolTray";
 import { Button } from "./ui/Button";
 import { usePlaygroundState } from "./usePlaygroundState";
 import { loadTextureWithFallback } from "./textures";
@@ -289,7 +290,7 @@ export default function ShaderPlayground() {
   }
 
   return (
-    <div className="min-h-screen bg-app text-ink">
+    <div className="flex min-h-screen flex-col bg-app text-ink">
       <header className="mx-2 mt-3 flex flex-wrap items-end justify-between gap-3 px-2">
         <div>
           <h1 className="section-title text-2xl">WebGL Shader Playground</h1>
@@ -301,15 +302,6 @@ export default function ShaderPlayground() {
           <Button variant="outlined" onClick={toggleTheme}>
             {state.themeMode === "light" ? "Dark theme" : "Light theme"}
           </Button>
-          {recordingSupported ? (
-            <Button
-              variant="outlined"
-              className={isRecording ? "btn-recording" : undefined}
-              onClick={toggleRecording}
-            >
-              {isRecording ? "Stop recording" : "Record (WebM)"}
-            </Button>
-          ) : null}
           <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
             Settings
           </Button>
@@ -317,7 +309,7 @@ export default function ShaderPlayground() {
       </header>
       {pendingDraft && !draftDismissed ? (
         <div
-          className="surface-inset mx-2 my-3 flex items-center gap-2 p-3 text-sm"
+          className="surface-inset mx-4 my-3 flex items-center gap-2 p-3 text-sm shadow-[var(--shadow-soft)]"
           role="status"
         >
           <span className="grow">Unsaved draft from your last session is available.</span>
@@ -341,16 +333,11 @@ export default function ShaderPlayground() {
           </Button>
         </div>
       ) : null}
-      <div className="m-2 flex flex-row items-start gap-4 max-[900px]:flex-col">
+      <div className="mx-2 flex flex-row items-stretch gap-3 max-[900px]:flex-col">
         <PreviewPane
           canvasRef={canvasRef}
           width={state.width}
           height={state.height}
-          onWidthChange={setWidth}
-          onHeightChange={setHeight}
-          screenshotFilename={state.screenshotFilename}
-          onScreenshotFilenameChange={setScreenshotFilename}
-          onCaptureScreenshot={captureScreenshot}
           compileError={state.compileError}
           textureError={state.textureError}
           screenshotError={state.screenshotError}
@@ -365,10 +352,6 @@ export default function ShaderPlayground() {
           shaderSource={state.editorSource}
           onShaderSourceChange={editSource}
           onRunShader={runShader}
-          downloadShaderFilename={state.downloadShaderFilename}
-          onDownloadShaderFilenameChange={setDownloadShaderFilename}
-          onDownloadShader={downloadShader}
-          onPickImage={pickImage}
           autoRun={state.autoRun}
           onToggleAutoRun={toggleAutoRun}
           onResetShader={resetShader}
@@ -381,6 +364,23 @@ export default function ShaderPlayground() {
           onRedo={redoEditor}
         />
       </div>
+      <ToolTray
+        width={state.width}
+        height={state.height}
+        onWidthChange={setWidth}
+        onHeightChange={setHeight}
+        screenshotFilename={state.screenshotFilename}
+        onScreenshotFilenameChange={setScreenshotFilename}
+        onCaptureScreenshot={captureScreenshot}
+        downloadShaderFilename={state.downloadShaderFilename}
+        onDownloadShaderFilenameChange={setDownloadShaderFilename}
+        onDownloadShader={downloadShader}
+        texturePath={state.texturePath}
+        onPickImage={pickImage}
+        isRecording={isRecording}
+        recordingSupported={recordingSupported}
+        onToggleRecording={toggleRecording}
+      />
       <ToastHost store={toastStore} />
       {settingsOpen ? (
         <SettingsDialog

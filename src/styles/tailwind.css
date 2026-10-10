@@ -33,6 +33,7 @@
   --hover-tint: rgba(184, 80, 50, 0.08);
   --danger-tint: rgba(166, 59, 44, 0.08);
   --overlay: rgba(43, 30, 18, 0.45);
+  --crease: rgba(60, 40, 20, 0.35);
   --shadow: 0 2px 12px rgba(60, 40, 20, 0.12);
   --shadow-soft: 0 1px 4px rgba(60, 40, 20, 0.08);
   --inset-shadow: inset 0 1px 3px rgba(60, 40, 20, 0.1);
@@ -55,6 +56,7 @@
   --hover-tint: rgba(224, 122, 84, 0.12);
   --danger-tint: rgba(228, 100, 86, 0.12);
   --overlay: rgba(12, 8, 4, 0.55);
+  --crease: rgba(0, 0, 0, 0.6);
   --shadow: 0 2px 12px rgba(10, 6, 2, 0.35);
   --shadow-soft: 0 1px 4px rgba(10, 6, 2, 0.25);
   --inset-shadow: inset 0 1px 3px rgba(8, 5, 2, 0.35);
@@ -165,6 +167,163 @@ body {
     border-radius: 9999px;
     background: var(--accent);
     animation: rec-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* --- Layout: the open sketchbook spread --- */
+
+  /* A page of the spread (the plate or the manuscript). */
+  .spread-page {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  /* Soft crease where the two pages meet at the book gutter. */
+  .page-plate {
+    box-shadow: var(--shadow), inset -18px 0 22px -22px var(--crease);
+  }
+
+  .page-source {
+    box-shadow: var(--shadow), inset 18px 0 22px -22px var(--crease);
+  }
+
+  /* Margin note: tracked-out label above a quiet caption. */
+  .note-label {
+    margin: 0;
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Compact read-only summary chip; opens the settings it summarizes. */
+  .chip-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.36rem 0.85rem;
+    background: var(--inset-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    box-shadow: var(--inset-shadow);
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .chip-summary:hover {
+    background: var(--hover-tint);
+  }
+
+  .chip-summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .chip-summary::after {
+    content: "\25BE";
+    color: var(--muted);
+    font-size: 0.72em;
+    line-height: 1;
+  }
+
+  /* Non-interactive read-only summary chip (no disclosure arrow). */
+  .chip-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.36rem 0.85rem;
+    background: var(--inset-bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.8rem;
+    box-shadow: var(--inset-shadow);
+  }
+
+  /* Popover card anchored above a tool-tray slot. */
+  .tool-popover {
+    position: absolute;
+    bottom: calc(100% + 0.6rem);
+    left: 0;
+    z-index: 30;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.65rem;
+    min-width: 21rem;
+    padding: 0.9rem;
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  /* The pencil-case tray along the bottom of the spread. */
+  .tool-tray {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .tool-slot + .tool-slot {
+    border-left: 1px dashed var(--border-strong);
+    padding-left: 1.15rem;
+    margin-left: 1.15rem;
+  }
+
+  @media (max-width: 900px) {
+    .tool-slot + .tool-slot {
+      border-left: none;
+      border-top: 1px dashed var(--border-strong);
+      padding-left: 0;
+      margin-left: 0;
+      padding-top: 0.95rem;
+      margin-top: 0.95rem;
+    }
+  }
+
+  /* Margin index: the source page's side rail (works index). */
+  .index-rail {
+    background: var(--inset-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--inset-shadow);
+  }
+
+  /* Letter-card: the settings overlay as personal stationery. */
+  .letter-card {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    transform: rotate(-0.45deg);
+  }
+
+  .letter-card::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    pointer-events: none;
+  }
+
+  /* Manuscript anchor: hairline rule above the run control. */
+  .page-anchor {
+    border-top: 1px solid var(--border);
+    padding-top: 0.85rem;
+    margin-top: 0.35rem;
   }
 }
 

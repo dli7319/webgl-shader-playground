@@ -1,19 +1,12 @@
 import React from "react";
-
 import { StatusBar } from "./StatusBar";
 import { Button } from "./ui/Button";
-import { TextField } from "./ui/TextField";
 import type { CompileStatus } from "./status";
 
 export interface PreviewPaneProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   width: number;
   height: number;
-  onWidthChange: (width: number) => void;
-  onHeightChange: (height: number) => void;
-  screenshotFilename: string;
-  onScreenshotFilenameChange: (filename: string) => void;
-  onCaptureScreenshot: () => void;
   compileError?: string | null;
   textureError?: string | null;
   screenshotError?: string | null;
@@ -30,16 +23,15 @@ const ERROR_BOX =
 const COMPILE_ERROR = `${ERROR_BOX} proof proof-error`;
 const WARN_ERROR = `${ERROR_BOX} proof proof-warn`;
 
-/** Preview canvas plus the screenshot/export controls beneath it. */
+/**
+ * Left page of the spread — the plate. The canvas is the pasted-in print;
+ * caption (status), export size, and the zoom cluster read as margin notes
+ * down the page's outer margin.
+ */
 export function PreviewPane({
   canvasRef,
   width,
   height,
-  onWidthChange,
-  onHeightChange,
-  screenshotFilename,
-  onScreenshotFilenameChange,
-  onCaptureScreenshot,
   compileError,
   textureError,
   screenshotError,
@@ -51,84 +43,67 @@ export function PreviewPane({
   onZoomFit,
 }: PreviewPaneProps) {
   return (
-    <div className="surface-panel flex w-1/2 grow flex-col gap-1 p-4 max-[900px]:w-full">
-      <h2 className="section-title mb-2 text-lg">Preview</h2>
-      <canvas
-        ref={canvasRef}
-        role="img"
-        aria-label="Shader preview output"
-        className="rounded-[12px] border border-edge shadow-[var(--shadow-soft)]"
-        style={{
-          aspectRatio: width / height,
-          width: `${zoomPercent}%`,
-          height: "unset",
-        }}
-      />
-      <div className="mt-2 flex items-center gap-2">
-        <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
-          −
-        </Button>
-        <span className="min-w-14 text-center text-sm text-muted">{zoomPercent}%</span>
-        <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
-          +
-        </Button>
-        <Button variant="outlined" onClick={onZoomFit}>
-          Fit
-        </Button>
+    <section className="spread-page page-plate flex w-[46%] grow flex-col gap-2 p-5 max-[900px]:w-full">
+      <h2 className="section-title text-lg">Preview</h2>
+      <div className="flex flex-row items-start gap-5 max-[760px]:flex-col">
+        <div className="min-w-0 grow overflow-auto">
+          <canvas
+            ref={canvasRef}
+            role="img"
+            aria-label="Shader preview output"
+            className="rounded-[12px] border border-edge shadow-[var(--shadow-soft)]"
+            style={{
+              aspectRatio: width / height,
+              width: `${zoomPercent}%`,
+              height: "unset",
+            }}
+          />
+          {compileError ? (
+            <div className={COMPILE_ERROR} role="alert">
+              <strong>Shader error</strong>
+              <pre>{compileError}</pre>
+            </div>
+          ) : null}
+          {textureError ? (
+            <div className={WARN_ERROR} role="alert">
+              <strong>Texture error</strong>
+              <pre>{textureError}</pre>
+            </div>
+          ) : null}
+          {screenshotError ? (
+            <div className={WARN_ERROR} role="alert">
+              <strong>Screenshot error</strong>
+              <pre>{screenshotError}</pre>
+            </div>
+          ) : null}
+        </div>
+        <aside className="flex w-48 shrink-0 flex-col gap-5 max-[760px]:w-full">
+          <div>
+            <p className="note-label">View</p>
+            <div className="mt-1.5 grid grid-cols-[auto_1fr_auto] items-center gap-1.5">
+              <Button variant="outlined" onClick={onZoomOut} aria-label="Zoom out">
+                −
+              </Button>
+              <span className="text-center text-sm text-muted">{zoomPercent}%</span>
+              <Button variant="outlined" onClick={onZoomIn} aria-label="Zoom in">
+                +
+              </Button>
+            </div>
+            <Button variant="outlined" className="mt-1.5 w-full" onClick={onZoomFit}>
+              Fit
+            </Button>
+          </div>
+          <div>
+            <p className="note-label">Plate</p>
+            <StatusBar
+              status={status}
+              runDurationMs={runDurationMs}
+              width={width}
+              height={height}
+            />
+          </div>
+        </aside>
       </div>
-      <StatusBar
-        status={status}
-        runDurationMs={runDurationMs}
-        width={width}
-        height={height}
-      />
-      {compileError ? (
-        <div className={COMPILE_ERROR} role="alert">
-          <strong>Shader error</strong>
-          <pre>{compileError}</pre>
-        </div>
-      ) : null}
-      {textureError ? (
-        <div className={WARN_ERROR} role="alert">
-          <strong>Texture error</strong>
-          <pre>{textureError}</pre>
-        </div>
-      ) : null}
-      {screenshotError ? (
-        <div className={WARN_ERROR} role="alert">
-          <strong>Screenshot error</strong>
-          <pre>{screenshotError}</pre>
-        </div>
-      ) : null}
-      <div className="surface-inset my-2 flex flex-row flex-wrap items-end gap-2 p-3">
-        <TextField
-          label="Width"
-          type="number"
-          className="grow"
-          value={width}
-          aria-label="Screenshot width in pixels"
-          onChange={(v) => onWidthChange(Number(v))}
-        />
-        <TextField
-          label="Height"
-          type="number"
-          className="grow"
-          value={height}
-          aria-label="Screenshot height in pixels"
-          onChange={(v) => onHeightChange(Number(v))}
-        />
-        <TextField
-          label="Filename"
-          type="text"
-          className="grow"
-          value={screenshotFilename}
-          aria-label="Screenshot filename"
-          onChange={onScreenshotFilenameChange}
-        />
-        <Button className="grow" variant="outlined" onClick={onCaptureScreenshot}>
-          Screenshot!
-        </Button>
-      </div>
-    </div>
+    </section>
   );
 }
