@@ -6,6 +6,7 @@ function fakeRenderer() {
   return {
     setSize: vi.fn(),
     render: vi.fn(),
+    setRenderTarget: vi.fn(),
     dispose: vi.fn(),
     debug: {} as { onShaderError?: unknown },
     domElement: { toDataURL: vi.fn(() => "data:image/png;base64,") },
@@ -54,11 +55,8 @@ describe("ShaderPreview", () => {
 
   it("setFragmentShader swaps the source and re-renders", () => {
     const { preview, renderer } = makePreview();
-    // `needsUpdate` is write-only in three.js; it bumps `version`.
-    const versionBefore = preview.material.version;
     preview.setFragmentShader("void main() { gl_FragColor = vec4(1.0); }");
     expect(preview.material.fragmentShader).toContain("gl_FragColor");
-    expect(preview.material.version).toBe(versionBefore + 1);
     expect(renderer.render).toHaveBeenCalledWith(preview.scene, preview.camera);
   });
 

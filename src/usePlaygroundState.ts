@@ -5,6 +5,7 @@ import {
   playgroundReducer,
   type PlaygroundState,
 } from "./playgroundState";
+import type { ChannelSource, PassId, RenderPassId } from "./passes";
 
 /**
  * Owns the playground's state and exposes named actions. All state
@@ -48,6 +49,9 @@ export function usePlaygroundState(initialOverrides?: Partial<PlaygroundState>) 
       setThemeMode: (mode: "light" | "dark") => dispatch({ type: "setThemeMode", mode }),
       undoEditor: () => dispatch({ type: "undoEditor" }),
       redoEditor: () => dispatch({ type: "redoEditor" }),
+      selectPass: (pass: PassId) => dispatch({ type: "selectPass", pass }),
+      setChannel: (pass: RenderPassId, index: number, source: ChannelSource) =>
+        dispatch({ type: "setChannel", pass, index, source }),
     }),
     []
   );

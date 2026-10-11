@@ -60,9 +60,18 @@ switches to Shadertoy mode automatically:
 - `iChannel0..3` sample the playground's texture (the default kitten or the
   `tDiffuse` image you pick).
 
-Not covered (yet): multi-pass shaders (Buffer A–D) — their channel wiring lives
-in Shadertoy's UI rather than in the copied code, so it cannot be inferred from
-a single pasted tab — and cubemap/video/keyboard channels.
+Not covered (yet): cubemap/video/keyboard channels.
+
+### Multi-pass (Buffer A–D)
+
+Multi-pass shaders run through the **pass editor** above the code editor:
+tabs for `Common`, `Buffer A`–`D`, and `Image` (each keeps its own source —
+the editor shows the selected pass), and per-pass `iChannel0..3` dropdowns
+wiring each channel to None, the playground texture, or another pass's output.
+Paste each Shadertoy tab into its pass, wire the channels the way the shader's
+Inputs panel does on Shadertoy, and press Run. Buffers render in order into
+ping-pong targets; a channel wired to its own pass reads the previous frame —
+Shadertoy's persistent-buffer behavior.
 
 ## Development
 

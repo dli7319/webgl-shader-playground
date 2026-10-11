@@ -55,6 +55,8 @@ export default function ShaderPlayground() {
     setThemeMode,
     undoEditor,
     redoEditor,
+    selectPass,
+    setChannel,
   } = usePlaygroundState(React.useMemo(() => loadSettings(window.localStorage), []));
 
   const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -131,12 +133,17 @@ export default function ShaderPlayground() {
     // Mount-only: updates flow through the effects below.
   }, []);
 
-  // Apply the compiled shader whenever it changes.
+  // Apply the compiled shader whenever it changes (single- or multi-pass).
   React.useEffect(() => {
     const start = performance.now();
-    previewRef.current?.setFragmentShader(state.compiledShader);
+    const compiled = state.compiledPasses;
+    if (compiled) {
+      previewRef.current?.setPasses(compiled.sources, compiled.routing);
+    } else {
+      previewRef.current?.setFragmentShader(state.compiledShader);
+    }
     reportRun(performance.now() - start);
-  }, [state.compiledShader]);
+  }, [state.compiledShader, state.compiledPasses]);
 
   // Auto-run: apply editor changes after a pause in typing.
   const debouncer = React.useMemo(() => createDebouncer(600), []);
@@ -380,6 +387,11 @@ export default function ShaderPlayground() {
           editorFontSize={state.editorFontSize}
           wordWrap={state.wordWrap}
           themeMode={state.themeMode}
+          activePass={state.activePass}
+          passSources={state.passSources}
+          routing={state.routing}
+          onSelectPass={selectPass}
+          onSetChannel={setChannel}
           canUndo={canUndo(state.history)}
           canRedo={canRedo(state.history)}
           onUndo={undoEditor}
