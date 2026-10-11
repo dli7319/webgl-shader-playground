@@ -14,6 +14,15 @@ import {
   undoHistory,
   type History,
 } from "./history";
+import {
+  defaultRouting,
+  emptyPassSources,
+  type ChannelSource,
+  type PassId,
+  type PassRouting,
+  type PassSources,
+  type RenderPassId,
+} from "./passes";
 
 export interface PlaygroundState {
   /** Editor contents (may be dirty relative to compiledShader). */
@@ -49,6 +58,14 @@ export interface PlaygroundState {
   wordWrap: boolean;
   /** Applied-shader history (snapshots at each run). */
   history: History<string>;
+  /** Shadertoy multi-pass sources (Common / Buf A-D / Image). */
+  passSources: PassSources;
+  /** Which pass the editor is currently showing. */
+  activePass: PassId;
+  /** Per-pass iChannel wiring. */
+  routing: PassRouting;
+  /** Sources + routing snapshotted at the last run, for the renderer. */
+  compiledPasses: { sources: PassSources; routing: PassRouting } | null;
 }
 
 export const initialPlaygroundState: PlaygroundState = {
@@ -71,6 +88,10 @@ export const initialPlaygroundState: PlaygroundState = {
   editorFontSize: 14,
   wordWrap: false,
   history: createHistory(defaultFragmentShader),
+  passSources: { ...emptyPassSources(), image: defaultFragmentShader },
+  activePass: "image",
+  routing: defaultRouting(),
+  compiledPasses: null,
 };
 
 /** Merges persisted settings (or other overrides) into the initial state. */
@@ -82,6 +103,13 @@ export function initialStateWith(
 
 export type PlaygroundAction =
   | { type: "editSource"; source: string }
+  | { type: "selectPass"; pass: PassId }
+  | {
+      type: "setChannel";
+      pass: RenderPassId;
+      index: number;
+      source: ChannelSource;
+    }
   | { type: "runShader" }
   | { type: "setWidth"; width: number }
   | { type: "setHeight"; height: number }
@@ -112,18 +140,60 @@ export function playgroundReducer(
 ): PlaygroundState {
   switch (action.type) {
     case "editSource":
-      return { ...state, editorSource: action.source };
+      return {
+        ...state,
+        editorSource: action.source,
+        passSources: { ...state.passSources, [state.activePass]: action.source },
+      };
+    case "selectPass":
+      return {
+        ...state,
+        activePass: action.pass,
+        editorSource: state.passSources[action.pass],
+      };
+    case "setChannel": {
+      const channels = [...state.routing[action.pass]] as ChannelSource[];
+      channels[action.index] = action.source;
+      return {
+        ...state,
+        routing: { ...state.routing, [action.pass]: channels },
+      };
+    }
     case "runShader": {
       const history = pushHistory(state.history, state.editorSource);
-      return { ...state, compiledShader: state.editorSource, history };
+      return {
+        ...state,
+        compiledShader: state.editorSource,
+        history,
+        compiledPasses: {
+          sources: { ...state.passSources },
+          routing: state.routing,
+        },
+      };
     }
     case "undoEditor": {
       const history = undoHistory(state.history);
-      return { ...state, history, editorSource: history.present };
+      return {
+        ...state,
+        history,
+        editorSource: history.present,
+        passSources: {
+          ...state.passSources,
+          [state.activePass]: history.present,
+        },
+      };
     }
     case "redoEditor": {
       const history = redoHistory(state.history);
-      return { ...state, history, editorSource: history.present };
+      return {
+        ...state,
+        history,
+        editorSource: history.present,
+        passSources: {
+          ...state.passSources,
+          [state.activePass]: history.present,
+        },
+      };
     }
     case "setWidth":
       return { ...state, width: action.width };
@@ -158,8 +228,14 @@ export function playgroundReducer(
         hasRun: true,
         runDurationMs: action.durationMs,
       };
-    case "resetEditor":
-      return { ...state, editorSource: defaultFragmentShader };
+    case "resetEditor": {
+      const cleared = state.activePass === "image" ? defaultFragmentShader : "";
+      return {
+        ...state,
+        editorSource: cleared,
+        passSources: { ...state.passSources, [state.activePass]: cleared },
+      };
+    }
     case "setZoom":
       return { ...state, zoomPercent: clampZoom(action.percent) };
     case "zoomIn":
